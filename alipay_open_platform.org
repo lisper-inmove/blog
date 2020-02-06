@@ -1,0 +1,70 @@
+#+BEGIN_COMMENT
+.. title: alipay开放平台对接
+.. slug: alipay开放平台对接
+.. date: 2019-12-26 13:32:00 UTC+08:00
+.. tags: 
+.. category: work
+.. link: 
+.. description: 支付宝开放平台对接
+.. type: text
+
+#+END_COMMENT
+
+
+* 获取用户信息
+
+  #+BEGIN_VERSE
+  [[https://docs.open.alipay.com/289/105656][获取用户信息流程]]
+  [[https://docs.open.alipay.com/api_2/alipay.user.info.share][支付宝接口文档]]
+  支付宝网关: https://openapi.alipay.com/gateway.do
+  接口名: alipay.user.info.share
+  #+END_VERSE
+  
+  #+BEGIN_SRC python
+    from alipay import AliPay
+    from Crypto.PublicKey import RSA
+    from Crypto.Hash import SHA
+    from Crypto.Signature import PKCS1_v1_5
+    import Crypto.Hash.SHA512
+    import maya
+
+    class AliPayManager:
+        def __init__(self):
+            self.appid = '<appid>'
+            self.public_key_string = open('private-key-file.pem', 'r').read()
+            self.private_key_string = open('public-key-file.pem', 'r').read()
+            self.alipay_public_key_string = open('alipay-public-key-file.pem', 'r').read()
+            self.alipay_gateway = 'https://openapi.alipay.com/gateway.do'
+
+        def rsa_sign(self, plaintext):
+            """RSA 数字签名"""
+            signer = PKCS1_v1_5.new(RSA.importKey(self.private_key_string))
+            hash_value = Crypto.Hash.SHA256.new(plaintext)
+            signature = signer.sign(hash_value)
+            sign = encodebytes(signature).decode("utf8").replace("\n", "")
+            return sign
+
+        def rsa_verify(self, sign, plaintext):
+            """校验RSA 数字签名"""
+            hash_value = Crypto.Hash.SHA256.new(plaintext)
+            verifier = PKCS1_v1_5.new(RSA.importKey(self.alipay_public_key_string))
+            return verifier.verify(hash_value, sign)
+
+        def get_user_info(self, params):
+            # 这个接口一定要做urlencoding.应该是2019.12.24更新接口原因
+            params = urlencoding(params)
+
+            url = '{}?{}'.format(self.alipay_gateway, params)
+            # 对于某些返回需要做下处理,具体看文档
+            ret = requests.get(url).json()
+            return ret
+
+        def __sign(self, params):
+            params.pop('sign')
+            keys = params.keys()
+            sorted_keys = sorted(keys, key=lambda x: x)
+            keys = ['{}={}'.format(key, params.get(key)) for key in sorted_keys]
+            s = '&'.join(keys)
+            sign = self.rsa_sign(s)
+            params['sign'] = sign
+  #+END_SRC

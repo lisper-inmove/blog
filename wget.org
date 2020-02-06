@@ -1,0 +1,29 @@
+#+BEGIN_COMMENT
+.. title: wget
+.. slug: wget
+.. date: 2019-12-28 16:59:24 UTC+08:00
+.. tags: 
+.. category: Linux
+.. link: 
+.. description: wget
+.. type: text
+
+#+END_COMMENT
+
+
+* 常用选项
+
+  #+BEGIN_VERSE
+  
+  1. -c: 断点续传.下载大文件时很有用.
+  2. -O: 设置保存的文件名
+  3. -b: 后台下载
+  4. --user-agent: 伪装成浏览器
+  5. -i: 下载文件中的内容.把要下载的地址写入文件.然后wget -i 这个文件.就会一行一行的去下载了
+  6. -r -A: 下载指定格式的文件. wget -r -A.pdf url
+  7. --ftp-user,--ftp-password: 下载ftp文件. wget --ftp-user=username --ftp-password=password url
+  8. -Y,--proxy: 打开或者关闭代码
+  9. -P: 把文件保存到目录
+  10. -l: 递归下载深度
+
+  #+END_VERSE

@@ -1,0 +1,37 @@
+#+BEGIN_COMMENT
+.. title: rsyslog
+.. slug: rsyslog
+.. date: 2020-01-15 11:25:04 UTC+08:00
+.. tags: 
+.. category: Linux
+.. link: 
+.. description: rsyslog
+.. type: text
+
+#+END_COMMENT
+
+
+1. 编译安装
+
+   #+BEGIN_VERSE
+   0. 系统信息
+   NAME="Ubuntu"
+   VERSION="16.04.6 LTS (Xenial Xerus)"
+   ID=ubuntu
+   ID_LIKE=debian
+   PRETTY_NAME="Ubuntu 16.04.6 LTS"
+   VERSION_ID="16.04"
+   HOME_URL="http://www.ubuntu.com/"
+   SUPPORT_URL="http://help.ubuntu.com/"
+   BUG_REPORT_URL="http://bugs.launchpad.net/ubuntu/"
+   VERSION_CODENAME=xenial
+   UBUNTU_CODENAME=xenial
+   1. 下载
+   https://www.rsyslog.com/downloads/download-v8-stable/
+   2. 安装依赖
+    - apt install libestr-dev
+    - apt install uuid-dev
+    - libfastjson: https://github.com/rsyslog/libfastjson
+    - apt install -y libgcrypt11-dev
+    - apt install libcurl4-openssl-dev
+   #+END_VERSE

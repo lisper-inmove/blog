@@ -1,0 +1,50 @@
+#+BEGIN_COMMENT
+.. title: Python - format
+.. slug: python-format
+.. date: 2019-12-25 12:32:51 UTC+08:00
+.. tags: 
+.. category: Python
+.. link: 
+.. description: 字符串的format使用
+.. type: text
+
+#+END_COMMENT
+
+
+* 对齐
+
+  #+BEGIN_SRC python :results output
+    # 默认左对齐
+    print('{} and {}'.format('hello', 'world'))
+    # 右对齐,6表示前导补充6-len(str)个空格
+    print('{:>} and {:>6s}'.format('hello', 'world'))
+    # 取10位中间对齐.把字符串放在中间.前面添加x个空格,后面添加y个空格,例子中x+y=10
+    print('{:^10s} and {:^10s}'.format('hello','world'))
+    # 取两位小数
+    print('{} is {:.2f}'.format(1.123,1.123))
+    print('{} is {:>10.2f}'.format(1.123,1.123))
+  #+END_SRC
+
+  #+RESULTS:
+  : hello and world
+  : hello and  world
+  :   hello    and   world   
+  : 1.123 is 1.12
+  : 1.123 is       1.12
+
+* 格式化
+
+  #+BEGIN_VERSE
+  
+  1. {:.2f}: 保留2位小数
+  2. {:+.2f}: 带符号保留2位小数
+  3. {:.0f}: 不带小数
+  4. {:.2%}: 百分比记法
+  5. {:.2e}: 指数记法
+  6. {:b}: 二进制
+  d: 10进制
+  o: 8进制
+  x: 16进制
+  #x: 16进制前导0x
+  #X: 16进制前导0X
+  #+END_VERSE

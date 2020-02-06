@@ -1,0 +1,26 @@
+#+BEGIN_COMMENT
+.. title: python-date
+.. slug: python-date
+.. date: 2020-01-02 18:36:58 UTC+08:00
+.. tags: 
+.. category: Python
+.. link: 
+.. description: Python日期处理函数
+.. type: text
+
+#+END_COMMENT
+
+
+* maya
+  #+BEGIN_VERSE
+  pip install maya
+  #+END_VERSE
+
+  #+BEGIN_SRC python :results output
+    import moment
+    now = moment.now().locale('Asia/Shanghai')
+    print(now)
+  #+END_SRC
+
+  #+RESULTS:
+  : 2020-01-02T19:38:50+08.00

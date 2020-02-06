@@ -1,0 +1,343 @@
+#+BEGIN_COMMENT
+.. title: docker
+.. slug: docker
+.. date: 2019-12-29 11:51:50 UTC+08:00
+.. tags: 
+.. category: Docker
+.. link: 
+.. description: Docker实战
+.. type: text
+
+#+END_COMMENT
+
+* 基本概念
+** 镜像
+   #+BEGIN_VERSE
+   Docker 镜像是一个特殊的文件系统， 除了提供容器运行时所需的程序、 库、 资
+   源、 配置等文件外， 还包含了一些为运行时准备的一些配置参数（ 如匿名卷、 环境
+   变量、 用户等） 。 镜像不包含任何动态数据， 其内容在构建之后也不会被改变。
+   #+END_VERSE
+*** 分层存储
+    #+BEGIN_VERSE
+    镜像构建时， 会一层层构建， 前一层是后一层的基础。 每一层构建完就不会再发生
+    改变， 后一层上的任何改变只发生在自己这一层。 比如， 删除前一层文件的操作，
+    实际不是真的删除前一层的文件， 而是仅在当前层标记为该文件已删除。 在最终容
+    器运行的时候， 虽然不会看到这个文件， 但是实际上该文件会一直跟随镜像。 因
+    此， 在构建镜像的时候， 需要额外小心， 每一层尽量只包含该层需要添加的东西，
+    任何额外的东西应该在该层构建结束前清理掉。
+    分层存储的特征还使得镜像的复用、 定制变的更为容易。 甚至可以用之前构建好的
+    镜像作为基础层， 然后进一步添加新的层， 以定制自己所需的内容， 构建新的镜像。
+    #+END_VERSE
+*** 镜像加速器
+    #+BEGIN_VERSE
+    在/etc/systemd/system/multi-user.target.wants/docker.service
+    中ExecStart=这一行加上
+    --registry-mirror=<加速器地址>
+    #+END_VERSE
+*** 获取镜像
+    #+BEGIN_EXAMPLE
+    docker pull [options] [Docker Registry地址]<仓库名>:<标签>
+    docker pull ubuntu:18.04
+    #+END_EXAMPLE
+    #+BEGIN_VERSE
+    1. Docker Registry地址格式为: <域名/IP>[:端口号],默认值为Docker的官方地址。
+    2. 仓库名为<用户名>/<软件名>。如果不给出用户名则为默认的library。
+    3. 标签则是形如Ubuntu系统的14.04,18.04之类.
+    #+END_VERSE
+*** 列出镜像
+    #+BEGIN_VERSE
+    1. docker images ubuntu
+    列出指定仓库的镜像
+    2. docker images ubuntu:18.04
+    列出指定仓库的标签的镜像
+    3. docker images -q
+    只显示ID列表
+    4. docker images -f since=mongo:3.2
+    在mongo:3.2之后建立的镜像.也可以用before表示之前.
+    5. docker images --format "{{.ID}}: {{.Repository}}"
+    以GO的模板语言显示.如上表示只显示ID和仓库列
+    docker images --format "table {{.ID}}\t{{.Repository}}\t{{.Tag}}"表示以ID,Repository,TAG做为标题并显示其内容.
+    #+END_VERSE
+*** 删除镜像
+    #+BEGIN_VERSE
+    1. docker rmi 短id/长id/镜像名
+    #+END_VERSE
+**** 虚悬镜像
+     #+BEGIN_VERSE
+     REPOSITORY TAG为<none>的镜像称为虚悬镜像。主要成因是这两个值被后面发布的版本覆盖了
+     docker images -f dangling=true只显示虚悬镜像。
+     这种镜像没有什么存在的价值。使用下面的命令删除它
+     docker rmi $(docker images -q -f dangling=true)
+     #+END_VERSE
+*** 查找镜像
+    #+BEGIN_VERSE
+    docker search
+    #+END_VERSE
+*** 摘取镜像
+    #+BEGIN_VERSE
+    docker pull
+    #+END_VERSE
+** 容器
+   #+BEGIN_VERSE
+   容器是镜像运行时的对象。镜像就好像是面向对象编程中的类，容器则是由类生成的对象。
+   容器是由镜像构建而来的，在镜像上新增一层存储层。存储层与容器是同生共死的。容器消亡时，存储层也随之消亡。
+   镜像层并不会受到任何改变。而我们如果要永久化数据同需要用到`数据卷`的相关知识。需要存储到宿主机上面。
+   #+END_VERSE
+*** 查看容器修改的内容(存储层的改变)
+    #+BEGIN_VERSE
+    1. docker diff 容器名
+    #+END_VERSE
+*** 提交容器(并不会使用commit来生成新的镜像)
+    #+BEGIN_VERSE
+    对存储层做了修改并不会永久有效.存储层会在容器关闭时消亡.
+    对容器使用commit命令可以提交成一个新的镜像.
+    docker commit --author 作者 --message 记录修改的内容 容器名 仓库名:标签名
+    #+END_VERSE
+*** 查看镜像内的历史记录
+    #+BEGIN_VERSE
+    docker history 仓库:标签
+    #+END_VERSE
+*** 删除容器
+    #+BEGIN_VERSE
+    1. docker rm 短id
+    2. 启动容器的时候使用docker -rm,stop容器的时候就会自动删除容器了
+    #+END_VERSE
+*** 运行容器
+    #+BEGIN_VERSE
+    1. docker run
+    检查镜像是不是存在,如果存在就运行.如果不存在就去仓库中去拉取
+    2. docker start
+    把一个stop掉的容器启动
+    -t: 为容器分配一个伪终端
+    -i: 让容器的标准输入保持打开
+    -d: 让容器后台运行
+    #+END_VERSE
+*** 终止容器
+    #+BEGIN_VERSE
+    docker stop
+    #+END_VERSE
+*** 进行容器
+    #+BEGIN_VERSE
+    docker attach 
+    #+END_VERSE
+*** 导入导出容器
+    #+BEGIN_VERSE
+    1. 导出
+    docker export id > a.tar
+    2. 导入
+    cat a.tar | docker import - inmove/ubuntu:18.04
+    #+END_VERSE
+** 仓库
+   #+BEGIN_VERSE
+   Docker Registry是一个镜像存储服务。类似于Github这样的仓库。专门用来存放镜像，这样让你构建的镜像可以在不同的机器上访问。
+   有公共的Docker Registry也可以搭建私有的Docker Registry。
+   #+END_VERSE
+
+* 命令
+** docker run
+   #+BEGIN_VERSE
+   1. docker run -it --rm ubuntu:18.04 /bin/bash
+   运行ubuntu的18.04版本.并执行/bin/bash命令.
+   -i表示交互式操作
+   -t表示终端
+   --rm表示退出容器后删除这个容器。否则需要使用docker rm来删除容器。如果不删除就会有一个牌stop状态的容器。
+   /bin/bash表示容器运行后执行这个命令
+   #+END_VERSE
+
+* 使用Dockerfile定制镜像
+** FROM
+   #+BEGIN_VERSE
+   1. 指定基础镜像.此命令一定是Dockerfile的第一行
+   FROM nginx: 以nginx作为基础镜像.
+   FROM scratch: 不以任何镜像作为基础镜像.
+   #+END_VERSE
+** RUN
+   #+BEGIN_VERSE
+   用来执行命令行命令
+   1. RUN <命令>
+   RUN echo '<h1>hello</h1>' >> /usr/share/nginx/html/index.html
+   2. RUN ['可执行文件', '参数1', '参数2', ...]
+   #+END_VERSE
+** COPY
+   #+BEGIN_VERSE
+   从构建上下文目录中的源路径复制.可以使用通配符.源目录可以是url.docker会自动下载.
+   1. COPY <源目录1>,<源目录2> ... <目标路径>
+   2. COPY [<源目录1>,<源目录2> ... <目标路径>]
+   #+END_VERSE
+** ADD
+   #+BEGIN_VERSE
+   ADD的用法和COPY一样.只不过当源目录是压缩包的时候,会自动解压.COPY不会.
+   COPY 和 ADD 指令中选择的时候， 可以遵循这样的原则， 所有的文件复制均使用 COPY 指令， 仅在需要自动解压缩的场合使用 ADD
+   #+END_VERSE
+** CMD
+   #+BEGIN_VERSE
+   容器运行启动后运行的指令.也可以以docker run的最后一个参数的形式指定,这个时候会覆盖dockerfile中的CMD的内容.
+   1. CMD <命令>
+   2. CMD [命令, 参数1, 参数2 ...]
+   3. CMD ["参数1", "参数2"...] 。 在指定了 ENTRYPOINT 指令后， 用 CMD 指定具体的参数
+   #+END_VERSE
+** ENTRYPOINT
+   #+BEGIN_VERSE
+   如果设置了ENTRYPOINT那么CMD命令的内容就变成了 ENTRYPOINT 命令的参数.
+   #+END_VERSE
+
+   #+BEGIN_VERSE
+   用下面这种CMD的方式的话.我们就只能执行
+   docker run myip # 后面不能再加参数了
+   docker run myip -i就会报找不到'-i'这个命令的错误.因为'-i覆盖了.
+   #+END_VERSE
+   #+BEGIN_EXAMPLE
+   FROM ubuntu:16.04
+   RUN apt-get update \
+       && apt-get install -y curl \
+       && rm -rf /var/lib/apt/lists/*
+   CMD [ "curl", "-s", "http://ip.cn" ]
+   #+END_EXAMPLE
+
+   #+BEGIN_VERSE
+   用 ENTRYPOINT 的方式就可以下面的方式来增加其它的参数
+   docker run myip -i
+   #+END_VERSE
+   #+BEGIN_EXAMPLE
+   FROM ubuntu:16.04
+   RUN apt-get update \
+       && apt-get install -y curl \
+       && rm -rf /var/lib/apt/lists/*
+   ENTRYPOINT [ "curl", "-s", "http://ip.cn" ]
+   #+END_EXAMPLE
+** ENV
+   #+BEGIN_VERSE
+   设置环境变量
+   1. ENV VERSION=1.0 DEBUG = 0 \
+         NAME='Happy Feet'
+   2. ENV VERSION 1.0
+   在后面的文件中用$来引用一个环境变量,和在bash中一样.
+   #+END_VERSE
+** ARG
+   #+BEGIN_VERSE
+   同ENV.但是ENV定义的环境变量在容器构建后还可以用.ARG的则不能.
+   在命令行使用--build-arg key=value来覆盖
+   #+END_VERSE
+** VOLUME
+   #+BEGIN_VERSE
+   卷.相当于容器内部访问外部的磁盘.写入的内容不会随着容器停止而消亡.
+   1. VOLUME [路径1, 路径2,...]: 匿名卷
+   在命令行使用-v来覆盖VOLUME选项
+   docker run -d -v mydata:/data /bin/bash: 把当前目录下的mydata挂载到容器的/data上面
+   #+END_VERSE
+** EXPOSE
+   #+BEGIN_VERSE
+   EXPOSE port1, port2, ...
+   声明容器提供服务的端口.没有什么实际用途.只是用来声明而已.
+   在使用-P选项时,会自动映射EXPOSE指定的端口.
+   #+END_VERSE
+** WORKDIR
+   #+BEGIN_VERSE
+   WORKDIR dir
+   指明工作目录.后面的所有构建指令都在这个目录下面进行.
+   #+END_VERSE
+** USER
+   #+BEGIN_VERSE
+   USER inmove
+   指定用户,都是对后面的指令生效
+   如果只是想对某部分命令临时切换一下用户则用gosu
+   #+END_VERSE
+   #+BEGIN_EXAMPLE
+      # 建立 redis 用户， 并使用 gosu 换另一个用户执行命令
+      RUN groupadd -r redis && useradd -r -g redis redis
+      # 下载 gosu
+      RUN wget -O /usr/local/bin/gosu "https://github.com/tianon/gosu/releases/download/1.7/gosu-amd64" \
+          && chmod +x /usr/local/bin/gosu \
+          && gosu nobody true
+      # 设置 CMD， 并以另外的用户执行
+      CMD [ "exec", "gosu", "redis", "redis-server" 
+   #+END_EXAMPLE
+** HEALTHCHECK
+   #+BEGIN_VERSE
+   检查容器健康状况
+   1. HEALTHCHECK [options] CMD <命令>: 设置检查容器健康状况的命令
+   options包括以下
+       1. --interval=<间隔>: 两次检查的时间间隔.默认为30秒
+       2. --timeout=<时长>: 超时时间.如果超过这个时间就认为是失败.默认是30秒.
+       3. --retries=<次数>,当连续失败指定次数后,将容器视为unhealthy.默认为3次.
+   CMD后面的命令则是用来检查的命令.返回值
+       0: 成功
+       1: 失败
+       2: 保留
+   2. HEALTHCHECK NONE: 如果基础镜像有检查的指令,使用这行可以屏蔽掉其检查的指令.
+   #+END_VERSE
+   #+BEGIN_EXAMPLE
+   FROM nginx
+   RUN apt-get update && apt-get install -y curl && rm -rf /var/lib
+   /apt/lists/*
+   HEALTHCHECK --interval=5s --timeout=3s \
+       CMD curl -fs http://localhost/ || exit 1
+   #+END_EXAMPLE
+** ONBUILD
+   #+BEGIN_VERSE
+   后面接其它指令.这个用这个Dockerfile来构建的时候并不人执行.但是以这个镜像做为基础镜像时就会执行.
+   #+END_VERSE
+   #+BEGIN_VERSE
+   FROM node:slim
+   RUN "mkdir /app"
+   WORKDIR /app
+   ONBUILD COPY ./package.json /app
+   ONBUILD RUN [ "npm", "install" ]
+   ONBUILD COPY . /app/
+   CMD [ "npm", "start" ]
+   #+END_VERSE
+   #+BEGIN_VERSE
+   把它构建为基础镜像my-node
+   #+END_VERSE
+   #+BEGIN_EXAMPLE
+   FROM my-node
+   #+END_EXAMPLE
+   #+BEGIN_VERSE
+   这个镜像就会执行my-node里的ONBUILD后面的内容了.
+   #+END_VERSE
+** 使用docker build构建镜像
+   #+BEGIN_VERSE
+   假设dockerfile如下
+   #+END_VERSE
+
+   #+BEGIN_EXAMPLE
+   FROM nginx
+   RUN echo '<h1> hello docker</h1>' > /usr/share/nginx/html/index.html
+   #+END_EXAMPLE
+
+   #+BEGIN_VERSE
+   在dockerfile所在目录下执行命令: docker build -t nginx:v3 .
+   其中最后一个'.'并不是当前目录的意思.而是告诉docker服务器,本次构建的上下文.
+   Docker服务器会把这个目录打包.然后上传给docker引擎.引擎收到这个上下文包的,展开就会获得构建镜像的一切文件.
+   构建的一切目录有关的操作都是以这个目录做为起始目录.
+   #+END_VERSE
+
+   #+BEGIN_VERSE
+   其它构建方式
+   1. 通过url构建
+   docker build https://xxxxxxxxxxxxx
+   2. 通过tar包构建
+   docker build xxx.tar.gz
+   #+END_VERSE
+* 数据卷和数据卷容器
+** 数据卷
+*** 挂载数据卷
+    #+BEGIN_VERSE
+    docker run -d -P --name web -v /src/webapp:/opt/webapp:ro training/webapp python app.py
+    使用-v来把宿主机的/src/webapp挂载到容器的/opt/webapp.挂载的权限默认为读写.使用ro来设定为只读.
+    也可以只设置/opt/webapp.那么会默认使用宿主机的/var/lib/docker/volumes
+    #+END_VERSE
+** 数据卷容器
+   #+BEGIN_VERSE
+   1. 创建数据卷容器
+   docker run -d -v /dbdata --name dbdata training/postgres
+   2. 使用--volumes-from挂载数据卷容器
+   docker run -d --volumes-from dbdata --name db1 training/postgres
+   #+END_VERSE
+** 删除数据卷
+   #+BEGIN_VERSE
+   数据卷容器即使不在运行态,也可以使用--volumes-from来挂载.
+   删除容器并不会删除数据卷.
+   如果只是删除数据卷,docker rm -v来删除
+   如果是删除数据卷容器的数据卷,最后一个使用数据卷的容器使用docker rm -v就可以了
+   #+END_VERSE

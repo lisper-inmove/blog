@@ -1,0 +1,163 @@
+#+BEGIN_COMMENT
+.. title: python magic-method
+.. slug: python-magic-method
+.. date: 2019-12-28 22:37:30 UTC+08:00
+.. tags: 
+.. category: Python
+.. link: 
+.. description: Python魔法函数
+.. type: text
+
+#+END_COMMENT
+
+
+* 访问attr
+
+  #+BEGIN_VERSE
+  实现以'.'的方式访问属性
+  1. __setattr__: 为属性设置值
+  2. __getattr__: 当访问的属性不存在时调用的方法
+  3. __getattribute__: 访问属性时一定调用的方法.
+  如果存在就返回它的值,如果不存在就返回__getattr__的调用.这个函数最好不要重载.
+  重载也不要使用self.xx的方式.因为会无限递归.
+
+  #+END_VERSE
+
+  #+BEGIN_SRC python :results output
+    class A:
+        def __init__(self, d={}):
+            self.__data = {}
+            self.__data.update(d)
+
+        def __setattr__(self, key, value):
+            print(f'__setattr__ {key}={value}')
+            self.__dict__[key] = value
+
+        def __getattr__(self, key):
+            print(f'__getattr__ cannot find {key} attribute')
+            return None
+
+    if __name__ == '__main__':
+        a = A()
+        a.name = 'inmove'
+        a.age = 21
+        print(f'my name is {a.name}, my age is {a.age}, {a.money}')
+  #+END_SRC
+
+  #+RESULTS:
+  : __setattr__ _A__data={}
+  : __setattr__ name=inmove
+  : __setattr__ age=21
+  : __getattr__ cannot find money
+  : my name is inmove, my age is 21, None
+
+* 以中括号的形式访问
+
+  #+BEGIN_VERSE
+  1. __setitem__
+  2. __getitem__
+  #+END_VERSE
+
+  #+BEGIN_SRC python :results output
+    class A:
+        def __init__(self, d={}, **kargs):
+            self.__data = {}
+            self.__data.update(d)
+            self.__data.update(kargs)
+        def __setitem__(self, key, value):
+            print(f'__setitem__ {key}={value}')
+            self.__data[key] = value
+        def __getitem__(self, key):
+            print(f'__getitem__ {key}')
+            try:
+                return self.__data[key]
+            except:
+                return None
+    
+    if __name__ == '__main__':
+        a = A()
+        a['name'] = 'inmove'
+        a['age'] = 21
+        print('my name is {}, {} years old. {} a month'.format(a['name'], a['age'], a['money']))
+  #+END_SRC
+
+  #+RESULTS:
+  : __setitem__ name=inmove
+  : __setitem__ age=21
+  : __getitem__ name
+  : __getitem__ age
+  : __getitem__ money
+  : my name is inmove, 21 years old. None a month
+* new和init两个函数的关系
+
+  #+BEGIN_VERSE
+  1. __new__
+  2. __init__
+  #+END_VERSE
+
+  #+BEGIN_SRC python :results output
+    class A:
+        def __new__(cls, *args, **kargs):
+            print("A's new")
+            return super().__new__(cls, *args, **kargs)
+        def __init__(self, *args, **kargs):
+            print("A's init")
+
+    class B(A):
+        def __new__(cls, *args, **kargs):
+            print("B's new")
+            return object.__new__(cls, *args, **kargs)
+        def __init__(self, *args, **kargs):
+            print("B's init")
+
+    if __name__ == '__main__':
+        A()
+        B()
+  #+END_SRC
+
+  #+RESULTS:
+  : A's new
+  : A's init
+  : B's new
+  : B's init
+
+* 比较函数
+
+  #+BEGIN_VERSE
+  1. __cmp__: 实现==,!=,如果有特定的某个操作符的重载,就调用特定的那个
+  2. __eq__: ==
+  3. __ne__: !=
+  4. __lt__: <
+  5. __gt__: >
+  6. __le__: <=
+  7. __ge__: >=
+  #+END_VERSE
+
+  #+BEGIN_SRC python :results output
+    class A:
+        def __init__(self, value):
+            self.value = value
+        def __cmp__(self, other):
+            return self.value > other.value
+
+    if __name__ == '__main__':
+        a0 = A(10)
+        a1 = A(11)
+        print(a0 == a1)
+  #+END_SRC
+
+  #+RESULTS:
+  : False
+
+* 一目运算符
+
+  #+BEGIN_VERSE
+  1. __pos__: +
+  2. __neg__: -
+  3. __abs__: 内置的abs
+  4. __invert__: ~
+  5. __round__: 内置round
+  6. __floor__: math.floor
+  7. __ceil__: math.ceil
+  8. __trunc__: math.trunc
+  #+END_VERSE

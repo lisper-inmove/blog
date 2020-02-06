@@ -1,0 +1,66 @@
+#+BEGIN_COMMENT
+.. title: nginx
+.. slug: nginx
+.. date: 2020-01-01 15:32:55 UTC+08:00
+.. tags: 
+.. category: Linux,Nginx
+.. link: 
+.. description: Nginx
+.. type: text
+
+#+END_COMMENT
+
+
+* Nginx平滑升级
+
+  #+BEGIN_VERSE
+  0. 备份旧的nginx二进制文件
+  1. 使用编译出来的二进制文件替换旧的文件
+  2. kill -USR2 pid
+  新旧master,worker同时运行.但是旧的master不再接受新的连接
+  3. kill -WINCH pid
+  旧的worker退出.旧的master依然在运行.使用reload指令可以回退
+  #+END_VERSE
+
+* Nginx日志切割
+
+  #+BEGIN_VERSE
+  nginx -s reopen重新生成新的access.log文件.
+  或者kill -USR1 pid
+  #+END_VERSE
+
+* gzip压缩
+
+  #+BEGIN_VERSE
+  在http块中配置如下
+  1. gzip on; # 打开gzip压缩功能
+  2. gzip_min_length 1024; # 当文件字节数小于这个数时就不压缩
+  3. gzip_comp_level 2; # 压缩等级
+  4. gzip_types text/plain text/css image/png; # 要压缩的文件类型
+  #+END_VERSE
+
+* 目录显示
+
+  #+BEGIN_VERSE
+  当用户在浏览器中用'/'结尾时,就列出目录
+  location块中
+  autoindex on;
+  #+END_VERSE
+
+* 限制访问速度
+
+  #+BEGIN_VERSE
+  location块
+  set $limit_rate 1k; # 设置nginx返回给客户浏览器的速度.此处为每秒1k
+  #+END_VERSE
+
+* 日志格式
+
+  #+BEGIN_VERSE
+  http块
+  log_format name '';
+  access_log logs/main.access.log main; # 把日志记录在main.access.log中,使用main这个名字的格式.
+  #+END_VERSE
+
+* 反向代理
+  pass
