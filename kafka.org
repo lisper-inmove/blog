@@ -1,0 +1,109 @@
+#+SETUPFILE: ~/.emacs.d/org-templates/template.org
+#+TITLE: kafka
+
+* 相关术语
+
+- message:
+  #+begin_verse
+  对于Kafka而言,message就是字节数组外.一个message可以有一个可选的key,也是字节数组.key的主要作用是在message被分配partitions时,
+  用于确定message保存在哪个partition.
+  #+end_verse
+- batch:
+  #+begin_verse
+  一组message.减少网络间数据交换的开销,会以batch的方式同时传递多个message.
+  #+end_verse
+- schema:
+  #+begin_verse
+  发送给kafka的数据和接收到数据需要遵循一定的规则.并且是比较稳定的规则,这样能提高应用层的稳定性.
+  这个主要用于对接kafka服务的库需要重要了解.
+  #+end_verse
+- topic:
+  #+begin_verse
+  一条message属于一个topic.一个topic里面包含了一组相同类别的message.
+  #+end_verse
+- partition:
+  #+begin_verse
+  一个topic可能被保存在多个partition中.同一个partition中,可以保证消息被顺序消费,
+  不同partition中,即使属于相同的topic的message也无法被保证按顺序消费
+  #+end_verse
+- producer
+- consumer
+- group
+  #+begin_verse
+  一个或多个consumer通过组成一个group.一个topic的某一个partition同一时间只能被一个组中的一个consumer消费
+  #+end_verse
+- broker
+  #+begin_verse
+  一个Kafka服务叫作broker.多个broker组成一个cluster.
+  一个topic的某一个partition可以属于多个broker.
+  其中一个broker-partition属于leader地位,其它的broker-partition则属于从属地位,
+  主要用于从leader中同步message.
+  #+end_verse
+
+* Producer
+- bootstrap.servers:
+  #+begin_verse
+  host:port 对.其中一个或多个broker的地址与端口
+  #+end_verse
+- key.serializer
+  #+begin_verse
+  类名.用于序列化key
+  #+end_verse
+- value.serializer
+- acks:
+  #+begin_verse
+  一共有三个值
+  0: 表示只要发过去了就行了,不管kafka有没有收到
+  1: 表示至少确保leader已收到
+  all: 表示大于1个broker收到
+  #+end_verse
+- buffer.memory
+  #+begin_verse
+  prouducer在发送数据的时候.最多能保存多少大小的数据在内存中.防止数据积压过多.
+  #+end_verse
+- compression.type
+  #+begin_verse
+  数据发送的压缩方式.默认数据是不压缩的.
+  可选值有 snappy, gzip, lz4.
+  snappy,使用更少的cpu,性能更好
+  gzip,使用较多的cpu.
+  #+end_verse
+- retries
+  #+begin_verse
+  重试次数
+  #+end_verse
+- retry.backoff.ms
+  #+begin_verse
+  重试之间的间隔
+  #+end_verse
+- batch.size
+  #+begin_verse
+  当messages占了一定量的内存的时候就会发送一次到kafka.batch.size用于设置此量的大小.
+  #+end_verse
+- client.id
+  #+begin_verse
+  一个字符串,用于broker标明发送消息的客户端
+  #+end_verse
+- max.in.flight.requests.per.connection
+  #+begin_verse
+  用于控制producer发送不用确认消息的数量
+  #+end_verse
+- timeout.ms,request.timeout.ms,metadata.fetch.timeout.ms
+  #+begin_verse
+  request.timeout.ms: 等待kafka回消息的超时时间
+  metadata.fetch.timeout.ms: 获取kafka元信息的超时时间
+  timeout.ms: broker同步消息的超时时间
+  #+end_verse
+- max.block.ms
+  #+begin_verse
+  send函数最长block时间
+  #+end_verse
+- max.request.size
+  #+begin_verse
+  producer能发送的消息的最大长度.这个长度单位为字节.与 单个message的长度 * message的数量 作对比
+  kafka还有个 =message.max.bytes= 来限制单个message的长度.
+  #+end_verse
+- receive.buffer.bytes send.buffer.bytes
+  #+begin_verse
+  TCP 接收和发送的数据和缓冲区的大小
+  #+end_verse

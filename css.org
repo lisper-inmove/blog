@@ -1,0 +1,221 @@
+#+SETUPFILE: ~/.emacs.d/org-templates/template.org
+#+TITLE: CSS
+
+* 背景
+** RGB / RGBa
+RGB: 分别表示三元色,红,绿,蓝
+#+BEGIN_SRC css
+  header {
+      background-color: rgb(0, 0, 0); /* black */
+  }
+
+  footer {
+      background-color: rgba(0, 0, 0, 0.5) /* 50%透明的黑色 */
+  }
+#+END_SRC
+
+** HSL / HSLa
+HSL分别代表: 色彩,饱和度,明亮度
+H: 0 ~ 360
+S: 0% ~ 100%
+L: 0% ~ 100%
+#+BEGIN_SRC css
+  li a {
+      background-color: hsl(120, 100%, 50%);
+  }
+
+  #p1 {
+      background-color: hsla(120, 100%, 50%, .3); /* 30%透明度的绿色 */
+  }
+#+END_SRC
+
+** 背景图
+如果background-color与bacground-image同时使用.在后面定义的会覆盖前面的定义
+#+BEGIN_SRC css
+  body {
+      background-image: url("background01.png");
+  }
+#+END_SRC
+
+** 背景图的其它属性
+1. background-size: xpx ypx | x% y%;
+2. background-repeat: no-repeat | repeat(default) | repeat-x | repeat-y;
+3. background-position: left offset (px/%) right offset (px/%) | center center | left top | right bottom;
+4. background-attachment: fixed | scroll | local | initial | inherit; 设置背景图片是不是跟着滚动
+5. background-clip: border-box | content-box | inherit; 背景的范围.
+
+** 颜色渐变
+1. linear-gradient(direction, color0, color1,...): 线性渐变
+   1. direction:
+      1. to left: 从右到左
+      2. to left top: 从右下到左上
+2. repeating-linear-gradient: 重复线性渐变
+3. radial-gradient: 圆形渐变
+   1. repeatding-radial-gradient:
+
+* 选择器
+** 基础选择器
+1. *: 选择所有
+   #+BEGIN_SRC css
+     ,* {
+         pading: 0;
+         margin: 0;
+     }
+   #+END_SRC
+2. 标签选择器: div,span等
+   #+BEGIN_SRC css
+     span {}
+     h1 {}
+   #+END_SRC
+3. 类选择器:
+   #+BEGIN_SRC css
+     .student {}
+   #+END_SRC
+4. 多个类选择器:
+   #+BEGIN_SRC css
+     .blue.student {}
+   #+END_SRC
+5. ID选择器:
+   #+BEGIN_SRC css
+     #theid {}
+   #+END_SRC
+6. 伪类选择器:
+   #+BEGIN_SRC css
+     :pseudo-class {}
+   #+END_SRC
+7. 伪元素选择器:
+   #+BEGIN_SRC css
+     ::pseudo-element {}
+   #+END_SRC
+8. 父子选择器
+   #+BEGIN_SRC css
+     div > p {}
+   #+END_SRC
+
+** 属性选择器
+#+BEGIN_SRC css
+  [attr] {} /* <div attr> */
+
+  [attr='val'] {} /* <div attr='val'> */
+
+  [attr~='val'] {} /* <div attr='val 0val val1'> */
+
+  [attr^='val'] {} /* <div attr='val1val2val3'> */
+
+  [attr$='val'] {} /* <div attr='sth aval'> */
+
+  [attr*='val'] {} /* <div attr='aabbvalccdd'> */
+
+  /* 在开头出现,或者被'-'跟着 */
+  [attr|='val'] {} /* <div attr='val-sth etc'> */
+
+  /* val的不区分大小写 */
+  [attr='val'i] {} /* <div attr='val'> */
+#+END_SRC
+
+** 组合选择器
+#+BEGIN_SRC css
+  div span {} /* 所有祖先是div的span */
+
+  div > span {} /* div 的儿子span */
+
+  a ~ span {} /* a 的所有兄弟span */
+
+  a + span {} /* 如果a的下一个兄弟是span,那么选中这个span */
+#+END_SRC
+
+** 伪类选择器
+#+BEGIN_SRC css
+  :active {} /* 鼠标按下时 */
+
+  :any {} /*  */
+
+  :target {} /*  */
+
+  :checked {}
+
+  :default {}
+
+  :disabled {}
+
+  :empty {}
+
+  :enabled {}
+
+  :first {}
+
+  :first-child {}
+
+  :first-of-type {}
+
+  :focus {}
+
+  /* 某个元素或某个元素的后代被选中时 */
+  :focus-within {}
+
+  :full-screen {}
+
+  :hover {}
+
+  :indeterminate {}
+
+  /* 选中那些指定了区间值的元素 */
+  :in-range {}
+
+  :invalid {}
+
+  :lang {}
+
+  :last-child {}
+
+  /* 选择 它父元素的最后一个元素 */
+  :last-of-type {}
+  /* 选择的是p的父元素的最后一个p标签 */
+  p:last-of-type {}
+
+  :left {}
+
+  :link {}
+
+  :not() {}
+
+  :nth-child {}
+
+  :nth-of-type {}
+
+  :only-child {}
+  /* 如果p是它父标签的惟一子元素,那么p被选中 */
+  p:only-child {}
+
+  :optional {}
+
+  :out-of-range {}
+
+  :placeholder-shown {}
+
+  :read-only {}
+
+  :read-write {}
+
+  :right {}
+
+  :root {}
+
+  :scope {}
+
+  /* not safe: https://hacks.mozilla.org/2010/03/privacy-related-changes-coming-to-css-vistited/ */
+  :visited {}
+#+END_SRC
+*** child Pseudo class
+| selector           | 1 | 2 | 3 | 4 | 5 | 6 | 7 | 8 | 9 | 10 |
+|--------------------+---+---+---+---+---+---+---+---+---+----|
+| :first-child       | y |   |   |   |   |   |   |   |   |    |
+| :nth-child(3)      |   |   | y |   |   |   |   |   |   |    |
+| :nth-child(n+3)    |   |   | y | y | y | y | y | y | y | y  |
+| :nth-child(3n)     |   |   | y |   |   | y |   |   | y |    |
+| :nth-child(3n+1)   | y |   |   | y |   |   | y |   |   | y  |
+| :nth-child(-n+3)   | y | y | y |   |   |   |   |   |   |    |
+| :nth-child(odd)    | y |   | y |   | y |   | y |   | y |    |
+| :nth-child(even)   |   | y |   | y |   | y |   | y |   | y  |
+| :last-child        |   |   |   |   |   |   |   |   |   | y  |
+| :nth-last-child(3) |   |   |   |   |   |   |   | y |   |    |

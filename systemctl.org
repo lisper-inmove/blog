@@ -1,143 +1,43 @@
-#+BEGIN_COMMENT
-.. title: Systemctl
-.. slug: systemctl
-.. date: 2019-12-24 23:38:23 UTC+08:00
-.. tags: 
-.. category: Linux
-.. link: 
-.. description: Linux服务管理工具 Systemctl
-.. type: text
+#+SETUPFILE: ~/.emacs.d/org-templates/template.org
+#+TITLE: Systemctl
 
-#+END_COMMENT
-
-* 基本使用
-
-  #+BEGIN_SRC bash
-    # 1. 启动服务
-    systemctl start xxx
-    # 2. 停止服务
-    systemctl stop xxx
-    # 3. 让服务开机启动
-    systemctl enable xxx
-    # 4. 使服务开机不启动
-    systemctl disable xxx
-    # 5. 查看服务的状态
-    systemctl status xxx
-    # 6. 服务是否是活跃的(运行中的)
-    systemctl is-active xxx
-    # 7. 是否是开机启动的
-    systemctl is-enabled xxx
-    # 8. 是否失败的
-    systemctl is-failed xxx
-  #+END_SRC
-
-* 显示units列表
-
-  #+BEGIN_SRC bash
-    # 1. 列出所有模块
-    # --all: 列出所有
-    # --state=active/running/exited/waiting/abandoned/inactive
-    # --type=service
-    systemctl list-units --all --state=active
-    # 2. 列出有文件
-    systemctl list-unit-files
-  #+END_SRC
-
-* 配置文件
-
-  #+BEGIN_SRC bash
-    # 1. 显示文件内容
-    systemctl cat atd.service
-    # 2. 编辑配置文件.不要用这个命令,它默认用的nano.难用得很
-    # 直接编辑/etc/systemd/下面的文件
-    systemctl edit xxx
-    # 3. 修改完配置后重新加载配置文件
-    systemctl daemon-reload
-  #+END_SRC
-
-* 服务依赖
-
-  #+BEGIN_SRC bash
-    # 1. 这个服务依赖哪些target
-    # --all
-    # --after
-    # --before
-    # --reverse
-    systemctl list-dependencies sshd.service
-  #+END_SRC
-
-* 显示服务所有配置
-
-  #+BEGIN_SRC bash
-    # 1. 显示所有配置.
-    # 2. -p: 显示某个配置的值
-    systemctl show xxx
-  #+END_SRC
-
-* 屏蔽服务
-
-  #+BEGIN_SRC bash
-    # 1. 屏蔽这个服务.甚至不能start它
-    systemctl mask xxx
-    # 2. unmask
-    systemctl unmask xxx
-  #+END_SRC
-
-* 配置文件详解
-
-  #+BEGIN_VERSE
+* systemctl配置文件所在位置
+=/etc/systemd/system/=
+* zookeeper
+#+begin_src ini
   [Unit]
-  Description=nginx - high performance web server
-  After=network.target remote-fs.target nss-lookup.target
+  Description=zookeeper01.service
+  After=network.target
 
   [Service]
   Type=forking
-  ExecStart=/opt/nginx/sbin/nginx -c /opt/nginx/conf/nginx.conf
-  ExecReload=/opt/nginx/sbin/nginx -s reload
-  ExecStop=/opt/nginx/sbin/nginx -s stop
+  # 指定环境变量
+  Environment=JAVA_HOME=/data/opt/jdk-9
+  ExecStart=/data/opt/zookeeper/z01/bin/zkServer.sh start
+  ExecStop=/data/opt/zookeeper/z01/bin/zkServer.sh stop
+  ExecReload=/data/opt/zookeeper/z01/bin/zkServer.sh restart
 
   [Install]
   WantedBy=multi-user.target
-  #+END_VERSE
+#+end_src
 
-  1. Unit
-     + Description: 对这个服务的描述
-     + Documentation: 文档相关的内容
-     + After: 本服务是在哪个服务之后才启动.多个服务用空格格开.仅仅是说明.但是并不强制要求.
-     + Before: 在指定的服务启动前最好启动此服务.仅仅是说明,不强制要求.
-     + Requires: 本unit需要在哪个服务启动后才能启动.如果前置服务没有启动成功,本unit不会启动.
-     + Wants: 规定这个服务启动后还要启动什么服务.如果后面的服务没有启动成功,对本unit并不会有影响.
-     + Conflicts: 如果有x服务启动,那么本unit就不启动.如果本unit启动了,x服务就不启动.x可以为由空格格开的多个服务.
-     + BindsTo: 同Requires.当BindsTo中的unit停止的时候,本unit也停止.
-     + Condition: 可以存在多个.只有当满足了这些条件,本unit才会启动.
-     + Assert: 同Condition.
+* kafka
+#+begin_src ini
+  [Unit]
+  Description=Apache Kafka server (broker)
+  After=network.target  zookeeper.service
 
-  2. Service
-     + Type: 这个服务的启动方式
-       - simple: 默认值.服务由ExecStart来启动,并长驻内存中
-       - forking: 由ExecStart启动.通过spawns产生子进程,然后父进程退出
-       - oneshot: 与simple类似,不长驻内存中.
-       - dbus: 与simple类似,但是必须要设置BusName的配置
-       - idle: 与simple类似,但是要在空闲的时候才执行
-       - notify: 与simple类似,但是必须要接收到一个sd_notify()函数发送的消息后,才会继续运行.
-     + ExecStart: 执行此服务的脚本.不支持某些特殊字符.所以命令行参数,最好写到一个脚本里去.
-     + ExecStartPre/ExecStartPost: 分别在服务启动前后,执行额外的命令.可以同时存在多个.
-     + ExecStop: 实现systemctl stop
-     + ExecStopPost: unit stop之后执行的命令.
-     + ExecReload: 实现systemctl reload
-     + Restart: 如果Restart设置为1,那么服务终止时会自动重启
-     + RestartSec: 如果打开了自动重启.服务终止多长时间后才重启
-     + KillMode: 服务终止时的表现
-       - process: 只终止主进程
-       - control-group: 由此daemon产生的所有control-group全部终止
-       - none: 什么都不做
-     + TimeoutSec: systemd需要等待多久,才能把服务标记为失败,或者强制结束它.
-     + RemainAfetrExit: 当RemainAfterExit=1时,当这个服务所属的所有程序都终止之后,此服务会再尝试启动.
-     + 环境变量: 在ExecStart配置中${key}的形式使用环境变量
-       - Environment=key=value
-       - EnvironmentFile=xxx: 文件里以key=value的格式书写
+  [Service]
+  # 服务以什么方式启动，如果是shell脚本的方式，则Type=forking，否则不指定作何值（也就是去掉该配置项）
+  Type=forking
+  # 启动环境参数，比如说JAVA_HOME的指定，而这里指定zookeeper的日志目录为/tmp
+  Environment=JAVA_HOME=/data/opt/jdk-9
+  Environment=PATH=/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin:/data/opt/jdk-9/bin
+  Type=simple
+  User=root
+  Group=root
+  ExecStart=/data/opt/kafka/k00/bin/kafka-server-start.sh /data/opt/kafka/k00/config/server.properties
 
-  3. Install
-     + WantedBy: 这个设置后面大多接的是*.target.意思是,这个unit挂在哪个target下面.
-     + Also: 当目前这个unit被enable时,Also后面的unit也要被enable
-     + Alias: 当systemctl enable相关的服务的时个,则此服务会进行链接文件的创建.
+  [Install]
+  WantedBy=multi-user.target
+#+end_src

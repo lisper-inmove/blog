@@ -1,0 +1,55 @@
+#+SETUPFILE: ~/.emacs.d/org-templates/template.org
+#+TITLE: Httpie
+
+* 安装
+#+BEGIN_SRC shell
+  pip install httpie
+#+END_SRC
+* 设置method
+直接加在 =http= 后面.默认为 =GET= 方法.如果有使用请求参数,如果没有设置请求参数,就设置成 =POST=.
+* 传参数
+1. `:`: headr参数. e.g: X-API-Token:123
+2. `=`,`=@`: post参数.`=@`指向一个文件
+3. `:=`,`:=@`: 原始json格式数据或文件. e.g: meals:='["ham","spam"]', pies:=[1,2,3]
+4. `==`: GET参数
+5. `@`: form表单.与--form,-f一起使用. e.g: screenshot@~/Pictures/img.png
+** 数组数据
+#+BEGIN_SRC shell
+  http host:url arrayData='[1,2,3]' arraydata2='["abc", "cde"]'
+#+END_SRC
+** json数据
+#+NAME: file.json
+#+BEGIN_SRC json
+  [
+      {
+          "price": 10,
+          "quantity": 1
+      },{
+          "price": 11,
+          "quantity": 12
+      }
+  ]
+#+END_SRC
+#+BEGIN_SRC shell
+  http host:url args:=@file.json
+#+END_SRC
+* Cookies
+#+BEGIN_SRC shell
+  http example.org Cookie:sessionid=foo
+  http example.org 'Cookie:sessionid=foo;another-cookie=bar'
+#+END_SRC
+* 身份认证
+#+BEGIN_SRC shell
+  http -a username:password example.org
+  http -A digest -a username:password example.org
+#+END_SRC
+
+prompt password
+#+BEGIN_SRC shell
+  http -a username example.org
+#+END_SRC
+* 设置代理
+#+BEGIN_SRC shell
+  http --proxy=http:http://10.10.1.10:3128 --proxy=https:https://10.10.1.10:1080 example.org
+  http --proxy=http:http://user:pass@10.10.1.10:3128 example.org
+#+END_SRC

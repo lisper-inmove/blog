@@ -1,0 +1,17 @@
+#+SETUPFILE: ~/.emacs.d/org-templates/template.org
+#+TITLE: figlet
+
+* install
+1. apt install figlet
+2. brew install figlet
+#+BEGIN_SRC shell :results output
+  figlet "R E D I S"
+#+END_SRC
+
+#+RESULTS:
+:  ____    _____   ____    ___   ____
+: |  _ \  | ____| |  _ \  |_ _| / ___|
+: | |_) | |  _|   | | | |  | |  \___ \
+: |  _ <  | |___  | |_| |  | |   ___) |
+: |_| \_\ |_____| |____/  |___| |____/
+:

@@ -1,66 +1,73 @@
-#+BEGIN_COMMENT
-.. title: nginx
-.. slug: nginx
-.. date: 2020-01-01 15:32:55 UTC+08:00
-.. tags: 
-.. category: Linux,Nginx
-.. link: 
-.. description: Nginx
-.. type: text
+#+SETUPFILE: ~/.emacs.d/org-templates/template.org
+#+TITLE: Nginx
 
-#+END_COMMENT
+* 登陆认证
+1. 安装密码生成工具: *apache2-utils* on (Debian, Ubuntu) *httpd-tools* on (RHEL/CentOS/Oracle Linux).
+2. sudo htpasswd -c /etc/nginx/auth/.htpasswd username
+3. 可以设置在location块,也可以设置在server块中.
 
+#+BEGIN_SRC ini
+  location /api {
+      auth_basic           “Administrator’s Area”;
+      auth_basic_user_file /etc/nginx/auth/.htpasswd;
+  }
+#+END_SRC
 
-* Nginx平滑升级
+#+BEGIN_SRC ini
+  server {
+      auth_basic           "Administrator’s Area";
+      auth_basic_user_file /etc/nginx/auth/.htpasswd;
 
-  #+BEGIN_VERSE
-  0. 备份旧的nginx二进制文件
-  1. 使用编译出来的二进制文件替换旧的文件
-  2. kill -USR2 pid
-  新旧master,worker同时运行.但是旧的master不再接受新的连接
-  3. kill -WINCH pid
-  旧的worker退出.旧的master依然在运行.使用reload指令可以回退
-  #+END_VERSE
+      location /public/ {
+          auth_basic off; # 关闭认证
+      }
+  }
+#+END_SRC
 
-* Nginx日志切割
+* 开放目录浏览
+1. autoindex on/off: 是否可以浏览目录
+2. autoindex_exact_size on/off: 是否显示文件实际大小
+3. autoindex_format html: 页面呈现的样式.json,xml,html,jsonp.
+4. autoindex_lacaltime on/off: on时显示客户端本地时间.off时显示utc时间.
+5. 同时记录把nginx的user(默认为www-data)对相应目录有访问权限
 
-  #+BEGIN_VERSE
-  nginx -s reopen重新生成新的access.log文件.
-  或者kill -USR1 pid
-  #+END_VERSE
+#+BEGIN_SRC ini
+  location /somedirectory/ {
+      autoindex on;
+      autoindex_exact_size off;
+      autoindex_format html;
+      autoindex_localtime on;
+  }
+#+END_SRC
 
-* gzip压缩
+* 日志
+** 参数
+1. $remote_addr: 客户端地址
+2. $remote_user: 客户端用户名称
+3. $time_local: 访问时间和时区
+4. $request: 请求的URI和HTTP协议
+5. $http_host: 请求地址，即浏览器中你输入的地址（IP或域名）
+6. $status: HTTP请求状态
+7. $upstream_status: upstream状态
+8. $body_bytes_sent: 发送给客户端文件内容大小
+9. $http_referer: url跳转来源
+10. $http_user_agent: 用户终端浏览器等信息
+11. $ssl_protocol: SSL协议版本
+12. $ssl_cipher: 交换数据中的算法
+13. $upstream_addr: 后台upstream的地址，即真正提供服务的主机地址
+14. $request_time: 整个请求的总时间
+15. $upstream_response_time: 请求过程中，upstream响应时间
 
-  #+BEGIN_VERSE
-  在http块中配置如下
-  1. gzip on; # 打开gzip压缩功能
-  2. gzip_min_length 1024; # 当文件字节数小于这个数时就不压缩
-  3. gzip_comp_level 2; # 压缩等级
-  4. gzip_types text/plain text/css image/png; # 要压缩的文件类型
-  #+END_VERSE
+** 配置实例
+#+BEGIN_SRC nginx
+  log_format  main  '$request_time $upstream_response_time $remote_addr - $remote_user [$time_local] "$request" '
+  '$status $body_bytes_sent "$http_referer" '
+  '"$http_user_agent" "$http_x_forwarded_for"';
+  access_log logs/access.log. main;
 
-* 目录显示
+  log_format  main  '"$request_time" "$upstream_response_time" $remote_addr - $remote_user [$time_local] "$request" '
+  '$status $body_bytes_sent "$http_referer" '
+  '"$http_user_agent" "$http_x_forwarded_for"';
 
-  #+BEGIN_VERSE
-  当用户在浏览器中用'/'结尾时,就列出目录
-  location块中
-  autoindex on;
-  #+END_VERSE
-
-* 限制访问速度
-
-  #+BEGIN_VERSE
-  location块
-  set $limit_rate 1k; # 设置nginx返回给客户浏览器的速度.此处为每秒1k
-  #+END_VERSE
-
-* 日志格式
-
-  #+BEGIN_VERSE
-  http块
-  log_format name '';
-  access_log logs/main.access.log main; # 把日志记录在main.access.log中,使用main这个名字的格式.
-  #+END_VERSE
-
-* 反向代理
-  pass
+  access_log  /home/shilai/data/logs/nginx/access.log main;
+#+END_SRC

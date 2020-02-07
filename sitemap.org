@@ -1,0 +1,20 @@
+#+TITLE: Inmove's Blog
+
+- [[file:bash.org][Bash]]
+- [[file:git.org][Git]]
+- [[file:httpie.org][Httpie]]
+- [[file:linux.org][Linux]]
+- [[file:nginx.org][Nginx]]
+- [[file:org-mode.org][Org Mode]]
+- [[file:python.org][Python]]
+- [[file:redis.org][Redis]]
+- [[file:systemctl.org][Systemctl]]
+- [[file:ubuntu.org][Ubuntu]]
+- [[file:clisp.org][clisp]]
+- [[file:figlet.org][figlet]]
+- [[file:index.org][index]]
+- [[file:kafka.org][kafka]]
+- [[file:shell.org][shell]]
+- css
+  - [[file:css/background.org][background]]
+  - [[file:css/selector.org][selector]]

@@ -1,0 +1,792 @@
+#+SETUPFILE: ~/.emacs.d/org-templates/template.org
+#+TITLE: Python
+
+* msgpack
+** 什么是MessagePack
+
+[[https://msgpack.org/][MessagePack]] 是一个效率极高的二进制序列化形式(协议).目前已经有很多种对它做了支持.它比json的效率要高很多.
+
+** Python msgpack
+
+[[https://pypi.org/project/msgpack/][Python - msgpack]]
+
+#+begin_src shell
+  pip install msgpack
+#+end_src
+
+** Python msgpack 的使用
+
+#+begin_src python :results output
+  import msgpack
+
+  a = [1,2,3]
+  b = msgpack.packb(a);
+  print(a, b)
+
+  c = msgpack.unpackb(b)
+  print(c, b)
+#+end_src
+
+#+RESULTS:
+: [1, 2, 3] b'\x93\x01\x02\x03'
+: [1, 2, 3] b'\x93\x01\x02\x03'
+
+** 在流中使用
+#+begin_src python :results output
+  import msgpack
+  import types
+  from io import BytesIO
+
+  buf = BytesIO()
+  for i in range(5):
+      buf.write(msgpack.packb("hello {}".format(i)));
+
+  buf.seek(0)
+
+  unpacker = msgpack.Unpacker(buf)
+  print(unpacker, isinstance(unpacker, types.GeneratorType))
+
+  for unpacked in unpacker:
+      print(unpacked, end=",")
+#+end_src
+
+#+RESULTS:
+: <msgpack._cmsgpack.Unpacker object at 0x556a7495d7d0> False
+: hello 0,hello 1,hello 2,hello 3,hello 4,
+
+** 自定义数据类型
+#+begin_src python :results output
+  import msgpack
+
+  class MyDataType:
+
+      def __init__(self, value):
+          self.value = value
+
+  def my_encode(obj):
+      if isinstance(obj, MyDataType):
+          return {"value": obj.value, "encode": True}
+      return obj
+
+  def my_decode(obj):
+      if obj.get("encode"):
+          return MyDataType(value=obj.get("value"))
+      return obj
+
+  obj = MyDataType(value=10)
+
+  packed_data = msgpack.packb(obj, default=my_encode)
+  print(packed_data)
+  unpacked_data = msgpack.unpackb(packed_data, object_hook=my_decode)
+  print(unpacked_data)
+#+end_src
+
+#+RESULTS:
+: b'\x82\xa5value\n\xa6encode\xc3'
+: <__main__.MyDataType object at 0x7f35838619a0>
+* queue
+* threading
+- threading.active_count(): 返回当前存活的Thread对象的数量
+- threading.current_thread(): 返回当前控制线程的Thread对象
+- threading.excepthook(args, /): 处理由Thread.run()引发的异常
+  #+begin_verse
+  args参数具有以下属性
+  1. exc_type: 异常类型
+  2. exc_value: 异常值
+  3. exc_traceback: 异常回溯
+  4. thread: 引发异常的线程
+
+  如果exc_type为 [[https://docs.python.org/zh-cn/3/library/exceptions.html#SystemExit][SystemExit]] 则会被忽略.其它异常被打印到sys.stderr
+  此函数引发的异常会调用sys.excepthook来处理
+  #+end_verse
+- threading.get_ident(): 当前线程的标识符
+- threadding.get_native_id(): 内核分配给当前线程的原生集成线程ID
+- threading.enumerate(): 当前所有存活线程的列表
+- threading.main_thread(): 当前主线程
+- threading.settrace(func)
+- threading.settrace(func): 每个线程的run被调用前,func会被传递给 [[https://docs.python.org/zh-cn/3/library/sys.html#sys.settrace][sys.settrace]]
+- threading.setprofile(func): 每个线程的run被调用前,func会被传递给 [[https://docs.python.org/zh-cn/3/library/sys.html#sys.setprofile][sys.profile]]
+** Thread类
+- class threading.Thread(group=None, target=None, name=None, args=(), kargs={}, *, daemon=None)
+  #+begin_verse
+  group应设置为None,为以后扩展ThreadGroup保留
+  target是用于run方法的可调用对象
+  name是线程名
+  args是用于调用target的参数元组
+  kargs是用于调用target的命名参数
+  daemon: 如果不是None,则该参数显示设置线程的守护模式,如果是None,则继承当前线程的守护模式
+  #+end_verse
+- start(): 开始线程活动.一个线程的start方法只能被调用一次
+- run(): 线程活动方法,不要手动调用此函数.
+- join(timeout=None): 等待,直到线程结束.
+  #+begin_verse
+  timeout,一个以秒为单位的浮点数.
+  如果线程A需要等到线程B结束才执行,则在线程A中调用 B.join(timeout=X)
+  如果不传timeout,则会一直阻塞直到B结束
+  如果传了timeout,则在joinr返回之后还在在A线程中调用 B.is_alive(),如果还存活则表明是超时返回
+  #+end_verse
+- name: 线程名
+- daemon: 是否是守护线程
+** Lock
+- class threading.Lock(): 返回一个线程锁.该锁是不可重入的
+- acquire(blocking=True, timeout=-1): 获取一个线程锁
+  #+begin_verse
+  blocking默认为True,当有其它线程持有这个锁时,acquire函数的调用线程将被阻塞
+  timeout用于blocking为False时表明调用线程的阻塞最长时间.timeout为-1时将无限等待.
+  #+end_verse
+- release(): 释放锁.这个方法可以在任何线程中调用.即使该线程没有获得锁
+- locked(): 当前线程是否获得了锁
+** RLock
+- class threading.Rlock(): 递归锁.区别于Lock的是,RLock是可重入的.如果线程A已经持有锁B了,那么那可以多次调用B.acquire,当然
+  释放也需要调用相同次数的release才会完全释放.RLock支持with语法
+- acquire(blocking=True, timeout=-1)
+- release()
+** Condition
+- class threading.Conition(lock=None)
+  #+begin_verse
+  条件变量对象.多个线程受约束于同一个条件变量.当某一条件达到时,其中一个线程调用notify或者notify_all函数,唤醒一个或多个线程接着执行
+  #+end_verse
+- acquire: 调用lock的acquire函数
+- release: 调用lock的release函数
+- wait(timeout=None): 等待被通知或超时.
+- wait_for(predicate, timeout=None): 等待,直到predicate返回真.predicate是一个无参数的函数.
+- notify(n=1): 唤醒一个或多个等待线程
+- notify_all(): 唤醒所有等待线程
+
+#+begin_src python
+  # -*- coding: utf-8 -*-
+
+  import time
+  import threading
+  from threading import Condition
+  from threading import RLock
+
+  x = 100
+
+
+  def xbigger_than_100():
+      global x
+      return x > 100
+
+
+  def consumer(condition):
+      thread_name = threading.current_thread().name
+      print("current thread: {}".format(thread_name))
+      with condition:
+          print("x value: {}".format(x))
+          condition.wait_for(xbigger_than_100)
+          print("got it: {}, {}".format(thread_name, x))
+
+  def producer(condition):
+      global x
+      print("set x to 101")
+      x = 101
+      with condition:
+          condition.notify(2)
+
+
+  if __name__ == '__main__':
+      lock = RLock()
+      condition = Condition(lock)
+      t0 = threading.Thread(target=consumer, args=(condition,))
+      t1 = threading.Thread(target=consumer, args=(condition,))
+      t0.start()
+      t1.start()
+      time.sleep(2)
+
+      t2 = threading.Thread(target=producer, args=(condition,))
+      t2.start()
+#+end_src
+** Semaphore
+- class threading.Semaphore(value=1): value赋与内部计数器初始值
+- acquire(blocking=True, timeout=None):
+  #+begin_verse
+  如果内部计数器大于0,则计数器值减一,立即返回True
+  如果内部计数器等于0,则线程被阻塞,直到有一个线程调用release函数,使内部计数器值大于0,返回True.或者timeout不为None时,达到超时,返回False.
+  #+end_verse
+- release(n=1): 释放一个信号量.将内部计数器值增加n.
+- class threading.BoundedSemaphore(value=1): 有限的信号量. 内部计数值的值不能小于 value初始值.
+** Event
+- class threading.Event: 事件对象.多个线程可以监听同一个事件对象
+- is_set(): 当内部标识为true时返回True
+- set(): 将内部标识设置为True.此时,所有等待对象将被唤醒
+- clear(): 将内部标识设置为False,之后调用wait方法的线程将被阻塞
+- wait(timeout=None): 阻塞直到内部标识变为true,或者timeout超时.
+** Timer
+- class threading.Timer(interval, function, args=None, kargs=None): 第隔一段时间调用function函数
+** 栅栏对象
+- class threading.Barrier(parties, action=None, timeout=None)
+  #+begin_verse
+  当有parties个线程调用该栅栏的wait函数时,wait函数返回,接着执行后面的语句
+  #+end_verse
+- wait(timeout=None):
+  #+begin_verse
+  wait的返回值是已经有多少个线程从wait函数返回了.
+  #+end_verse
+- reset(): 重置栅栏到初始状态.如果仍有线程等待释放,则会引发BrokenBarrierError异常
+- abort(): 使栅栏处于损坏状态.如此,当前处于等待的线程,以及后面调用wait的线程将引发BrokenBarrierError.
+- parties: 达到目标的线程数.parties个线程调用了wait函数,则达到目标
+- n_waiting: 当前处于等待状态的线程数
+- broken: true/false, 栅栏是否处于破损态
+- exception threading.BrokenBarrierError
+
+
+#+begin_src python :results output
+  # -*- coding: utf-8 -*-
+
+
+  import random
+  import threading
+  import time
+
+  def new_thread(barrier):
+      now = int(time.time())
+      seconds = int(random.random() * 10) % 5
+      print("{} before barrier.wait: {}, sleep: {}s".format(threading.current_thread().name, now, seconds))
+      time.sleep(seconds)
+      try:
+          n = barrier.wait(1)
+          print("barrier return: {}".format(n))
+      except threading.BrokenBarrierError as bb_err:
+          now = int(time.time())
+          print("barrier error: {}, {}".format(bb_err, now))
+      now = int(time.time())
+      print("{} after barrier.wait: {}".format(threading.current_thread().name, now))
+
+  if __name__ == '__main__':
+      barrier = threading.Barrier(3)
+
+      t0 = threading.Thread(target=new_thread, args=(barrier,))
+      t1 = threading.Thread(target=new_thread, args=(barrier,))
+      t2 = threading.Thread(target=new_thread, args=(barrier,))
+
+      t0.start()
+      t1.start()
+      t2.start()
+#+end_src
+
+#+RESULTS:
+: Thread-1 before barrier.wait: 1615133674, sleep: 4s
+: Thread-2 before barrier.wait: 1615133674, sleep: 1s
+: Thread-3 before barrier.wait: 1615133674, sleep: 1s
+: barrier error: , 1615133676
+: Thread-2 after barrier.wait: 1615133676
+: barrier error: , 1615133676
+: Thread-3 after barrier.wait: 1615133676
+: barrier error: , 1615133678
+: Thread-1 after barrier.wait: 1615133678
+** 上下文管理器
+#+begin_verse
+threading中的所有带有acquire和release方法的对象都可以被用作with语句的上下文管理器.
+#+end_verse
+#+begin_example
+  with some_lock:
+      pass
+#+end_example
+等同于:
+#+begin_example
+  lock.acquire()
+  try:
+      do_something()
+  finally:
+      lock.release()
+#+end_example
+
+* multiprocessing
+** Pool
+- class multiprocessing.pool.Pool([processes[, initializer[, initargs[, maxtasksperchild[, context]]]]])
+  1. processes: 子进程数
+  2. initializer: 如果initializer不为None的话,每个进程启动前将调用initializer(*initargs)
+  3. maxtaskperchild: 每个子进程能处理的任务数.如果已处理的任务数达到了上限,则子进程会退出.
+#+begin_src python :results output
+  import os
+  import time
+  from multiprocessing import Pool
+
+  def initializer(a, b):
+      print(os.getpid(), a, b)
+      return a + b
+
+  def f(x):
+      print(os.getpid(), time.time())
+      return x * x
+
+  if __name__ == '__main__':
+      with Pool(5, initializer=initializer, initargs=(1, 2)) as p:
+          print(p.map(f, [1, 2, 3]))
+      time.sleep(3)
+#+end_src
+
+#+RESULTS:
+: 5214 1 2
+: 5214 1615307792.1400917
+: 5213 1 2
+: 5213 1615307792.1395216
+: 5217 1 2
+: 5215 1 2
+: 5215 1615307792.1402898
+: 5216 1 2
+: [1, 4, 9]
+
+#+begin_src python :results output
+  import os
+  import time
+  from multiprocessing import Pool
+
+  def f(x):
+      print(os.getpid(), time.time())
+      return x * x
+
+  def callback(x):
+      print(x)
+
+  def error_callback(err):
+      print(err)
+
+  if __name__ == '__main__':
+      # 使用 with Pool(5) as p:
+      #          p.map_async(f, [1, 2, 3])
+      # 会一直超时,不知道原因
+      rets = []
+      pool = Pool(processes=5)
+      rets.append(pool.map_async(f, [1, 2, 3]))
+      pool.close()
+      pool.join()
+      for ret in rets:
+          print(ret.get(timeout=1))
+      time.sleep(3)
+#+end_src
+
+#+RESULTS:
+
+#+begin_src python :results output
+  import os
+  import time
+  from multiprocessing import Pool
+
+  def initializer(a, b):
+      print(os.getpid(), a, b)
+      return a + b
+
+  def f(x):
+      print(os.getpid(), time.time())
+      time.sleep(1)
+      return x * x
+
+  if __name__ == '__main__':
+      with Pool(5, initializer=initializer, initargs=(1, 2)) as p:
+          args = (1, 2, 3)
+          rets = []
+          for arg in args:
+              # apply 函数是一个一个执行,并没有并行执行
+              rets.append(p.apply(f, [arg]))
+          print(rets)
+      time.sleep(3)
+
+#+end_src
+
+#+RESULTS:
+: 4676 1 2
+: 4673 1 2
+: 4673 1615307204.0816004
+: 4677 1 2
+: 4674 1 2
+: 4674 1615307205.0999238
+: 4675 1 2
+: 4675 1615307206.1075408
+: [1, 4, 9]
+
+#+begin_src python :results output
+  import os
+  import time
+  from multiprocessing import Pool
+
+  def f(x):
+      print(os.getpid(), time.time())
+      time.sleep(1)
+      return x * x
+
+  def callback(x):
+      """ 必须是一个参数
+      """
+      print("success callback: {}".format(x))
+
+  def error_callback(err):
+      """ 必须是一个参数的函数
+      """
+      print(err)
+
+  if __name__ == '__main__':
+      with Pool(5) as p:
+          args = (1, 2, 3)
+          rets = []
+          for arg in args:
+              # 打印出的时间都在同一秒内,所以子进程是同时执行的
+              rets.append(p.apply_async(f, [arg], callback=callback))
+          for ret in rets:
+              print(ret.get(timeout=5))
+      time.sleep(3)
+#+end_src
+
+#+RESULTS:
+: 5111 1615307723.2445111
+: 5110 1615307723.2443168
+: 5109 1615307723.2441235
+: success callback: 9
+: success callback: 4
+: success callback: 1
+: 1
+: 4
+: 9
+
+* 获取路径的最后一个部分
+#+begin_src python :results output
+  import os
+  print(os.path.basename(os.path.normpath('/root/path/folder')))
+#+end_src
+
+#+RESULTS:
+: folder
+* bisect
+1. bisect(array, value[, lo[, hi]]):
+   1. array: 已排序数组
+   2. value: 将要插入到数组的值
+   3. lo,hi: 可以指定只使用数组中的某一部分
+2. bisect_right
+3. bisect_left
+4. insort
+5. insort_right
+6. insert_left
+
+#+BEGIN_SRC python :results output
+  import bisect
+
+  array = [0, 10, 20, 30, 40, 50, 100]
+
+  value0 = -1
+  value1 = 9
+  value2 = 100
+
+  print(bisect.bisect(array, value0), end=" ")
+  print(bisect.bisect(array, value1), end=" ")
+  print(bisect.bisect(array, value2), end=" ")
+
+  # bisect.bisect 同 bisect.bisect_right
+  print(bisect.bisect_left(array, value2))
+
+  # bisect/bisect_right 与 bisect_left的不同之处在于,如果value已在array中存在有了
+  # bisect/bisect_right 会尝试把 value 放在所有相同元素的最后
+  # bisect_left则是放在最前面
+
+  # insort/insort_right 与 insort_left的不同之处与bisect/bisect_right和bisert_left之间的不同是一样的
+  print("before insort: {}".format(array))
+  bisect.insort(array, value1)
+  print("after insort: {}".format(array))
+#+END_SRC
+
+#+RESULTS:
+: 0 1 7 6
+: before insort: [0, 10, 20, 30, 40, 50, 100]
+: after insort: [0, 9, 10, 20, 30, 40, 50, 100]
+
+* 删除空格
+:PROPERTIES:
+:header-args: :var s="  Hello World  From Pankaj \t 123 \n Hi There  "
+:END:
+
+1. 删除头部和尾部的空格. =ltrip= 只删除头部空格 =rtrip= 只删除尾部空格
+#+BEGIN_SRC python :results output
+  print(s.strip())
+#+END_SRC
+
+#+RESULTS:
+: Hello World  From Pankaj 	 123
+:  Hi There
+
+2. 删除所有空白字符,包括制表符和换行符
+#+BEGIN_SRC python :results output
+  import string
+  s = s.translate({ord(c): None for c in string.whitespace})
+  print(s)
+#+END_SRC
+
+#+RESULTS:
+: HelloWorldFromPankaj123HiThere
+* yield
+** 用法
+#+begin_verse
+如果一个函数中有 =yield= 关键字,当你调用这个函数的时候,这个函数并不会执行.
+并且你将得到一个生成器,然后可以通过,next或者for-in来从生成器中得到值.
+如下是一个简单的例子.
+生成器是一次性消耗品,循环一次就无法再回到起点.所以两个g并不是相同的.
+#+end_verse
+#+begin_src python :results output
+  def test():
+      yield 1
+      yield 2
+      yield 3
+
+  g = test()
+  print("通过for-in来获取生成器中的值: {}".format(g))
+  for v in g:
+      print("value of: {}".format(v), end=",")
+  print("")
+
+  g = test()
+  print("通过next来获取生成器中的值: {}".format(g))
+  while True:
+      try:
+          value = next(g)
+          print("value: {}".format(value), end=",")
+      except StopIteration:
+          print("\n生成器已经被消耗光的时候再调用next将引发StopIteration")
+          break
+#+end_src
+
+#+RESULTS:
+: 通过for-in来获取生成器中的值: <generator object test at 0x7efd8e8a4740>
+: value of: 1,value of: 2,value of: 3,
+: 通过next来获取生成器中的值: <generator object test at 0x7efd8e915cf0>
+: value: 1,value: 2,value: 3,
+: 生成器已经被消耗光的时候再调用next将引发StopIteration
+** 原理
+#+begin_verse
+原文可以看这篇文章: [[https://hackernoon.com/the-magic-behind-python-generator-functions-bc8eeea54220][The Magic Behind Python Generator Functions]]
+
+像上面的例子,调用test函数的时候,得到了一个Frame对象,被保存在g中.
+这个Frame对象呢,保存了指令入口点,也就是我们把g传给next函数时,将会执行哪一条语句.
+当然呢也保存了所有的临时变量等.但是并不会保存当时的全局变量.
+#+end_verse
+
+** 用inspect来获取当前的frame
+#+begin_src python :results output
+  import inspect
+
+  frame = None
+
+  def add_two_numbers(x, y):
+      global frame
+      s = x + y
+      frame = inspect.currentframe()
+      return s
+
+  add_two_numbers(1, 2)
+  print("Frame: {}".format(frame))
+  print("Locals: {}".format(frame.f_locals))
+#+end_src
+
+#+RESULTS:
+: Frame: <frame at 0x7f6074117240, file '<stdin>', line 9, code add_two_numbers>
+: Locals: {'x': 1, 'y': 2, 's': 3}
+
+* metaclass
+** 用 class 和 type 来定义类
+#+BEGIN_SRC python :results output
+  class Father:
+      pass
+  class Mother:
+      pass
+
+  class A0(Father, Mother):
+      name = "inmove"
+
+      def get_name(self):
+          return self.name
+
+      def set_name(self, name):
+          self.name = name
+
+  def get_name(self):
+      return self.name
+
+  def set_name(self, name):
+      self.name = name
+
+  A1 = type("A1", (Father, Mother), {"get_name": get_name, "set_name": set_name, "name": "inmove"})
+
+  a0 = A0()
+  a1 = A1()
+
+  print(A0, A1)
+
+  print(a0, a1)
+  a0.set_name("mei")
+  a1.set_name("jiao")
+  print(a0.name, a1.name)
+#+END_SRC
+
+#+RESULTS:
+: <class '__main__.A0'> <class '__main__.A1'>
+: <__main__.A0 object at 0x7fad16677950> <__main__.A1 object at 0x7fad16677990>
+: mei jiao
+
+** 元类 创建类的类
+#+BEGIN_VERSE
+可以看到A0和A1都是相同的 /类对象/. 这里的 type 被称作类的类,除了我们平时用的返回对象的类型外,它还可以用来创建类.
+当我们使用 =class A= 来创建一个类的时候,实际上就是调用了 type 这个方法来创建一个 /类对象/
+其中第一个参数为类名.第二个参数为父类列表,第三个参数为属性列表.属性列表可以是 成员变量,也可以是成员函数.
+当我们使用 type(type) 的时候可以看到返回的是: /<class 'type'>/ 也就是说,type 其实是一个类,专门用来创建类的类
+#+END_VERSE
+
+#+BEGIN_VERSE
+这种类在python里又叫 *元类(metaclass)*. 如果我们要自定义元类,需要继承 type 这个类.看下面这个例子:
+#+END_VERSE
+#+BEGIN_SRC python :results output
+  class MyMetaclass(type):
+      def __new__(cls, name, bases, attrs):
+          print("call MyMetaclass __new__")
+          return type.__new__(cls, name, bases, attrs)
+
+      def __init__(self, *args, **kargs):
+          print("call MyMetaclass __init__")
+          self.my_metaclass = "MyMetaclass"
+
+  class Foo(metaclass=MyMetaclass): # 相当于 Foo = MyMetaclass("Foo", (), ()) # 这里有些默认的attrs没有列出来
+      def __init__(self):
+          print("call Foo __init__")
+
+  if __name__ == '__main__':
+      print("before Foo()")
+      f0 = Foo()
+      f1 = Foo()
+      print(f0.my_metaclass)
+      print("after Foo()")
+#+END_SRC
+
+#+RESULTS:
+: call MyMetaclass __new__
+: call MyMetaclass __init__
+: before Foo()
+: call Foo __init__
+: call Foo __init__
+: MyMetaclass
+: after Foo()
+
+#+BEGIN_VERSE
+可以看到 "call MyMetaclass __new__" 和 "call MyMetaclass __init__" 是在 "before Foo()" 之前打印出来的.
+所以 MyMetaclass 的调用是在 创建类的时候发生的.
+#+END_VERSE
+
+** 关于元类的一些注意的点
+*** 元类的继承
+#+BEGIN_VERSE
+如果类 Bar 为 Foo 的子类,那么它们的 metaclass 必须是能向上追溯到相同的非 type 类.如下所未.
+也就是说 *元类* 也像普通类一样可以继承
+#+END_VERSE
+#+BEGIN_SRC python
+  class MyMetaclass(type):
+      def __new__(cls, name, bases, attrs):
+          print("prefix meta class: {}, {}, {}, {}".format(cls, name, bases, attrs))
+          return type.__new__(cls, name, bases, attrs)
+
+  class MyMetaclass2(MyMetaclass):
+      def __new__(cls, name, bases, attrs):
+          print("prefix meta class 2: {}, {}, {}, {}".format(cls, name, bases, attrs))
+          return MyMetaclass.__new__(cls, name, bases, attrs)
+
+  class MyMetaclass3(type):
+      def __new__(cls, name, bases, attrs):
+          print("prefix meta class: {}, {}, {}, {}".format(cls, name, bases, attrs))
+          return type.__new__(cls, name, bases, attrs)
+
+  class Father:
+      pass
+
+  class Foo(Father, metaclass=MyMetaclass):
+      def __new__(cls, *args, **kargs):
+          print("Foo new")
+          return object.__new__(cls, *args, **kargs)
+
+      def __init__(self):
+          print("Foo init")
+
+  class Bar(Foo, metaclass=MyMetaclass2):
+      def __new__(cls, *args, **kargs):
+          print("Bar new")
+          return object.__new__(cls, *args, **kargs)
+
+      def __init__(self):
+          print("Bar init")
+
+      def __new__(cls, name, bases, attrs):
+          print("prefix meta class: {}, {}, {}, {}".format(cls, name, bases, attrs))
+          return type.__new__(cls, name, bases, attrs)
+
+  # TypeError: metaclass conflict: the metaclass of a derived class must be a (non-strict) subclass of the metaclasses of all its bases
+  # class Wrong(Foo, metaclass=MyMetaclass3):
+  #     pass
+#+END_SRC
+
+#+RESULTS:
+: None
+
+** 使用 metaclass 来定义 单例
+[[https://refactoringguru.cn/design-patterns/singleton/python/example#example-1][Python Singleton]]
+*** 普通的单例
+#+BEGIN_SRC python :results output
+  class Singleton(type):
+      _instances = {}
+      def __call__(cls, *args, **kargs):
+          print("call Singleton __call__")
+          if cls not in cls._instances:
+              instance = super().__call__(*args, **kargs)
+              cls._instances[cls] = instance
+          return cls._instances[cls]
+
+  # Foo = Singleton("Foo", (), ())
+  class Foo(metaclass=Singleton):
+      def __init__(self):
+          print("Foo")
+
+  f0 = Foo()
+  f1 = Foo()
+#+END_SRC
+
+#+RESULTS:
+: call Singleton __call__
+: Foo
+: call Singleton __call__
+*** 线程安全的单例
+#+BEGIN_SRC python :results output
+  from threading import Lock, Thread
+
+  class SingletonMeta(type):
+      _instances = {}
+
+      _lock: Lock = Lock()
+      def __call__(cls, *args, **kwargs):
+          with cls._lock:
+              if cls not in cls._instances:
+                  instance = super().__call__(*args, **kwargs)
+                  cls._instances[cls] = instance
+          return cls._instances[cls]
+
+  class Singleton(metaclass=SingletonMeta):
+      value: str = None
+      def __init__(self, value: str) -> None:
+          self.value = value
+      def some_business_logic(self):
+          pass
+
+  def test_singleton(value: str) -> None:
+      singleton = Singleton(value)
+      print(singleton.value)
+
+  if __name__ == "__main__":
+      process1 = Thread(target=test_singleton, args=("FOO",))
+      process2 = Thread(target=test_singleton, args=("BAR",))
+      process2.start()
+      process1.start()
+#+END_SRC
+
+* 修改pip镜像源
+1. 临时修改
+#+BEGIN_SRC shell
+  pip install -i https://pypi.tuna.tsinghua.edu.cn/simple some-package
+#+END_SRC
+
+2. 设为默认
+#+BEGIN_SRC shell
+  pip install pip -U
+  pip config set global.index-url https://pypi.tuna.tsinghua.edu.cn/simple
+#+END_SRC

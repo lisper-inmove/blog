@@ -1,0 +1,7 @@
+#+SETUPFILE: ~/.emacs.d/org-templates/template.org
+#+TITLE: Linux
+
+* timezone
+  #+BEGIN_SRC shell
+    ln -sf /usr/share/zoneinfo/Asia/Shanghai /etc/localtime
+  #+END_SRC

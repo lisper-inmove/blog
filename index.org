@@ -1,0 +1,3 @@
+#+SETUPFILE: ~/.emacs.d/org-templates/template.org
+#+HTML_HEAD: <link rel="stylesheet" type="text/css" href="https://inmove.com.cn/index.css" />
+#+INCLUDE: ~/code/blog/sitemap.org

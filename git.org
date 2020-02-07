@@ -1,0 +1,18 @@
+#+SETUPFILE: ~/.emacs.d/org-templates/template.org
+#+TITLE: Git
+
+#+BEGIN_VERSE
+git rebase 用于提交的合并.
+开发的时候有可能会提交很多没用的commit.当把开发分支提交到主分支时最好做一次提交的合并.不然会有很多无用的提交说明.
+#+END_VERSE
+
+1. 从开发分支创建一个临时分支
+   - git checkout -b xxx-tmp
+2. 查出主分支当前的一个提交,假设为A
+3. rebase到A
+   #+BEGIN_SRC shell
+     git rebase -i A
+   #+END_SRC
+4. 根据说明把所有都改为s,其中一个设置为p
+5. 保存退出后会让你重新输入commit说明,把以前的都删了,为这次开发提交一个详细的说明
+6. 把xxx-tmp合并到主分支

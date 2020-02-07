@@ -1,0 +1,483 @@
+#+SETUPFILE: ~/.emacs.d/org-templates/template.org
+#+TITLE: Redis
+
+* cluster
+** 原文地址
+
+[[https://redis.io/topics/cluster-tutorial][Redis cluster tutorial]]
+
+** Redis Cluster 配置参数
+1. cluster-enabled yes/no: 是否开启集群
+2. cluster-config-file filename: redis cluster开启后,会生成一个配置文件用于记录集群信息.
+3. cluster-node-timeout milliseconds: 结点超过多少毫秒后不可达,会被认为为失败
+4. cluster-slave-validity-factor factor: 如果slave和master失联的时间超过了 factor 和 cluster-node-timeout 的乘积.那么这个slave就不能发起failover
+5. cluster-migration-barrier count: 当一个master(A)没有slave的时候,会从其它的master(B)那里借一个slave.如果B借出去一个之后还有超过count个slave,则会借出,否则就不借出
+6. cluster-require-full-coverage yes/no: 默认值为yes.如果集群检查到有一个slot不可用,集群将停止查询数据,如果所有slot恢复,则集群自动恢复.
+7. cluster-allow-reads-when-down yes/no: 默认值为no.如果结点被标记为fail,将不提供读的操作.设置为yes,则可以在被标记了fail的状态下提供读.这个选项主要是为了避免读到过期的数据.
+** Resharding the cluster
+1. redis-cli --cluster reshard <host>:<port>
+2. select 选择要 reshard slot 的数量,n个.
+3. 选择slot去到哪个node.
+4. 选择从哪些node获得这些slot
+   1. all 表示平均从所有其它node中获取
+   2. node ID表示从这个node获取部分.可以设置多个node,最后输入 done 表示结束输入,如果输入了3个node,从每个node中获取 n / 3个slot.如果node有重复的,那么会少于n个slot被 reshard.
+5. redis-clis --cluster --check <host>:<port>: 查看cluster信息
+** 结点的操作
+#+BEGIN_VERSE
+1. host0,port0表示新增的结点
+2. host1,port1表示任意一个已存在的结点
+#+END_VERSE
+
+默认新增为主结点
+#+BEGIN_EXAMPLE
+redis-cli --cluster add-node <host0>:<port0> <host1>:<port1>
+#+END_EXAMPLE
+
+新增为从结点
+#+BEGIN_EXAMPLE
+redis-cli --cluster add-node <host0>:<port0> <host1>:<port1> --cluster-slave
+#+END_EXAMPLE
+
+新增为nodeID的从结点
+#+BEGIN_VERSE
+redis-cli --cluster add-node <host0>:<port0> <host1>:<port1> --cluster-srave --cluster-master-id <nodeID>
+#+END_VERSE
+
+删除结点.host,port是任意一个结点.node-id是要删除的结点.如果要删除的是一个主结点,需要先把它所有slot都rehash到其它结点上.
+#+BEGIN_EXAMPLE
+redis-cli --cluster del-node <host>:<port> `<node-id>`
+#+END_EXAMPLE
+
+* 命令合集
+** strings
+1. append key value: key指向的值是一个string.把value添加到这个string的后面. 配置getrange和setrange两个命令使用
+2. bitcount key start end: 返回key [start,end] 范围内有多少位被置为1
+3. bitfield: 批量执行位操作
+   i表示有符号整形.u表示无符号整形.后面的数字表示占用几个位.
+   1. set: 对某些位置1.下面一行表示, 对于key,偏移4个位,用接下来的8个位设置数字5.key的前12位为: 0000(偏移的4个位) 0000 0101
+      #+BEGIN_EXAMPLE
+      bitfield key set i8 4 5
+      #+END_EXAMPLE
+   2. get: 获取某位的值.对于key,偏移4个位.返回接下来8个位的值.返回为按上面set的值将返回: 0000 0101
+      #+BEGIN_EXAMPLE
+      bitfield key get i8 4
+      #+END_EXAMPLE
+   3. incrby: 自增或自减.对于key,偏移4个位.对接下来的4个位的值增加1.
+      #+BEGIN_EXAMPLE
+      bitfield key incrby i4 4 1
+      #+END_EXAMPLE
+   4. overflow: 溢出时的表示.
+      1. wrap: 回环算法
+         1. 无符号整形,对最大值取模
+         2. 有符号整形,下溢时从最大的整数开始取数,上溢则从最小的负数开始取数.-128-1发生下溢,变为127.127+1发生上溢变为-128
+      2. sat: 饱和算法
+         1. 下溢之后设为最小整形值,上溢之后设为最大整数值.比如,对于i8,120+10,值将被设置为127,继续增加也还是保持127.
+      3. fail: 返回失败,不做任何操作
+
+      #+BEGIN_EXAMPLE
+        bitfield key overflow sat incrby i8 4 9
+      #+END_EXAMPLE
+4. bitop: 对多个key做位运算,执行时间为O(n),n为bit的位数
+   除了not只能操作一个key以外,其余3个都能操作多个key.所有操作对原key都没有响影,结果都保存在destkey里.
+   1. and:
+      #+BEGIN_EXAMPLE
+      bitop and destkey key0 key1 key2 ...
+      #+END_EXAMPLE
+   2. or
+      #+BEGIN_EXAMPLE
+      bitop and destkey key0 key1 key2 ...
+      #+END_EXAMPLE
+   3. xor
+      #+BEGIN_EXAMPLE
+      bitop xor destkey key0 key1 key2 ...
+      #+END_EXAMPLE
+   4. not
+      #+BEGIN_EXAMPLE
+      bitop not destkey key0
+      #+END_EXAMPLE
+5. bitpos key bit [start] [end]: 返回第一个置1或置0的位.bit为0或1.start,end以字节为单位
+
+   如下: 表示查找第0个字节到第2个字节(共3个字节)中第一个为0的位
+   #+BEGIN_EXAMPLE
+   bitpos key 0 0 2
+   #+END_EXAMPLE
+
+   注: 在start,end省略的情况下.
+   1. 如果bit为1,且所有已设置过的位全是0,将返回-1.
+   2. 如果bit为0,所有已设置过的位全是1,将返回位的长度的下一个数字.比如前面23个字符都设置过了且全为1,那么bit为0时,将返回24.
+
+6. decr key: 原子性的对key对应的数字减1.如果key不存在会先被设置为0.
+
+7. decrby key decrement: 原子性的对key对应的数字减decrement.key不存在的话会先被设置为0.
+
+8. get key: 返回key的value.不存在时返回nil.
+
+9. getbit key offset: 返回string在offset处的bit值.如果超出了string的长度就返回0.
+
+10. getrange key start end: 返回string[start:end]的值.下标以为0开始.start,end都包含在返回值中.可以是负数
+
+11. getset key value: 设置key的值为value,并返回旧值.key不存在则返回nil.
+
+12. incr key: 对key原子加1.
+
+13. incrby key increment: 对key原子加increment.
+
+14. incrbyfloat key increment: 对key原子加increment.increment必须是一个浮点数.
+
+15. mget key [key ...]: 获取多个key的值
+
+16. mset key value [key value ...]: 一次设置多个k/v对.原子操作,所有key是一次性设置的
+
+17. msetnx key value [key value ...]: 一次设置多个k/v对.只有当key不存在时才会设置.必须所有key都不存在时才会设置.
+
+18. psetex key milliseconds value: 设置key的值为value,milliseconds毫秒后过期.
+
+19. set key value [ex seconds] [px milliseconds] [nx|xx]: 设置key的值为value.
+    1. ex seconds: 过期时间,单位为秒
+    2. px milliseconds: 过期时间,单位为毫秒
+    3. nx: 只key不存在时才设置
+    4. xx： 只有当key已经存在时才设置
+    5. 由于这些参数的存在,setnx,setex,psetex可以被set取代
+
+20. setex key seconds value: 设置key的值为value,寒苦时间为seconds,单位为秒.
+
+21. setnx key value: key不存在时,设置key的值为value.
+
+22. setrange key offset value: 从offset偏移量开始,设置key的值为value.
+
+23. strlen key: 返回字符串的长度
+
+** 列表
+1. blpop key0 key1 ... timeout: 从给定的列表中弹出第一个遇到的非空列表的头元素.
+   1. 如果所有列表都是空,并且timeout为0,客户端将永久阻塞.直到其中一个列表有元素被push进去.如果timeout不为0,将在timeout秒后返回nil到客户端.
+   2. 如果有数据返回,返回数据为(key,value)
+   3. 当多个客户端被阻塞时,如果有数据到来,第一个被阻塞的客户端将得到执行
+   4. 从Redis2.6开始.如果客户端被阻塞了.LPUSH同时push了多个值,最后一个被push进去的值会被返回.client A将得到c.而Redis2.6以前的版本client A将得到a,但是这种返回有很多问题.
+      #+BEGIN_EXAMPLE
+      client A: BLPOP foo 0
+      client B: LPUSH foo a b c
+      #+END_EXAMPLE
+   5. BLPOP 在 MULTI/EXEC 里不会阻塞,而是返回空.因为MULTI/EXEC会阻塞整个服务器,以保证服务的原子性,也就没办法在其它客户端使用push命令了.
+
+2. brpop key0 key1 ... timeout: 同blpop,只不过blpop从头部弹出,brpop从尾部弹出.
+
+3. brpoplpush: rpoplpush的阻塞版本
+
+4. lindex key index: 返回列表第index位置的元素.时间复杂度为O(n).负数表示从后开始数
+
+5. linsert key before|after pivot value: 把value插入到pivot的前面|后面.value为空是什么都不会发生.时间复杂度为O(n).
+
+6. llen key: 返回列表的长度
+
+7. lpush key value [value ...]: 把value插入列表的头部.多个value会依次加入.老于Redis2.4的lpush一次只能push一个值.
+
+8. lpop key: O(1),弹出头部第一个元素.key不存在或key为空时返回nil.
+
+9. lpushx key value: 同lpush,只不过只有当key存在且是一个列表时才操作,否则什么都不做
+
+10. lrange key start stop: O(S+N).N是指定区间的元素个数.对于小列表,S是列表头到start的偏移量.对于大列表,S是最近的端(头部|尾部)到start的偏移量.
+    1. 当start超过llen key的时候,返回空
+    2. 当end超过llen的时候,返回start到最后一个元素
+    3. start为负数时,从尾部计数
+
+11. lrem key count value: O(n), 从key中移除|count|个值为value的元素.
+    1. count > 0: 从头开始移除
+    2. count < 0: 从尾开始
+    3. count == 0: 移除所有
+
+12. lset key index value: O(n),设置index位置的元素的值为value.index超过llen key时返回出错
+
+13. ltrim key start stop: O(n),修剪key只剩下[start,stop]的元素.start,stop也可以是负数,则以尾部做为参照.
+
+14. rpop key: O(1), 从尾部弹出元素
+
+15. rpoplpush source destination: 把source中的第一个元素弹出,并添加到 destination 的尾部.
+    1. 如果source不存在或为空,不做任何操作
+    2. 如果source和destination是同一个列表,source的头部的元素会被放到source的尾部
+
+16. rpush key value [value ...]: lpush是插入头部,rpush是插入尾部
+
+17. rpushx key value [value ...]: key存在且是一个列表时才执行,否则什么都不做
+
+** GEO
+1. geoadd key lng lat member [lng lat member ...]: O(log(n)),n是key的元素数量. lng,经度. lat纬度. member名字. 把元素添加到经纬度列表中,这里的列表是一个sorted set.
+   1. lng: -180~180
+   2. lat: -85.05112878 ~ 85.05112878
+
+2. geohash key member [member ...]: O(log(n)),返回member的geohash表示
+
+3. geopos key member [member ...]: O(log(n)),返回member的经纬度
+
+4. geodist key member1 member 2 [unit]: O(log(n)), 返回member1和member2的距离.unit表示单位
+   1. unit: m(米) km(千米), mi(英里), ft(英尺)
+
+5. georadius key lng lat radius m|km|ft|mi [withcoord] [withdish] [withhash] [COUNT count] [sort-direction]: O(N + log(M)),N是圆内元素数量,M是index内元素数量. 以给定的lng,lat为中心,返回键包含的位置元素当中,与中心距离不超过给定最大距离的所有位置元素.
+   1. withdist: 将距离也一起返回
+   2. withcoord: 将经纬度也一起返回
+   3. withhash: geohash也一起返回
+   4. count: 只返回前count个元素.只返回部分元素并不会减少命令执行速度,但是减少返回,能在一定程度上节省带宽
+   5. sort-direction: desc,由远及近.asc,由近及远
+6. GEORADIUSBYMEMBER key member radius m|km|ft|mi [WITHCOORD] [WITHDIST] [WITHHASH] [COUNT count]: 同georadius,不过是由已存在的元素决定中心点,而不是由经纬度.
+
+** Hash
+1. hdel key field [field ...]: O(n),n是被删除的域数.从hash集中删除指定的域.2.4开始支持同是删除多个域
+
+2. hexists key field: O(1),查询指定的域存不存在.
+
+3. hget key field: O(1),返回指定域
+
+4. hgetall key: O(n),返回所有域
+
+5. hincrby key field increment: O(1),增加指定域的值.如果key不存在,则会创建这个key.如果field不存在,则它的初值被设置为0.
+
+6. hincrbyfloat key field increment: O(1),增加指定域的值.
+
+7. hkeys key: O(n), 返回key的所有域
+
+8. hlen key: O(1), 返回key的域的数量
+
+9. hmget key field [field ...]: O(n),n为参数field的数量.批量返回域.域不存在的话返回值为nil.
+
+10. hmset key field value [field value ...]: O(n),n参数filed的数量.设置field的值为value.
+
+11. hset key field value: O(1),设置field的值为value
+
+12. hsetnx key field value: field不存在时,设置其值为value
+
+13. hstrlen key field: O(1),返回指定域value的长度
+
+14. hvals key: O(n), 返回key中所有域的value
+
+15. hscan key cursor [MATCH pattern] [COUNT count]: see scan
+** keys
+1. del key [key ...]: O(1), 删除指定的一批key
+
+2. dump key: 序列化一个键
+   1. 带有64位校验和,restore的时候会检查这个校验和
+   2. 值的编码格式和RDB文件保持一致
+   3. RDB版本会被编码在序列化值当中.如果Redis的版本不同造成RDB格式不兼容,反序列化会被拒绝
+   4. 序列化的值不包括生存时间信息
+
+3. exists key [key ...]: 检查key是不是存在
+
+4. expire key seconds: 设置key的生存时间为seconds秒
+   1. 当key过期时,并不会从内存中删除,只有当这这个key再次被访问时才会真正的从内存中删除
+   2. RENAME并不会更新key的过期时间
+   3. 2.6开始,过期时间的误差被缩小到0-1毫秒
+
+5. expireat key timestamp: 设置key在某个时刻过期
+
+6. keys pattern: 返回匹配的key. 虽然这个命令很快,但是这个命令会阻塞整个redis
+
+7. migrate host port key destination-db timeout [copy] [replace]: 将key原子性的从当前实例传送到目标实例上去
+   1. 使用dump序列化key,然后传送到目标实例.目标实例使用restore反序列化.然后返回成功.然后当前实例会删除key.
+   2. 些命令不可能丢失key.
+   3. 此命令有可能发生IOERROR和timeout,当这两种情况发生时.key有可以同时存在于两个实例
+
+8. move key db: 将key移动到另一个db当中.如果当前db中没有这个key,或者目标db中有同名的key,什么都不会发生
+
+9. object subcommand [arguments [arguments ...]]: 检查对象信息
+   1. refcount: 返回key被引用的次数
+   2. encoding: 返回指定ey对应的value所使用的内部表示
+   3. ideltime: 返回key对应的value自存储之后的空闲时间
+
+10. persist key: 移除给定key的生存时间,变成永久有效
+
+11. pexpire key milliseconds: 设置生存时间,单位毫秒
+
+12. pexpireat key milliseconds-timestamp: 设置过期时间点,单位毫秒
+
+13. pttl key: 返回key的剩余生存时间
+    1. Redis Version <= 2.6: 如果key不存在或者存在但是没有过期时间,返回－1
+    2. Redis Version >= 2.8: key不存在时返回1.key存在没有过期时间时返回－2
+
+14. randomkey: 返回一个随机ey
+
+15. rename key newkey: 把key重命名为newkey.如果key与newkey相同,返回一个错误.如果newkey已经存在则覆盖
+
+16. renamenx key newkey: 只有当newkey不存在时才能成功.key不存在时返回出错
+
+17. restore key ttl serialized-value [replace]: 反序列化给定的值,并将他和key相关联
+    1. ttl 以毫秒为单位设置生存时间
+
+18. sort key [by pattern] [limit offset count] [get pattern] [asc|desc] [alpha] destination
+    1. alpha: 默认按照数值类型排序,alpha指明使用字典序
+    2. 有数据如下:
+        | name   | id | price |
+        |--------+----+-------|
+        | goods1 |  1 |    20 |
+        | goods2 |  2 |    30 |
+        | goods3 |  3 |    90 |
+        | goods4 |  4 |    70 |
+       1. lpush goods_id 1 2 3 4
+       2. set price_1 20;set price_2 30; set price_3 90; set price_4 70
+       3. sort goods_id: 按从小到大返回goeds_ids列表
+       4. sort goods_id by price_*: 使用从goods_id取出来的1,2,3,4来补充price_*中的*号.以price_{1,2,3,4}来进行排序,返回goods_id列表
+       5. hset obj_1 name goods1 id 1 price 20;hset obj_2 name goods2 id 2 price 30;hset obj_3 name goods3 id 3 price 90;hset obj_4 name goods4 id 4 price 70
+       6. sort goods_id by obj_*->price: 以hash对象中的price来做为排序的键
+    3. 默认返回排序的列表,有时候想要得到其它的外部键就使用get.
+       #+BEGIN_EXAMPLE
+       sort goods_id by obj_*->price get obj_*->name get obj_*->price
+       #+END_EXAMPLE
+    4. 交排序结果保存在redis中
+       #+BEGIN_EXAMPLE
+       sort goods_id by obj_*->price store resultkey
+       #+END_EXAMPLE
+
+19. ttl key: 返回key的剩余生存时间
+
+20. type key: 返回key存储的value的数据结构类型
+
+21. wait numslaves timeout: 此命令阻塞当前客户端,直到所有以前的写命令都成功传输到指定的slaves.timeout以毫秒为单位,超时还没有到达指定的slave,仍然返回.
+
+** pubsub
+
+1. psubscribe pattern [pattern ...]: 订阅频道,psubscribe/subscribe的区别主要是pubscribe能使用以下几个模式.
+   1. "?": 一个字符
+   2. "*": 任意多个字符
+   3. "[]": 中括号中的字符
+
+2. pubsub subcommand [argumnt [argument ...]]:
+   1. pubsub channels [pattern]: 列出当前活跃的频道.活跃指channel含有一个或多个订阅者.pattern如果未提供,则列出所有
+   2. pubsub numsub [channel-1 ... channel-n]: 列出指定channel订阅都个数
+   3. pubsub numpat: 返回客户端订阅的channel的总个数
+
+3. publish channel message: 发布信息
+
+4. punsubscribe [pattern [pattern ...]]: 客户端退订模式,如果没有指定pattern,则退出所有
+
+5. subscribe channel [channel ...]: 订阅给指定频道的信息
+
+6. unsubscribe [channel [channel ...]]: 退订给定的频道,若没有指定则退订所有
+
+** set
+1. sadd key member [member ...]: 添加一个或多个元素到集合中.如果member已经存在,则什么都不做
+
+2. scard key: 返回集合元素的数量
+
+3. sdiff key [key ...]: 返回第一个集合与其它集合的差集
+
+4. sdiffstore destination key [key ...]: 把差集存在destination中
+
+5. sinter key [key ...]: O(m * n),返回多个集合的交集.n是最小集合的元素个数.m是参与运算的集合个数
+
+6. sinterstore dest key [key ...]: 把交集结果存在dest中
+
+7. sismember key member: 检查member是不是key的成员
+
+8. smembers key: 返回key集合的所有元素
+
+9. smove source dest member: 将member从source中移动到dest
+   1. 如果member不在source中,什么都不做
+   2. 如果member已经在dest中,只会从source中删除member.
+
+10. spop key [count]: 从集合中移除并返回一个或多个随机元素.count在Redis.Version > 3 时可用
+
+11. srandmember key [count]: count在Redis.Version >= 2.6时可用.
+    1. count > 0: 返回不超过key总数个元素
+    2. count < 0 && |count| < scard key: 返回不超过key总数个元素
+    3. count < 0 && |count| > scard key: 返回|count|个元素,会有重复的元素
+
+12. srem key member [member ...]: 移除元素
+
+13. sunion key [key ...]: 返回多个集合的并集
+
+14. sunionstore dest key [key ...]: 把多个集合的并集存在dest中.如果dest已经存在会被覆盖
+** Sorted Set
+1. zadd key [nx|xx] [ch] [incr] score member [score member ...]: 将score/member成员对添加到有序集合中.
+   1. score是浮点数
+   2. score可以是+inf,-inf.
+   3. 如果member已经存在,则更新member的score
+   4. nx: 不更新存在的成员,只添加新成员
+   5. xx: 只更新存在的成员,不添加新成员
+   6. ch: 返回发生变化的成员总数.默认返回新添加成员数.也就是说默认情况下,修改的成员数是不会返回的.
+   7. incr: 对成员做score的增加.member不存在时依然会创建
+   8. score是双精度64位浮点数,范围为-2^53 ~ +2^53.更大的整数在内部用指数形式表示,所以,如果为分数设置一个非常大的整数,你得到的是一个近似的十进制数.
+   9. 当分数相同时,按照member的字典序排序.
+
+2. zcard key: 返回元素个数
+
+3. zcount key min max: 返回有序集合中score在[min,max]的成员数.
+
+4. zincrby key increment member: 为key中的member的值加上增量increment.member不存在则以increment为值加入到集合中.increment可以是负数
+
+5. zinterstore dest numkeys key [key ...] [weights weight] [sum|min|max]: 计算numkeys个有序集的交集.把结果放到dest中
+   1. numkeys是key的个数
+   2. 结果集中元素的值是 score0 * weight0 + score1 + weight1
+   3. dest如果已存在会被覆盖
+
+6. zlexcount key min max: 计算有序集合中指定成员之间的成员数量
+   #+BEGIN_EXAMPLE
+   zlexcount key [member1 [member5
+   #+END_EXAMPLE
+   1. 成员名前必须有[,且与成员名之间不能有空格
+   2. 可以用-,+表示得分最小值是最大值.see zrangebylex
+
+7. zpopmax key [count]: 删除并返回有序集合中最多count个具有最高得分的成员
+
+8. zpopmin key [count]: 删除并返回有序集合中最多count个具有最低得分的成员
+
+9. zrange key start stop [withscores]: 返回排名在指定范围内的元素.
+   1. 按score从低到高返回.
+   2. 得到相同时按字典序排序
+   3. start,stop以0为基数
+   4. start,stop都可以是负数,表示从后面开始算偏移量
+   5. start>stop时返回一个空列表
+   6. 默认只返回成员,withscores则会同时返回score
+
+10. zrangebylex key min max [limit offset count]: 返回指定成员区间内的成员,按成员字典正序排列
+    1. 此命令用于对字符串按字典序排列时有用
+    2. 所有元素得分必须相同
+    3. 以ASCII字典序排序,UTF-8会影响排序结果
+    4. '[min [max': 可以认为是 闭区间
+    5. '(min (max': 开区间
+    6. -,+: 代替min,max.-表示最小值,+表示最大值
+    7. limit: 返回结果是否分页,limit后面必须跟上offset,count.
+    8. offset: 超始位置偏移量
+    9. count: 个数
+
+11. zrevrangebylex key max min [limit offset count]: zrangebylex的倒序
+
+12. zrangebyscore key min max [withscores] [limit offset count]: 返回分数在[min,max]之间的元素
+    1. 分数由低到高排列
+    2. 分数相同的成员按字典序排列
+    3. 默认是闭区间,也可以在参数前增加'('来使用开区间
+    4. offset: 对于offset的定位,会遍历offset前面的所有元素,所以越到后面所需的时间也就越长
+
+13. zrank key member: O(log(n)),返回key中member的排名.如果member不在key中,返回nil.
+
+14. zrem key member [member ...]: key存在时,删除key中的成员
+
+15. zremrangebylex key min max: 删除成员区间的元素.分数不同时不要使用些命令.
+
+16. zremrangebyrank key start stop: 删除指定排名区间的成员
+
+17. zremrangebyscore key min max: 删除store介于[min,max]之间的成员
+
+18. zrevrange key start stop [withscores]: 从大到小返回指定区间的成员.
+
+19. zrevrangebyscore key max min [withscores] [limit offset count]: 返回有序集俣中指定分数区间内的成员,分数由高到低.
+
+20. zrevrank key member: key中member的排名,分数从高到低的排名(zrank为从低到高)
+
+21. zscore key member: 成员的分数
+
+22. zunionstore dest numkeys key [key ...] [weights weight] [sum|min|max]: 合并多个集合到dest中.
+    1. numkeys: 集合的个数
+    2. sum: 对于多个集合中的同一个member,把分数加起来
+    3. min: 取最大值
+    4. max: 取最小值
+    5. dest如果已经存在则覆盖
+
+** SCAN
+1. scan cursor [MATCH pattern] [COUNT count]: 用于迭代当前数据库中的所有key.
+   1. 返回一个游标和元素数组
+   2. 第一次使用0调用,下一次使用上一次返回的游标调用.如果游标返回0,则表明迭代已结束
+   3. 迭代过程中,元素是有可能被删除或者新增元素.
+   4. 迭代过程中,只要一直存在的数据一定会被返回
+   5. 同一个元素可能会被返回多次
+   6. 有可能返回0个元素,但是只要游标不是0,迭代就没有结束
+   7. 使用MATCH来匹配.匹配工作是在从服务器取出数据,向客户端返回数据前做的,所以有可能某次迭代的返回数据中全部不匹配,会返回一个空的元素数组,但是只要游标不为0,迭代就没有结束.
+2. sscan key cursor [MATCH pattern] [COUNT count]: 用于迭代set集合中的元素
+3. hscan key cursor [MATCH pattern] [COUNT count]: 迭代一个hash obj中的键值对
+4. zscan key cursor [MATCH pattern] [COUNT count]: 迭代SortSet
