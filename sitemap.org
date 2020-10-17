@@ -1,6 +1,6 @@
 #+TITLE: Inmove's Blog
 
-- [[file:index.org][index]]
+- [[file:template.org][template]]
 - emacs
   - [[file:emacs/org-mode.org][org-mode]]
   - [[file:emacs/use-emacs.org][use-emacs]]

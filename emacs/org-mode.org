@@ -277,6 +277,24 @@
 
 ** 列视图
 
+** Agenda Views
+   #+BEGIN_VERSE
+   Agenda Views 的作用是提供一个Org Files的视图.把多个org files总结到一个视图里.
+   #+END_VERSE
+   #+BEGIN_VERSE
+   1. C-c [ (org-agenda-file-to-front): 把当前文件加入到agenda列表里
+   2. C-c ] (org-remove-file): 把当前文件从agenda列表里删除
+   #+END_VERSE
+
+   #+BEGIN_VERSE
+   org-agenda命令列表agenda菜单
+   #+END_VERSE
+   #+BEGIN_VERSE
+   1. a: 创建一个agenda日历
+   2. t/T: 创建一个所有的TODO items的列表
+   3. m/M: 通过标签搜索TODO items
+   4. s: 创建一个通过正则搜索出来的TODO items
+   #+END_VERSE
 ** 分隔线
 ---------------------------------
 ** Lesson 0
