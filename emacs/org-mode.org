@@ -1,0 +1,360 @@
+#+SETUPFILE: ~/.emacs.d/org-templates/level-0.org
+#+TODO: TODO(t) WAIT(w@/!) | DONE(d!) CANCELED(c@)
+#+STARTUP: noindent
+#+TAGS: { @work(w) @home(h) @tennisclub(t) } laptop(l)
+#+FILETAGS: inmove:StudyOrgmode:
+#+PROPORTIES: var foo=1
+#+PROPORTIES: var+ bar=2
+
+* 用来学习org-mode的org file
+
+** 关于光标在org mode的标题之间的移动
+   1. C-c C-n (org-next-visible-heading): 移动到下一个没有隐藏的标题上面
+   2. C-c C-p (org-previous-visible-heading): 移动到上一个没有隐藏的标题上面
+   3. C-c C-f (org-formard-heading-same-level): 向下移动到下一个同级标题
+   4. C-c C-b (org-backward-heading-same-level): 向上移动到上一个同级的标题
+   5. C-c C-u (outline-up-heading): 移动到父标题上
+
+** 关于标题的编辑                                                     :@home:
+   1. M-LEFT (org-do-promote): 如果光标在标题上面,那么把这个标题向上提升一级
+   2. M-RIGHT (org-do-demote)
+   3. M-S-LEFT (org-promote-subtree): 如果光标在标题上面,那么把整个subtree都提升一级
+   4. M-S-RIGHT (org-demote-subtree)
+   5. M-UP (org-move-subtree-up): 把当前整棵subtree和上面的同一级的subtree交换位置
+   6. M-DOWN (org-move-subtree-down)
+   7. C-c @ (org-mark-subtree): 选中当前标题的所有内容
+   8. C-c C-x C-w (org-cut-subtree): 剪切标题下的所有内容
+   9. C-c C-x M-w (org-copy-subtree): 复制标题下的所有内容
+   10. C-c C-x C-y (org-paste-subtree): 把复制的标题所有内容粘贴到当前位置.无论复制的内容的标题是什么级别,粘贴之后的级别都是当前光标上面的一个标题的级别相同
+   11. C-c C-w (org-refile): 把当前标题移动到任意一个标题下面.关于移动之后的级别有点奇怪.9.2 Refile and Copy有更详细的说明
+   12. C-c ^ (org-sort): 对当前的标题做排序
+
+** narrow and widen
+  1. C-x n s (org-narrow-to-subtree): narrow当前标题
+  2. C-x n b (org-narrow-to-block): narrow当前block
+  3. C-x n w (widen): 所有的narrow命令都可以使用此函数widen
+
+** *TODO items*
+   #+BEGIN_VERSE
+   所有以 TODO 开始的标题会被org mode当作 TODO item
+   #+END_VERSE
+*** Basic TOO Functionality
+    1. C-c C-t (org-todo): 改变TODO item的状态.默认情况下只有 *TODO* , *DONE* 两种状态.设置 *org-too-keywords* 来增加更多的关键字
+       #+BEGIN_VERSE
+       sequence类型关键字是最常见的关键字
+       #+END_VERSE
+       #+BEGIN_SRC emacs-lisp :results none
+         (setq org-todo-keywords
+               '((sequence "TODO" "FEEDBACK" "VERIFY" "|" "DONE" "DELEGATED")))
+       #+END_SRC
+
+       #+BEGIN_VERSE
+       也可以设置 type 类型的关键字. type 类型的特点就是当你连续使用 ~C-c C-t~ 的时候,他在在状态列表中循环.
+       当你过段时间再来 ~C-c C-t~ 的时候,他会直接修改状为 DONE
+       #+END_VERSE
+       #+BEGIN_SRC emacs-lisp :results none
+         (setq org-todo-keywords
+               '((type "Fred" "Sara" "Lucy" "|" "DONE")))
+       #+END_SRC
+
+       #+BEGIN_VERSE
+       多个关键字集合.当我们使用 ~C-c C-t~ 的时候只能在一组关键字集合中切换状态
+       1. C-u C-u C-c C-t: 切换到下一组
+       2. C-S-RIGHT: 切换到下一组
+       3. C-S-LEFT: 切换到上一组
+       4. S-RIGHT/S-LEFT: 和 ~C-c C-t~ 相同,不过突破了多个集合之间的限制.比如,当前状态为 DONE 时 ~C-c C-t~ 会切换到TODO.而S-RIGHT会切换到REPORT
+       #+END_VERSE
+       #+BEGIN_SRC emacs-lisp :results none
+         (setq org-too-keywords
+               '((sequence "TODO" "|" "DONE")
+                 (sequence "REPORT" "BUG" "KNOWNCAUSE" "|" "FIXED")
+                 (sequence "|" "CANCELED")))
+       #+END_SRC
+
+       #+BEGIN_VERSE
+       有的时候,状态太多了,一个一个切换有点太慢.所以我们可以设置关键字的快捷访问
+       #+END_VERSE
+       #+BEGIN_SRC emacs-lisp :results none
+         (setq org-todo-keywords
+               '((sequence "TODO(t)" "|" "DONE(d)")
+                 (sequence "REPORT(r)" "BUG(b)" "KNOWNCAUSE(k)" "|" "FIXED(f)")
+                 (sequence "|" "CANCELED(c)")))
+       #+END_SRC
+
+       #+BEGIN_VERSE
+       ~org-todo-keywords~ 应用于全局.我们还可以为某个单独的文件进行设置
+       ~#+TODO~ 和 ~#+SEQ_TODO~ 是等同的
+       #+END_VERSE
+       #+BEGIN_SRC org
+         ,#+TODO: TODO FEEDBACK VERIFY | DONE CANCELED
+         ,#+SEQ_TODO: TODO FEEDBACK VERIFY | DONE CANCELED
+         ,#+TPE_TODO: Fred Sara Lucy Mike | DONE
+
+         ,#+TODO: TODO | DONE
+         ,#+TODO: REPORT BUG KNOWNCAUSE | FIXED
+         ,#+TODO: | CANCELED
+       #+END_SRC
+
+*** *TODO* 的依赖性
+    :PROPERTIES:
+    :END:
+    #+BEGIN_VERSE
+    考虑下面两种情况
+    1. 一个任务由多个子任务组成,那么当所有子任务被DONE时,这个主任务是不能DONE的
+    2. 多个任务必须要一个一个来完成,那么当前面的任务没有DONE时,后面的任务是不能被DONE的.
+    这个时候就需要TODO的依赖性的.
+    把 ~org-enforce-todo-dependencies~ 设置t时,能让第一种情况得到解决.
+    当一个标题有ORDERED的PROPERTIES的时候,第二种情况能得到解决
+    设置NOBLOCKING的PROPERTIES来阻止一个任务被阻塞
+    当 ~org-enforce-todo-checkbox-dependencies~ 为t时.如果一个标题有一个checkbox是unchecked状态的话,这个标题是不能变成DONE的
+    #+END_VERSE
+    #+BEGIN_SRC org :results none
+      ,* Parent
+        :PROPERTIES:
+        :ORDERED:  t
+        :END:
+      ,** TODO a
+      ,** TODO b 需要a被DONE
+      ,** TODO c 需要b被DONE
+      ,** TODO D 不被a,b,c阻塞
+         :PROPERTIES:
+         :NOBLOCKING: t
+         :END:
+    #+END_SRC
+    1. C-c C-x o (org-toggle-ordered-property): 开关 ORDERED property
+    2. C-u C-u C-u C-c C-t: 改变TODO状态为DONE.无视TODO依赖性
+*** 记录 TODO 的状态改变
+    :PROPERTIES:
+    :END:
+    #+BEGIN_VERSE
+    1. =(setq org-log-done 'time)=: 每次从TODO状态变成DONE状态时,会自动记录下当前时间.从DONE变成TODO时时间会消失, 设置 ~org-closed-keep-when-no-todo~ 为t,则时间也不会消失
+    2. =(setq org-log-done 'note)=: 状态从TODO变成DONE的时候记录下时间和一段话
+    3. 默认情况下按时间越晚,记录越离标题近. 设置 ~org-closed-keep-when-no-todo~ 为t,则反过来
+    #+END_VERSE
+    #+BEGIN_SRC emacs-lisp :results none
+      (setq org-log-done 'note)
+    #+END_SRC
+    #+BEGIN_SRC org :results none
+      ,#+STARTUP: logdone
+      ,#+STARTUP: lognotedone
+    #+END_SRC
+
+    #+BEGIN_VERSE
+    设置 ~org-todo-keywords~ 的时候使用
+    1. !: 来表明需要记录下进入的时间.
+    2. @: 表明需要提供一个note.
+    3. /!: 需要记录下离开的时间
+    如下设置:
+    1. 进行到WAIT时会记录下时间,并记录下一段话
+    2. 从WAIT离开时,会记录下时间
+    3. 进入到DONE时会记录下时间
+    4. 进入到CANCELED时会记录下一段话
+    #+END_VERSE
+
+    1. 全局设置
+    #+BEGIN_SRC emacs-lisp :results none
+      (setq org-todo-keywords
+            '((sequence "TODO(t)" "WAIT(w@/!)" "|" "DONE(d!)" "CANCELED(c@)")))
+    #+END_SRC
+    2. 文件级设置
+    #+BEGIN_SRC org :results none
+      ,#+TODO: TODO(t) WAIT(w@/!) | DONE(d!) CANCELED(c@)
+    #+END_SRC
+    3. 标题级设置
+    #+BEGIN_SRC org :results none
+      ,* 为此标题设置logging
+        :PROPERTIES:
+        :LOGGING:  TODO(!) WAIT(!) DONE(!) CANCELED(!)
+        :END:
+    #+END_SRC
+
+    #+BEGIN_VERSE
+    设置 ~org-log-into-drawer~ 为t来把状态改变的时间和note都放到一个LOGBOOK的drawer中
+    #+END_VERSE
+    #+BEGIN_SRC emacs-lisp :results none
+      (setq org-log-into-drawer t)
+    #+END_SRC
+
+*** 优先级
+    #+BEGIN_VERSE
+    org mode默认有三级优先级A,B,C.A为最高优先级.
+    #+END_VERSE
+    1. C-c , (org-priority): 设置优先级
+    2. S-UP/S-DOWN (org-priority-up/down): 升级/降级
+** 标签
+   #+BEGIN_VERSE
+   标签出现在标题的最右边.以':'包围起来,如 =:work:urgent:=
+   标签具有继承性.子标签继承父标签的所有标签.
+   设置 FILETAGS 来设置单文件标签,所有标题都继承它
+   #+END_VERSE
+   #+BEGIN_SRC org :results none
+     ,#+FILETAGS: :inmove:StudyOrgmode:
+   #+END_SRC
+   #+BEGIN_VERSE
+   设置 =org-use-tag-inheritance= 为nil,关闭tag的继承
+   设置 =org-tags-exclude-from-inheritance= 来关闭部分tag的继承
+   #+END_VERSE
+
+   #+BEGIN_VERSE
+   C-c C-q (org-set-tags-command): 为当前标题新增一个标签
+   #+END_VERSE
+
+   #+BEGIN_VERSE
+   使用 =org-tag-alist= 列表来设置默认的一些标签.这样在 =C-c C-q= 的时候可以直接选择
+   单个文件中则使用 =#+TAGS= 来设置. 如果 TAGS 为空的话, =org-tag-alist= 中的内容将被清空
+
+   =org-tag-persistent-alist= 也用于保存全局的tag,并且不能被 TAGS 清空
+   使用 =#+STARTUP: noptag= 来在当前文件清空 =org-tag-persistent-alist= 列表
+   #+END_VERSE
+
+   #+BEGIN_VERSE
+   设置标签的快捷选择键
+   #+END_VERSE
+   #+BEGIN_SRC emacs-lisp :results none
+     (setq org-tag-alist '(("@work" . ?w) ("@home" . ?h) ("laptop" . ?l)))
+   #+END_SRC
+   #+BEGIN_SRC org :results none
+     ,#+TAGS: @work(w) @home(h) @tennisclb(t) laptop(l) pc(p)
+   #+END_SRC
+
+   #+BEGIN_VERSE
+   对标签进行分组.work和home不能共存.
+   两边的大括号一定要有空格
+   #+END_VERSE
+   #+BEGIN_SRC org :results none
+     ,#+TAGS { @work(w) @home(h) } laptop(l) pc(p)
+   #+END_SRC
+
+   #+BEGIN_VERSE
+   也可以使用 =startgroup= =endgroup= 来在 =org-tag-alist= 中设置分组
+   #+END_VERSE
+   #+BEGIN_SRC emacs-lisp :results none
+     (setq org-tag-alist '((:startgroup . nil)
+                           ("@work" . ?w) ("@home" . ?h)
+                           ("@tennisclub" . ?t)
+                           (:enddgroup . nil)
+                           ("laptop" . ?l) ("pc" . ?p)))
+   #+END_SRC
+** 属性
+*** 基础语法
+    :PROPERTIES:
+    :END:
+    #+BEGIN_VERSE
+    PROPERTIES 的基础语法如下例:
+    和TAG最大的不同是它是一个键-值对
+    PROPERTIES 的继承由变量 *org-use-property-inheritance* 控制.其默认值为nil,表示不继承.
+    但是有的 PROPERTIES 是不受这个变量控制,如 CATEGORY ARCHIVE COLUMNS 以及所有以 _ALL 结尾的 PROPERTIES
+    使用 =#+PROPORTIES= 来设置文件级的属性
+    #+END_VERSE
+    #+BEGIN_SRC org :results none
+      ,** A test
+         :PROPERTIES:
+         :Title: test
+         :END:
+    #+END_SRC
+
+    #+BEGIN_VERSE
+    使用 KEY+ 的语法来为属性增加值
+    #+END_VERSE
+    #+BEGIN_SRC org :results none
+      ,#+PROPORTIES: var foo=1
+      ,#+PROPERTIES: var+ bar=2
+    #+END_SRC
+    #+BEGIN_SRC org :results none
+      ,** Father
+         :PROPERTIES:
+         :MyValue:  1
+         :END:
+      ,*** Child
+          :PROPERTIES:
+          :MyValue+:  2
+          :END:
+    #+END_SRC
+*** 快捷键
+    1. C-c C-x p (org-set-property): 增加属性
+    2. C-c C-c d (org-delete-property): 删除属性
+    3. C-c C-c D (org-delete-property-globally): 删除全局属性.删除整个文件的同名属性
+
+** 列视图
+
+** 分隔线
+---------------------------------
+** Lesson 0
+*** Lesson 01
+ #+BEGIN_VERSE
+ 下半节课,我们再学点其它的
+ #+END_VERSE
+*** Lesson 00
+ #+BEGIN_VERSE
+ 今天我们学习一点不一样的知识
+ #+END_VERSE
+** Lesson 1
+   :PROPERTIES:
+   :ORDERED:  t
+   :END:
+*** Lesson 10                                                         :Emacs:
+ #+BEGIN_VERSE
+ 今天学习Emacs这个东西
+ #+END_VERSE
+*** TODO Lesson 11
+ #+BEGIN_VERSE
+ 下半节课学习其它的.Lesson 11 不能被DONE,除非 Lesson 10 被DONE
+ #+END_VERSE
+** Lesson 2
+   :PROPERTIES:
+   :ORDERED:  t
+   :END:
+   #+BEGIN_VERSE
+   我下面的Lesson需要一个一个完成
+   #+END_VERSE
+   #+BEGIN_SRC emacs-lisp :results none
+     (setq org-enforce-todo-dependencies t)
+   #+END_SRC
+
+*** Lesson 20
+ #+BEGIN_VERSE
+ 今天来学习Python
+ #+END_VERSE
+*** Lesson 21
+ #+BEGIN_VERSE
+ 后面再学习Linux
+ #+END_VERSE
+** CANCELED Lesson 3
+   - State "CANCELED"   from "DONE"       [2020-10-16 Fri 00:00] \\
+     from DONE to CANCELED
+   - State "DONE"       from "WAIT"       [2020-10-16 Fri 00:00]
+   - State "WAIT"       from "TODO"       [2020-10-16 Fri 00:00] \\
+     from TODO to WAIT
+   #+BEGIN_VERSE
+   还没有内容
+   #+END_VERSE
+*** WAIT Lesson 30
+    logging记录在drawer里
+    :LOGBOOK:
+    - State "WAIT"       from "TODO"       [2020-10-16 Fri 00:01] \\
+      from TODO to WAIT
+    :END:
+    #+BEGIN_SRC emacs-lisp :results none
+      (setq org-log-into-drawer t)
+    #+END_SRC
+*** WAIT Lesson 31
+    :PROPERTIES:
+    :END:
+    为Lesson 31单独设置logging
+    :PROPERTIES:
+    :LOGGING:  TODO(!) WAIT(!) DONE(!) CANCELED(!)
+    :END:
+    :LOGBOOK:
+    - State "WAIT"       from "TODO"       [2020-10-16 Fri 00:18]
+    - State "TODO"       from              [2020-10-16 Fri 00:18]
+    :END:
+** Lesson 4
+   :PROPERTIES:
+   :header-args: :var host="inmove.com.cn"
+   :END:
+   #+BEGIN_SRC sh
+     echo $host
+   #+END_SRC
+
+   #+RESULTS:
+   : inmove.com.cn

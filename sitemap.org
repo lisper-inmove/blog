@@ -1,0 +1,8 @@
+#+TITLE: Inmove's Blog
+
+- [[file:index.org][index]]
+- emacs
+  - [[file:emacs/org-mode.org][org-mode]]
+  - [[file:emacs/use-emacs.org][use-emacs]]
+- python
+  - [[file:python/logging.org][logging]]

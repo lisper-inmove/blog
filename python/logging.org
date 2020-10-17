@@ -1,0 +1,67 @@
+#+SETUPFILE: ~/.emacs.d/org-templates/level-0.org
+
+* Python Logging Example
+#+BEGIN_SRC python :results none
+  # -*- coding: utf-8 -*-
+
+  """
+
+  python的logger可以添加多个Handler
+  1. Handler的level要和logger的level更加宽松,否则handler将不会执行
+
+  """
+
+
+  import logging
+  import logging.handlers
+  import time
+
+  logger = logging.getLogger(__name__)
+  logger_level = logging.INFO
+  logger.setLevel(logger_level)
+
+  # 关于formatter
+  # %(levelno)s: 日志级别数值
+  # %(levelname)s: 日志级别名字
+  # %(pathname)s: 当前执行程序相对路径
+  # %(filename)s: 文件名
+  # %(lineno)s: 行号
+  # %(thread)s: 线程ID
+  # %(module)s: 模块名
+  # %(msecs)d: 日志事件发生的毫秒数
+  # %(funcName)s: 函数名
+  # datefmt: 是asctime的格式
+  datefmt = "%Y-%m-%d %H:%M:%S"
+  fmt = "%(asctime)s %(msecs)s - %(name)s - %(levelname)s %(thread)s %(module)s %(filename)s %(lineno)s %(funcName)s - %(message)s"
+  formatter = logging.Formatter(fmt, datefmt=datefmt)
+
+  # 添加文件处理器
+  fh = logging.FileHandler(filename="example.log", mode="a", encoding="utf8")
+  # logging.WARNING 比 logging.INFO更加严格,所以logger.info将不会写入到文件中
+  fh.setLevel(logging.WARNING)
+  fh.setFormatter(formatter)
+  logger.addHandler(fh)
+
+  # 流处理器
+  ch = logging.StreamHandler()
+  ch.setLevel(logger_level)
+  ch.setFormatter(formatter)
+  logger.addHandler(ch)
+
+  # syslog处理器
+  # tail -f /var/log/syslog
+  sh = logging.handlers.SysLogHandler(address='/dev/log')
+  sh.setLevel(logger_level)
+  sh.setFormatter(formatter)
+  logger.addHandler(sh)
+
+  # 为handler添加Filter,只有filter函数返回True时才会执行handler
+  class MyFilter(logging.Filter):
+      def filter(self, record):
+          return True
+  sh.addFilter(MyFilter())
+
+  logger.exception("error with traceback")
+  logger.info("hello: {}".format(int(time.time())))
+  logger.error("there is an error")
+#+END_SRC
