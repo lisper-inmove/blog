@@ -1,0 +1,16 @@
+#+SETUPFILE: ~/.emacs.d/org-templates/level-0.org
+#+TITLE: logrotate
+#+CATEGORY: Linux logrotate
+
+** 举例
+#+BEGIN_EXAMPLE
+/var/log/main
+{
+    nocompress
+    daily
+    copytruncate
+    create
+    ifempty
+    rotate 30
+}
+#+END_EXAMPLE

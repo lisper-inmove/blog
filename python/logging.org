@@ -1,6 +1,7 @@
 #+SETUPFILE: ~/.emacs.d/org-templates/level-0.org
+#+TITLE: Python Logging Example
 
-* Python Logging Example
+** logging提供的多种handler
 #+BEGIN_SRC python :results none
   # -*- coding: utf-8 -*-
 
@@ -64,4 +65,38 @@
   logger.exception("error with traceback")
   logger.info("hello: {}".format(int(time.time())))
   logger.error("there is an error")
+#+END_SRC
+** 使用rsyslog记录到远端服务器
+#+BEGIN_VERSE
+通过SysLogHandler把日志推送到远端服务器
+远端服务器一定要记得开放514端口
+在 ~/etc/rsyslog.d/xxx.conf~ 中配置如下: ~if $app-name == 'main' then /var/log/main~ 则会把app-name为main的服务的日志记录到 /var/log/main中去
+python 中 app-name 在 getLogger时指定,然后在fmt中以 %(name)s: 指定,但是一定要放在最前面.
+另外,一定不要预先在 生成 /var/log/main 不然也不会记录日志
+#+END_VERSE
+#+BEGIN_SRC python :results none
+  # -*- coding: utf-8 -*-
+
+  import socket
+  import logging
+  import logging.handlers
+  import time
+
+  logger = logging.getLogger("main")
+  logger_level = logging.INFO
+  logger.setLevel(logger_level)
+
+  datefmt = "%Y-%m-%d %H:%M:%S"
+  fmt = "%(name)s: - %(levelname)s %(thread)s %(module)s %(filename)s %(lineno)s %(funcName)s - %(message)s"
+  formatter = logging.Formatter(fmt, datefmt=datefmt)
+
+  # syslog处理器
+  # tail -f /var/log/syslog
+  sh = logging.handlers.SysLogHandler(address=("127.0.0.1", 514), facility="local6", socktype=socket.SOCK_STREAM)
+  sh.setLevel(logger_level)
+  sh.setFormatter(formatter)
+  logger.addHandler(sh)
+
+  print(logger.info("error hello: {}".format(int(time.time()))))
+  print(logger.info("hello: {}".format(int(time.time()))))
 #+END_SRC

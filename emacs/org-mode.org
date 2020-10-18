@@ -5,8 +5,7 @@
 #+FILETAGS: inmove:StudyOrgmode:
 #+PROPORTIES: var foo=1
 #+PROPORTIES: var+ bar=2
-
-* 用来学习org-mode的org file
+#+TITLE: 用来学习org-mode的org file
 
 ** 关于光标在org mode的标题之间的移动
    1. C-c C-n (org-next-visible-heading): 移动到下一个没有隐藏的标题上面
@@ -38,7 +37,7 @@
    #+BEGIN_VERSE
    所有以 TODO 开始的标题会被org mode当作 TODO item
    #+END_VERSE
-*** Basic TOO Functionality
+*** Basic TODO Functionality
     1. C-c C-t (org-todo): 改变TODO item的状态.默认情况下只有 *TODO* , *DONE* 两种状态.设置 *org-too-keywords* 来增加更多的关键字
        #+BEGIN_VERSE
        sequence类型关键字是最常见的关键字

@@ -2,10 +2,8 @@
 
 
 * 那些比较有用的但是又没记住的命令
-1. C-c k: counsel-ag
-2. C-c g: counsel-git
-3. C-c j: ace-jump-mode
-4. C-f f: helm-find-files
-5. C-f b: helm-buffers-list
-6. C-f s: helm-show-kill-ring
-7. C-f a: helm-all-mark-rings
+1. C-c j: ace-jump-mode
+2. C-f f: helm-find-files
+3. C-f b: helm-buffers-list
+4. C-f s: helm-show-kill-ring
+5. C-f a: helm-all-mark-rings
