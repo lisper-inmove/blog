@@ -1,0 +1,22 @@
+#+SETUPFILE: ~/.emacs.d/org-templates/level-0.org
+#+TITLE: 使用systemctl来开机启动emacs daemon
+
+
+#+BEGIN_SRC ini
+  [Unit]
+  Description=Emacs: the extensible, self-documenting text editor
+
+  [Service]
+  Type=forking
+  ExecStart=/home/inmove/opt/bin/emacs --daemon
+  ExecStop=/home/inmove/opt/bin/emacs --eval "(progn (setq kill-emacs-hook 'nil) (kill-emacs))"
+  Restart=always
+  User=inmove
+
+  # Remove the limit in startup timeout, since emacs
+  # cloning and building all packages can take time
+  TimeoutStartSec=0
+
+  [Install]
+  WantedBy=default.target
+#+END_SRC

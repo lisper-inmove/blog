@@ -1,0 +1,9 @@
+#+SETUPFILE: ~/.emacs.d/org-templates/level-0.org
+
+
+* 那些比较有用的但是又没记住的命令
+1. C-c j: ace-jump-mode
+2. C-f f: helm-find-files
+3. C-f b: helm-buffers-list
+4. C-f s: helm-show-kill-ring
+5. C-f a: helm-all-mark-rings
