@@ -1,0 +1,50 @@
+#+SETUPFILE: ~/.emacs.d/org-templates/level-0.org
+#+TITLE: Agenda Views
+
+* Agena Views
+** TODO agenda
+   #+BEGIN_VERSE
+   Agenda Views 最主要的作用是提供一个视图,把散落在各处的TODO item, time-stamped items, tagged headlines 聚拢在一起.
+   提供一个全局的视图,让我们可以根据不同的条件来查找正在进行中的任务。
+   ~org-agenda-files~ 列表包含了所有生成agenda视图的org文件.如果org-agenda-files包含目录,则这个目录下的所有org文件都会被包含进来。
+   #+END_VERSE
+   #+BEGIN_VERSE
+   1. C-c [ (org-agenda-file-to-front): 把当前文件加入到agenda列表里
+   2. C-c ] (org-remove-file): 把当前文件从agenda列表里删除
+   #+END_VERSE
+
+** Agenda 调度程序
+#+BEGIN_VERSE
+使用 ~org-agenda~ 进入到agenga调度程序.你将会看到一个菜单,使用单个字符的快捷键来选择要怎么来使用agenda视图
+1. a: 创建一个类似于日历的agenda
+2. t/T: 创建一个所有的TODO items的列表
+3. m/M: 会要求你输入一个正则表达式,根据这个正则表达式在所有标题的的TAGS中进行搜索(M只在TODO中搜索)
+4. s: 通过在标题中搜索输入的关键字来创建agenda视图
+5. /: 通过正则表达式在所有agenda文件中搜索.同时也会在 ~org-agenda-text-search-extra-files~ 包含的文件中搜索
+6. #/!: a list of stuck projects
+7. <: 限制生成的视图只对当前buffer生效
+8. <<: 限制生成的视图只在当前subtree生效
+9. *: 开关agenda buffer的自动更新.通过 ~org-agenda-sticky~ 来设置默认是否打开. 通过 ~org-toggle-sticky-agenda~ 命令来在任何时候切换.
+#+END_VERSE
+*** Calendar Agenda
+#+BEGIN_SRC emacs-lisp :results none
+  (setq org-agenda-include-diary t)
+#+END_SRC
+*** The global TODO list
+
+* 分割线
+---------------------------------
+* 用来做测试的
+#+BEGIN_VERSE
+用来做agenda的测试
+#+END_VERSE
+* Ann
+:PROPERTIES:
+:CATEGORY: Ann
+:END:
+%%(org-anniversary 1990 10 24) My Birthday
+* Study
+:PROPERTIES:
+:CATEGORY: Study
+:END:
+%%(org-anniversary 2019 10 25) Studdy English
