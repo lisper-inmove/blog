@@ -1,0 +1,9 @@
+#+SETUPFILE: ~/.emacs.d/org-templates/level-0.org
+#+TITLE: Emacs 的函数
+
+
+* 判断是不是图形模式
+#+begin_src emacs-lisp
+  (if (display-graphic-p)
+      (message "do something"))
+#+end_src
