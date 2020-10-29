@@ -3,6 +3,8 @@
 - [[file:index.org][index]]
 - [[file:template.org][template]]
 - emacs
+  - [[file:emacs/agenda.org][Agenda Views]]
+  - [[file:emacs/dates-and-times.org][Dates and Times]]
   - [[file:emacs/use-emacs.org][use-emacs]]
   - [[file:emacs/systemctl-emacs.org][使用systemctl来开机启动emacs daemon]]
   - [[file:emacs/org-mode.org][用来学习org-mode的org file]]
@@ -11,4 +13,5 @@
   - [[file:linux/rsyslog.org][rsyslog]]
 - python
   - [[file:python/logging.org][Python Logging Example]]
+  - [[file:python/collections-ChainMap.org][Python collections ChainMap]]
   - [[file:python/metaclass.org][metaclass]]
