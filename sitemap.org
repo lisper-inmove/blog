@@ -18,9 +18,11 @@
   - [[file:linux/logrotate.org][logrotate]]
   - [[file:linux/rsyslog.org][rsyslog]]
 - org-mode
-  - [[file:org-mode/table.org][Table]]
-  - [[file:org-mode/headlines.org][headlines]]
-  - [[file:org-mode/Hyperlinks.org][超链接在OrgMode中的使用]]
+  - [[file:org-mode/TODO-items.org][TODO 工具]]
+  - [[file:org-mode/Table.org][Table]]
+  - [[file:org-mode/Healines.org][提纲]]
+  - [[file:org-mode/Tags.org][标签]]
+  - [[file:org-mode/Hyperlinks.org][超链接]]
 - python
   - [[file:python/logging.org][Python Logging Example]]
   - [[file:python/collections-ChainMap.org][Python collections ChainMap]]

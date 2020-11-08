@@ -1,5 +1,5 @@
 #+SETUPFILE: ~/.emacs.d/org-templates/template.org
-#+TITLE: 超链接在OrgMode中的使用
+#+TITLE: 超链接
 
 * 超链接的表现形式
 #+begin_verse
@@ -87,7 +87,7 @@ test11
 
 * test2
 #+begin_example
-通过 [[*headline-name]] 进程锚点跳转
+通过 [[*headline-name]] 进行锚点跳转
 #+end_example
 
 * test3

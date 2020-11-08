@@ -1,0 +1,195 @@
+#+SETUPFILE: ~/.emacs.d/org-templates/template.org
+#+TITLE: TODO 工具
+
+
+* Basic TOO Functionality
+#+begin_verse
+只要提纲以 TODO 开头,那么这个提纲就是一个 TODO工具
+既可以直接在提纲上面输入 TODO,也可以使用快捷键 =C-c C-t= 把提纲变成 TODO工具
+#+end_verse
+
+* 全局设置 TODO状态关键字
+#+begin_verse
+默认情况下只有 TODO DONE 两种状.
+通过设置 =org-todo-keywords= 来自定义 TODO的状态关键字,如下例所示
+其中 | 用来分隔 未完成状态 和 完成状态
+未完成状态表示正在进行中的工作,包括但不限于 TODO
+完成状态表示已完成或者到期等等之类,包括但不限于 DONE
+设置完成之后,当我们使用 =C-c C-t= 的时候,每种状态将依序出现在提纲的 TODO关键字 处
+#+end_verse
+<<sequence-todo-keywords>>
+#+begin_src emacs-lisp :results none
+  (setq org-todo-keywords
+        '((sequence "TODO" "FEEDBACK" "VERIFY" "|" "DONE" "DELEGATED")))
+#+end_src
+
+#+begin_verse
+以上被称作 [[sequence-todo-keywords][sequence-todo-keywords]]
+还有一种为 [[type-todo-keywords][type-todo-keywords]] 被称作类型关键字,如下,
+这种用法已经被 [[file:Tags.org][标签]] 所取代.
+#+end_verse
+<<type-todo-keywords>>
+#+begin_src emacs-lisp :results none
+  (setq org-todo-keywords '((type "Fred" "Sara" "Lucy" "|" "DONE")))
+#+end_src
+
+#+begin_verse
+可以设置多个关键字集合,如下
+首先不能出现相同的关键字
+另外当我们使用 =C-c C-t= 的时候,只能其中一个集合中进行切换
+#+end_verse
+#+begin_src emacs-lisp :results none
+  (setq org-todo-keywords
+        '((sequence "TODO" "|" "DONE")
+          (sequnece "REPORT" "BUG" "KNOWNCAUSE" "|" "FIXED")
+          (sequence "|" "CANCELED")))
+#+end_src
+
+#+begin_verse
+使用关键字的快捷访问
+#+end_verse
+#+begin_src emacs-lisp :results none
+  (setq org-todo-keywords
+        '((sequence "TODO(t)" "|" "DONE(d)")
+          (sequence "REPORT(r)" "BUG(b)" "KNOWNCAUSE(k)" "FEEDBACK(f)" "|" "FIXED(F)")
+          (sequence "|" "CANCELED(c)")))
+#+end_src
+
+#+begin_verse
+设置关键字的外观
+#+end_verse
+#+begin_src emacs-lisp :results none
+  (setq org-todo-keyword-faces
+        '(("TODO" . "red")
+          ("STARTED" . "yellow")
+          (CANCELED . (:foreground "blue" :weight bold))))
+#+end_src
+
+* 为某个文件单独设置 TODO状态关键字
+#+begin_verse
+当使用多行 =#+TODO= 时,则对应于多集合
+#+end_verse
+#+begin_src org :results none
+  ,#+TODO: TODO(t) | DONE(d)
+  ,#+TODO: REPORT(r) BUG(b) KNOWNCAUSE(k) FEEDBACK(f) | FIXED(F)
+  ,#+TODO: | CANCELED(c)
+#+end_src
+
+* /TODO/ 工具的关联性
+1. 当我们设置 =org-enforce-todo-dependencies= 为t,那么只要有一个子项是非 DONE 状态,那么这个提纲就不能被设置为DONE
+   #+begin_verse
+   =org-enforce-todo-dependencies= 是全局设置.
+   也可以用属性 *NOBLOCKING* 来对单个提纲进行控制
+   #+end_verse
+2. 如果提纲有 ORDERED 的属性,那么,提纲的所有任务需要一个一个的完成
+* 全局设置 记录状态关键字的改变
+#+begin_verse
+当状态关键字改变为 *完成状态* 的时候,我们可以选择记录下当前的时间,也可以记录下状态改变的原因
+=org-log-done= 的值决定了要记录的内容
+当其值为 time 时,只记录时间
+当其值为 note 时,同时记录下原因和时间
+#+end_verse
+#+begin_src emacs-lisp :results none
+  (setq org-log-done 'time)
+  (setq org-log-done 'note)
+#+end_src
+
+#+begin_verse
+为每个关键字做设置
+1. @: 记录时间戳,同时记录状态改变原因.如果只想记录时间戳,则什么都不输入,直接 =C-c C-c= 退出
+2. !: 只记录时间戳
+3. /!: 从当前状态变化为目标状态时,记录下离开的时间.但是,只有当目标状态不记录任何东西的时候才有效
+    如,当从WAIT变为DONE时,此设置不会起作用,但是当从WAIT变为TODO时,就会记录下离开的时间戳
+#+end_verse
+#+begin_src emacs-lisp :results none
+  (setq org-todo-keywords
+        '((sequence "TODO(t)" "WAIT(w@/!)" "|" "DONE(d!)" "CANCELED(c@)")))
+#+end_src
+
+#+begin_verse
+所有这些 *time* *note* 都会被记录在提纲的下面一行
+如果我设置 =org-log-into-drawer= 为t,那么所有这些都会被记录在 名为 LOGBOOK drawer box里面
+通过设置 LOG_INTO_DRAWER 属性来设置这个 drawer box的名字
+#+end_verse
+
+* 为单个文件 设置记录状态关键字的改变
+#+begin_verse
+当关键字变为 *完成状态* 的时候
+#+end_verse
+#+begin_src org :results none
+  ,#+STARTUP: logdone
+  ,#+STARTUP: lognotedone
+#+end_src
+
+* 为单个提纲设置状态关键字
+#+begin_src org :results none
+  ,* 设置每个关键字的状态改变时记录的内容
+    :PROPERTIES:
+    :LOGGING:  TODO(d) WAIT(w@/!) | DONE(d!) CANCELED(c@)
+    :END:
+#+end_src
+
+* 提纲的优先级
+#+begin_verse
+提纲只有三种优先级,A,B,C.
+#+end_verse
+
+* 子任务完成时,主任务自动完成
+#+begin_verse
+在某个 任务 后面加上 [/] 或 [%] 后
+当如果这个任务的子项状态改变,会同时记录下主任务的完成进度
+同时设置函数 =org-summary-todo= 会让主任务的状态跟着子任务更新
+#+end_verse
+#+begin_src emacs-lisp :results none
+  (defun org-summary-todo (n-done n-not-done)
+    "Switch entry to DONE when all subentries are done, to TODO otherwise."
+    (let (org-log-done org-log-states) ; turn off logging
+      (org-todo (if (= n-not-done 0) "DONE" "TODO"))))
+  (add-hook 'org-after-todo-statistics-hook 'org-summary-todo)
+#+end_src
+
+* 快捷键
+1. C-c C-t (org-todo)
+2. S-RIGHT/LEFT: 切换到下一个状态,不受多集合的限制
+3. C-u C-u C-c C-t: 对于多关键字集合类型,此命令用于切换到下一个集合
+4. C-c C-x o (org-toggle-ordered-property): 切换当前提纲的 ORDERED 属性
+5. C-u C-u C-u C-c C-t: 改变TODO状态为DONE,忽略其关联性
+6. C-u C-c C-t: 改变提纲的状态关键字.Emacs会让你输入一段文字,来对经次改变做说明
+7. S-UP (org-priority-up) S-DOWN (org-priority-down)
+
+
+* TODO test0 [33%]
+:LOGBOOK:
+- State "DONE"       from "TODO"       [2020-11-08 Sun 15:22]
+:END:
+#+begin_verse
+只要test1,test2有一个没有done,test0就不能被设置为done
+#+end_verse
+:PROPERTIES:
+:NOBLOCKING: nil
+:END:
+** DONE test1
+CLOSED: [2020-11-08 Sun 15:22]
+:LOGBOOK:
+- State "DONE"       from "TODO"       [2020-11-08 Sun 15:22]
+- State "DONE"       from "TODO"       [2020-11-08 Sun 15:22]
+:END:
+** TODO test2
+** TODO test3
+* CANCELED test3
+CLOSED: [2020-11-08 Sun 15:02]
+:PROPERTIES:
+:LOG_INTO_DRAWER: LOG_NOTE_DRAWER
+:END:
+:LOG_NOTE_DRAWER:
+- State "CANCELED"   from "DONE"       [2020-11-08 Sun 15:02] \\
+  hello
+- State "DONE"       from "TODO"       [2020-11-08 Sun 15:02]
+- State "DONE"       from "CANCELED"   [2020-11-08 Sun 15:02]
+- State "CANCELED"   from "CANCELED"   [2020-11-08 Sun 14:59] \\
+  canceled
+:END:
+
+#+begin_src emacs-lisp :results none
+  (setq org-log-into-drawer t)
+#+end_src

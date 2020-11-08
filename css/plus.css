@@ -79,3 +79,7 @@ a:visited {
 a:active {
     color: red;
 }
+
+.tag {
+    color: #28f371;
+}
