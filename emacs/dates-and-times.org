@@ -105,7 +105,7 @@
 
 * 截止日期与日期安排
 ** DEADLINE
-DEADLINE: <2020-10-31 Sat -4d>
+DEADLINE: <2020-10-31 Sat>
 #+begin_verse
 预计将在这个时间点完成这项工作.
 在agenda view中,截止日期以橘色显示.当前日期下面会有距离截止日期的天数.
@@ -115,7 +115,7 @@ DEADLINE: <2020-10-31 Sat -4d>
 =(setq org-deadline-warning-days 5)= 那么在agenda view中将看到
 黄色的高亮显示的 "dates-and-times:In   4 d.:  DEADLINE"
 和橘色的高亮显示 "dates-and-times:Deadline:   DEADLINE"
-pdf上面说用 -nd 来表示如:<2020-11-01 Sun -5d> 但是我试了一下好像和预想的有点不一样,暂先不用这表示吧
+也可以用 -nd 来表示如:<2020-11-01 Sun -5d> . 那么当时间还有5天就到deadline的时候就会在agena上面提醒了
 #+end_verse
 ** SCHEDULED
 SCHEDULED: <2020-10-25 Fri>
@@ -133,3 +133,74 @@ SCHEDULED: <2020-10-25 Fri>
 4. C-c / b (org-check-before-date): 创建一个sparse tree,显示所有deadlines/scheduled items before a given date.
 5. C-c / a (org-check-after-date): 创建一个sparse tree,显示所有deadlines/scheduled items after a given date.
 #+end_verse
+* 重复性任务
+#+begin_verse
+在时间戳的里面加上形如 +1w 这样的内容来表示每周重复一次
+其中h表示小时,d表示天,w表示周,m表示月,y表示年
+如果条目是一个TODO item,当我们使用 =C-c C-t= 把条目变成DONE的时候,emacs并不会简单把条目变成DONE
+而依然是TODO状态,但是会在下面增加一个TODO变为DONE的说明,并在加上一个PROPERTIES,key为LAST_REPEAT,值为当前时间戳
+也可以使用 =C-u -1 C-c C-t= 来把TODO变为DONE的状态
+#+end_verse
+#+begin_src org
+  ,* TODO test
+    DEADLINE: <2020-11-10 Tue +1w>
+    :PROPERTIES:
+    :LAST_REPEAT: [2020-10-31 Sat 23:29]
+    :END:
+    - State "DONE"       from "TODO"       [2020-10-31 Sat 23:29]
+#+end_src
+* 记录工作时间
+:LOGBOOK:
+CLOCK: [2020-11-01 Sun 00:27]--[2020-11-01 Sun 00:44] =>  0:17
+:END:
+1. C-c C-x C-i (org-clock-in): 开始记录工作时间
+2. C-c C-x C-o (org-clock-out): 结束当前记录
+3. C-c C-x C-q (org-clock-cancel): 取消工作时间的记录
+4. C-c C-x C-j (org-clock-goto): 跳到当前正在进行中的任务
+5. C-c C-x C-d (org-clock-display): 统计任务一共用了多少时间
+   #+begin_verse
+   此命令会在条目的最后面显示此任务一共用了多少时间,并且在文档被修改的时候消失
+   但是当设置 =org-remove-highlights-with-change= 为nil时,则不会消失
+   #+end_verse
+   #+begin_src org
+     (setq org-remove-highlights-with-change nil)
+   #+end_src
+** test
+:LOGBOOK:
+CLOCK: [2020-10-31 Sat 00:44]--[2020-11-01 Sun 00:44] => 24:00
+:END:
+** test0
+:LOGBOOK:
+CLOCK: [2020-10-18 Sun 00:47]--[2020-11-01 Sun 00:47] => 336:00
+CLOCK: [2020-10-26 Mon 00:47]--[2020-11-01 Sun 00:47] => 144:00
+:END:
+** clocktable
+#+BEGIN: clocktable :scope subtree :maxlevel 3
+#+CAPTION: Clock summary at [2020-11-01 Sun 01:33]
+| Headline          | Time      |         |         |
+|-------------------+-----------+---------+---------|
+| *Total time*      | *1d 0:30* |         |         |
+|-------------------+-----------+---------+---------|
+| \_  clocktable    |           | 1d 0:30 |         |
+| \_    clocktable0 |           |         |    0:20 |
+| \_    clocktable1 |           |         |    0:10 |
+| \_    clocktable2 |           |         | 1d 0:00 |
+#+END:
+
+*** clocktable0
+:LOGBOOK:
+CLOCK: [2020-11-01 Sun 00:39]--[2020-11-01 Sun 00:59] =>  0:20
+:END:
+#+begin_export html
+<p class="verbose">
+要做这个
+</p>
+#+end_export
+*** clocktable1
+:LOGBOOK:
+CLOCK: [2020-11-01 Sun 00:49]--[2020-11-01 Sun 00:59] =>  0:10
+:END:
+*** clocktable2
+:LOGBOOK:
+CLOCK: [2020-10-31 Sun 00:59]--[2020-11-01 Sun 00:59] => 24:00
+:END:
