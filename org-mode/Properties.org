@@ -1,0 +1,106 @@
+#+SETUPFILE: ~/.emacs.d/org-templates/template.org
+#+TITLE: 属性
+
+
+* 属性
+#+begin_verse
+属性由key-value对组成.与[[file:Tags.org][标签]]很像,却又很不同.
+比如我们对接口做了重构,但是又要向前兼容,那么旧的接口就要保留.这个时候我们就要用属性来做标记
+如下是最简单的一个例子
+#+end_verse
+#+begin_src org :results none
+  ,* Goldberg Variations
+    :PROPERTIES:
+    :TEST_PROPERTY: test
+    :END:
+#+end_src
+* 属性的继承
+#+begin_verse
+属性的继承由变量 =org-use-property-inheritance= 控制.当其值为t时,则子提纲继承父提纲
+当其值为nil时,则不继承
+但是如果property的key为xxx_ALL时,则不受此变量的限制
+还有一些hard code的变量也是不受此变量限制的: /COLUMNS/ /CATEGORY/ /ARCHIVE/ /LOGGING/
+#+end_verse
+* 特殊的属性
+| Name           | Explanation                                                                                                           |
+|----------------+-------------------------------------------------------------------------------------------------------------------------------------------|
+| ‘ALLTAGS’      | All tags, including inherited ones.                                                                                                       |
+| ‘BLOCKED’      | t if task is currently blocked by children or siblings.                                                                                   |
+| ‘CATEGORY’     | The category of an entry.                                                                                                                 |
+| ‘CLOCKSUM’     | The sum of CLOCK intervals in the subtree. org-clock-sum must be run fi rst to compute the values in the current buff er.                 |
+| ‘CLOCKSUM_T’   | The sum of CLOCK intervals in the subtree for today. org-clock-sum-today must be run fi rst to compute the values in the current buff er. |
+| ‘CLOSED’       | When was this entry closed?                                                                                                               |
+| ‘DEADLINE’     | The deadline time string, without the angular brackets.                                                                                   |
+| ‘FILE’         | The fi lename the entry is located in.                                                                                                    |
+| ‘ITEM’         | The headline of the entry.                                                                                                                |
+| ‘PRIORITY’     | The priority of the entry, a string with a single letter.                                                                                 |
+| ‘SCHEDULED’    | The scheduling timestamp, without the angular brackets.                                                                                   |
+| ‘TAGS’         | The tags defi ned directly in the headline.                                                                                               |
+| ‘TIMESTAMP’    | The fi rst keyword-less timestamp in the entry.                                                                                           |
+| ‘TIMESTAMP_IA’ | The fi rst inactive timestamp in the entry.                                                                                               |
+| ‘TODO’         | The TODO keyword of the entry.                                                                                                            |
+
+* 列视图
+** 定义列视图的模板
+#+begin_verse
+一共有两种方式,一种作用于全文件,一种作用于当前提纲
+#+end_verse
+#+begin_src org :results none
+  ,#+COLUMNS: %25ITEM %TAGS %PRIORITY %TODO
+#+end_src
+#+begin_src org :results none
+  ,* column view
+    :PROPERTIES:
+    :COLUMNS:  %25ITEM %TAGS %PRIORITY %TODO
+    :END:
+#+end_src
+
+#+begin_verse
+Column-Definition 的格式如下.
+也就是说 %,PROPERTY 是必须的
+WIDTH: 这一列的宽度
+TITLE: 列标题,由()包围
+SUMMARY-TYPE: 如果指定了SUMMARY-TYPE,那么父结点的值由子结点计算得来.由{}包围
+#+end_verse
+#+begin_example
+  %[WIDTH]PROPERTY[(TITLE)][{SUMMARY-TYPE}]
+#+end_example
+#+begin_verse
+如下例所示:
+WIDTH: 9
+PROPERTY: Approved
+TITLE: Approved?
+SUMMARY-TYPE: X
+#+end_verse
+#+begin_example
+  %9Approved(Approved?){X}
+#+end_example
+
+* 快捷键
+1. C-c C-x p: 为当前提纲新增一个属性
+2. C-c C-c s: 当光标在 属性区域里面的时候 修改一个属性的值
+3. C-c C-c d: 删除当前提纲的一个属性
+4. C-c C-c D: 删除全局的一个属性
+
+* test
+#+PORPERTY: TEST_PROPERTY_ALL 1 2 3 4 abc
+** test1
+:PROPERTIES:
+:TEST_PROPERTY: abc
+:END:
+** test2
+:PROPERTIES:
+:CATEGORY: pab
+:END:
+** test3
+:PROPERTIES:
+:COLUMNS:  %25ITEM %10APPROVED(Approved?){X} %OWNER(Owner) %11STATUS(Status) %10TIME_ESTIMATE(Time_Estimate){:} %CLOCKSUM %CLOCKSUM_T
+:Owner_ALL: Tammy Mark Karl Lisa Don
+:Status_ALL: "In progress" "Not started yet" "Finished" ""
+:Approve_ALL: "[ ]" "[X]"
+:END:
+*** test3-0
+:PROPERTIES:
+:OWNER:    Don
+:Status:  done
+:END:

@@ -20,6 +20,7 @@
 - org-mode
   - [[file:org-mode/TODO-items.org][TODO 工具]]
   - [[file:org-mode/Table.org][Table]]
+  - [[file:org-mode/Properties.org][属性]]
   - [[file:org-mode/Healines.org][提纲]]
   - [[file:org-mode/Tags.org][标签]]
   - [[file:org-mode/Hyperlinks.org][超链接]]
