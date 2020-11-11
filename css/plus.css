@@ -13,3 +13,73 @@ code {
 i {
     color: #20F50B;
 }
+
+table {
+    border: 1px solid black;
+}
+
+td {
+    border: 1px solid black;
+}
+
+th {
+    border: 2px solid black;
+    color: #9e9cda;
+    background: #002b36;
+}
+
+.t-above {
+    display: none;
+}
+
+span.timestamp-wrapper {
+    display: block;
+    text-indent: 30px;
+}
+
+.outline-3 {
+    text-indent: 5px;
+}
+
+.outline-4 {
+    text-indent: 8px;
+}
+
+.outline-5 {
+    text-indent: 13px;
+}
+
+p.verbose {
+    text-indent: 35px;
+}
+
+a[href="index.html"] {
+    display: none;
+}
+a[href="template.html"] {
+    display: none;
+}
+
+li {
+    list-style-type: none;
+}
+
+tr:nth-child(odd){
+    background: #113142;
+}
+
+a {
+    text-decoration: none;
+}
+
+a:visited {
+    color: #b58900;
+}
+
+a:active {
+    color: red;
+}
+
+.tag {
+    color: #28f371;
+}

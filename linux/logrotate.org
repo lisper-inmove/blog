@@ -2,7 +2,7 @@
 #+TITLE: logrotate
 #+CATEGORY: Linux logrotate
 
-** 举例
+* 举例
 #+BEGIN_EXAMPLE
 /var/log/main
 {

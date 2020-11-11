@@ -1,0 +1,169 @@
+#+SETUPFILE: ~/.emacs.d/org-templates/template.org
+#+TITLE: Table
+
+* 生成表格
+
+#+begin_verse
+=C-c |= (org-table-create-or-convert-from-region) 创建表格
+
+如果有选中区域,那么就根据选中的内容来生成表格
+1. 如果每行都有TAB,那么就以TAB来分列
+2. 如果每行都有',',那么就以','来分列
+3. 否则以空格来分列
+也可以强制设置分列符
+1. C-u: 强制使用','
+2. C-u C-u: 强制使用TAB
+3. C-u C-u C-u: 在minibuffer中输入分列符
+如果没有选中区域,那么emacs会提示你在minibuffer中输入 行x列 来生成一个空的格式
+另一种更方便的方式生成表格是在行首输入任意多个 '|' 然后 TAB 就会自动生成表格了
+也可以用 |a|b|c| 这样的方式来生成一个一行3列的表格
+#+end_verse
+
+* 表格格式化
+#+begin_verse
+1. C-c C-c (org-table-align): 调整整个表格的格式
+2. TAB (org-table-next-field): 调整整个表格的格式并移动下一个field
+3. C-c SPC (org-table-blank-field): 把当前域的内容置空
+4. S-TAB (org-table-previous-field): 调整整个表格的格式，并移动到前一个field
+5. RET (org-table-next-row): 调整整个表格的格式,并移动到当前列的下一行
+6. M-a (org-table-beginning-of-field): 光标移动到field的第一个字符。如果本来就在第一个字符，那么就移动到上一个域的第一个字符
+7. M-e (org-table-end-of-field): 光标移动到field的最后一个字符。如果本来就在最后一个字符，那么就移动到下一个域的最后一个字符
+#+end_verse
+
+* 移动
+#+begin_verse
+1. M-LEFT (org-table-move-column-left): 把当前列的内容和左边交换
+2. M-RIGHT (org-table-move-column-right): 把当前列的内容和右边交换
+3. M-UP (org-table-move-row-up): 把当前行和上一行做交换
+4. M-DOWN (org-table-move-row-down): 把当前列和下一列做交换
+
+5. M-S-LEFT (org-table-delete-column): 删除整列
+6. M-S-RIGHT (org-table-insert-column): 在当前列的右边新增一列
+7. M-S-UP (org-table-kill-row): 删除当前行
+8. M-S-DOWN (org-table-insert-row): 在当前行的下面插入一行
+
+9. S-LEFT (org-table-move-cell-left): 把当前域和左边一个域交换
+10. S-RIGHT (org-table-move-cell-right): 把当前域和右边一个域交换
+11. S-UP (org-table-move-cell-up): 把当前域和上面一个域交换
+12. S-DOWN (org-table-move-cell-down): 把当前域和下面一个域交换
+#+end_verse
+
+* 其它快捷键
+#+begin_verse
+1. C-c - (org-table-insert-hline): 在当前行的下方插入水平线,光标不移动
+2. C-c RET (org-table-hline-and-mone): 在当前行的下方插入水平线,并移动到下一行
+3. C-c ^ (org-table-sort-lines): 按列排序.光标当前所在列的域做为排序比较用的元素
+    1. 如果光标在第一列的前面,则会要求你输入以N列来做排序
+4. C-c C-x M-w (org-table-copy-region)
+5. C-c C-x C-w (org-table-cut-region)
+6. C-c C-x C-y (org-table-paste-rectangle)
+7. C-c + (org-table-sum): 计算列数字的和
+8. S-RET (org-table-copy-down)
+9. C-c ` (org-table-edit-field): 编辑当前域
+10. org-table-import: 引入一个文件,并且把文件的内容转换成一个表格.文件中的内容要以TAB或者空格或者','分隔
+11. org-table-export: 把表格导出到文件.
+    see /org-table-export-default-format/ 查看更多
+    可以在minibuffer输入要导出的名字,也可以使用 property TABLE_EXPORT_FILE 来设置导出的文件名.
+#+end_verse
+* Column Width an Alignment
+#+begin_verse
+编辑表格的时候,使用TAB,RET会自动对表格进行对齐.
+如果把 =org-table-automatic-realign= 设置为nil则关闭此项操作,这之后需要对齐就需要使用 =C-c C-c=
+变量 =org-startup-align-all-tables= 用于控制当我们访问一个文件的时候表格是否自动对齐
+也可以使用 =#+STARTUP: align/noalign= 来进行文件级控制
+1. C-c TAB (org-table-toggle-column-width): 开关当前列的缩略显示
+    设置变量 =org-startup-shrkni-all-tables= 为t,则表格自动shrink
+    =#+STARTUP: shrink= 设置后面的table自动shrink
+    使用 <number> 来表示shrink后剩下的字符数
+    c表示居中,r居右,l居左
+#+end_verse
+    |--------------------------------+-------------+------------|
+    |          align center          | align right | align left |
+    |--------------------------------+-------------+------------|
+    |             <c10>              |         <r> | <l3>       |
+    | aaoestuhsoanetuhsaotnehusaoteu |         bbc | aa   a     |
+    |               b                |         aab | 112   3    |
+    |              aeu               |             |            |
+    |               c                |         123 | 111        |
+* Column Groups
+#+begin_verse
+/ 表示这一行是分组行
+< 表示分组开始
+> 表示分级结束
+<> 表示这一列单独一组
+#+end_verse
+| N | N^2 | N^3 | N^4 | sqrt(n) | sqrt[4](N) |
+|---+-----+-----+-----+---------+------------|
+| / |   < |     |   > |       < |          > |
+| 1 |   1 |   1 |   1 |       1 |          1 |
+| 2 |   4 |   8 |  16 |  1.4142 |     1.1892 |
+| 3 |   9 |  27 |  81 |  1.7321 |     1.3161 |
+|---+-----+-----+-----+---------+------------|
+#+TBLFM: $2=$1^2::$3=$1^3::$4=$1^4::$5=sqrt($1)::$6=sqrt(sqrt(($1)))
+
+* The Spreadsheet
+|   | Math | English | Chinese | History |
+|---+------+---------+---------+---------|
+| 1 |   90 |      80 |      70 |     100 |
+| 2 |   99 |      78 |      97 |      60 |
+| 3 |   70 |      90 |      89 |      89 |
+| 4 |  100 |      99 |      80 |      79 |
+| 5 |   76 |      69 |     100 |     100 |
+
+1. C-c ?: 可以知道当前域的坐标.
+   #+begin_verse
+   比如,在 5->History 使用此命令时,会在minibuffer中显示 =line @6, col$5, ref @6$5 or E6 or $LR5=
+   line @6 表示在第6行
+   col $5 表示在第5列
+   ref 表示三种引用方式
+   #+end_verse
+2. C-c }: 则会在表格上面显示行列的符号
+** Field References
+1. B3: 表示第三行的第二个域
+2. @ROW$COLUMN: 表示row行column列 @0表示当前行,$0表示当前列 *比较常用*
+3. $N: 第N列,N从1开始.@N
+4. $+N,$-N: 对于当前行的相对列,相同的还有@+N,@-N
+5. $<,$>: 第一列和最后一列.@>,@<
+6. $>>>: 表示从右开始的第三列
+7. @I: 第一条hline
+8. @-I: 从当前行开始往上数的第一条hline
+9. @III+2: 第三条hline下面的第二条数据行
+10. 用'..'来表示一段:
+    #+begin_example
+    1. $1..$3: 第一列到第三列(包括)
+    2. $<<<..$>>: 正数第三列到倒数第二列
+    3. @2$1..@4$3: A2到C4之间的所有field
+    4. @I..II: 第一个hline和第二个hline之间的数据.@I..@II的简写
+    #+end_example
+
+* test
+:PROPERTIES:
+:TABLE_EXPORT_FILE: test3
+:END:
+
+#+STARTUP: shrink
+(setq org-table-automatic-realign t)
+(setq org-startup-shrink-all-tables 3)
+
+| a |  b |  c |  d |         e |  f |
+|---+----+----+----+-----------+----|
+| 1 |  8 |  7 |  1 |         1 |  3 |
+| 2 |  5 |  3 | 16 | 1.4142136 |  6 |
+| 3 | 14 | 14 | 81 |        84 | 11 |
+
+#+PLOT: title:"Citas" ind:1 deps:(3) type:2d with:histograms set:"yrange [0:]"
+| Sede      | Max cites | H-index |
+|-----------+-----------+---------|
+| Chile     |    257.72 |   21.39 |
+| Leeds     |    165.77 |   19.68 |
+| Sao Paolo |     71.00 |   11.50 |
+| Stockholm |    134.19 |   14.33 |
+| Morelia   |    257.56 |   17.67 |
+
+
+#+TBLFM: $3=$1+$4::@4$3=$1+$7::@4$6=$1+$5
+#+TBLFM: @2$3..@3$4=@3$1+@2$3
+#+TBLFM: $7=if("$1" == "nan" || "$3" == "nan", string(""), $1 + $3); E f-1::@2$4=vsum(@II..III)::@3$4=@2$1+@2$3::@3$7=6
+#+TBLFM: $1=($4-1)*5/9
+#+TBLFM: if($3 < 20, teen, string(""))
+#+TBLFM: if("$1" == "nan" || "$3" == "nan", string(""), $1 + $3); E f-1
