@@ -72,8 +72,8 @@ a {
     text-decoration: none;
 }
 
-a:visited {
-    color: #b58900;
+a:hover {
+    color: #b5890f;
 }
 
 a:active {
@@ -82,4 +82,12 @@ a:active {
 
 .tag {
     color: #28f371;
+}
+
+#table-of-contents > h2:first-child {
+    display: none;
+}
+
+.src-json {
+    display: block;
 }

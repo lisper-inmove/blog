@@ -3,26 +3,27 @@
 - [[file:index.org][index]]
 - [[file:template.org][template]]
 - emacs
-  - [[file:emacs/agenda.org][Agenda Views]]
-  - [[file:emacs/dates-and-times.org][Dates and Times]]
   - [[file:emacs/bugs.org][Emacs 使用过程中遇到的一些问题]]
   - [[file:emacs/emacs-functions.org][Emacs 的函数]]
   - [[file:emacs/exporting.org][Exporting]]
-  - [[file:emacs/work-with-src-code-blocks.org][Source Block]]
   - [[file:emacs/use-emacs.org][use-emacs]]
   - [[file:emacs/systemctl-emacs.org][使用systemctl来开机启动emacs daemon]]
-  - [[file:emacs/org-mode.org][用来学习org-mode的org file]]
 - enlgish
   - [[file:enlgish/vocabulary.org][英文单词]]
 - linux
   - [[file:linux/logrotate.org][logrotate]]
   - [[file:linux/rsyslog.org][rsyslog]]
 - org-mode
+  - [[file:org-mode/agenda.org][Agenda Views]]
+  - [[file:org-mode/dates-and-times.org][Dates and Times]]
+  - [[file:org-mode/DatesAndTimes.org][Dates and Times]]
+  - [[file:org-mode/work-with-src-code-blocks.org][Source Block]]
   - [[file:org-mode/TODO-items.org][TODO 工具]]
   - [[file:org-mode/Table.org][Table]]
   - [[file:org-mode/Properties.org][属性]]
   - [[file:org-mode/Healines.org][提纲]]
   - [[file:org-mode/Tags.org][标签]]
+  - [[file:org-mode/org-mode.org][用来学习org-mode的org file]]
   - [[file:org-mode/Hyperlinks.org][超链接]]
 - python
   - [[file:python/logging.org][Python Logging Example]]
