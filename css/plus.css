@@ -80,6 +80,10 @@ a:active {
     color: red;
 }
 
+a:hover {
+    color: #b5895f;
+}
+
 .tag {
     color: #28f371;
 }

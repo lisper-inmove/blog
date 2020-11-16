@@ -76,6 +76,11 @@ SUMMARY-TYPE: X
   %9Approved(Approved?){X}
 #+end_example
 
+* 设置多个header-args变量
+#+begin_src org :results none
+  ,#+PROPERTY: header-args :var a=10
+  ,#+PROPERTY: header-args+ :var b=11
+#+end_src
 * 快捷键
 1. C-c C-x p: 为当前提纲新增一个属性
 2. C-c C-c s: 当光标在 属性区域里面的时候 修改一个属性的值
