@@ -5,7 +5,6 @@
 - emacs
   - [[file:emacs/bugs.org][Emacs 使用过程中遇到的一些问题]]
   - [[file:emacs/emacs-functions.org][Emacs 的函数]]
-  - [[file:emacs/use-emacs.org][use-emacs]]
   - [[file:emacs/systemctl-emacs.org][使用systemctl来开机启动emacs daemon]]
   - [[file:emacs/Register.org][注册器: Register]]
 - enlgish
