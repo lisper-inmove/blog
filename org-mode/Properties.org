@@ -1,7 +1,6 @@
 #+SETUPFILE: ~/.emacs.d/org-templates/template.org
 #+TITLE: 属性
 
-
 * 属性
 #+begin_verse
 属性由key-value对组成.与[[file:Tags.org][标签]]很像,却又很不同.

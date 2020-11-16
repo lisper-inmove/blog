@@ -1,5 +1,5 @@
 #+SETUPFILE: ~/.emacs.d/org-templates/template.org
-#+TITLE: Dates and Times
+#+TITLE: 时间与日期
 
 * OrgMode识别的几种日期格式
 #+begin_verse

@@ -1,5 +1,5 @@
 #+SETUPFILE: ~/.emacs.d/org-templates/template.org
-#+TITLE: Table
+#+TITLE: 表格
 
 * 生成表格
 

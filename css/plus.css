@@ -80,10 +80,6 @@ a:active {
     color: red;
 }
 
-a:hover {
-    color: #b5895f;
-}
-
 .tag {
     color: #28f371;
 }
@@ -94,4 +90,8 @@ a:hover {
 
 .src-json {
     display: block;
+}
+
+.src-json:before {
+    content: "json";
 }

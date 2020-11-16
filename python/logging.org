@@ -1,7 +1,7 @@
-#+SETUPFILE: ~/.emacs.d/org-templates/level-0.org
+#+SETUPFILE: ~/.emacs.d/org-templates/template.org
 #+TITLE: Python Logging Example
 
-** logging提供的多种handler
+* logging提供的多种handler
 #+BEGIN_SRC python :results none
   # -*- coding: utf-8 -*-
 
@@ -66,7 +66,7 @@
   logger.info("hello: {}".format(int(time.time())))
   logger.error("there is an error")
 #+END_SRC
-** 使用rsyslog记录到远端服务器
+* 使用rsyslog记录到远端服务器
 #+BEGIN_VERSE
 通过SysLogHandler把日志推送到远端服务器
 远端服务器一定要记得开放514端口
