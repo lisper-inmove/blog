@@ -10,6 +10,7 @@
 - enlgish
   - [[file:enlgish/vocabulary.org][英文单词]]
 - linux
+  - [[file:linux/advanced-programming-in-the-unix.org][Unix高级环境编程]]
   - [[file:linux/logrotate.org][logrotate]]
   - [[file:linux/rsyslog.org][rsyslog]]
   - [[file:linux/about_linux.org][关于Linux一些杂七杂八的东西]]

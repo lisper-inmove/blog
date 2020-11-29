@@ -16,19 +16,10 @@ $(document).ready(function() {
         button.css(hide_show_switch_css);
         if (txt == fold) {
             // 折叠
-            // console.log(txt);
-            // button.html(unfold);
+            button.html(unfold);
         } else {
             // 展开
             button.html(fold);
-            src_block.click(function() {
-                console.log("click src block");
-                button.css({"display": "block"});
-                src_block.toggle("slow");
-                src_block.unbind("click");
-                button.html(unfold);
-            });
-            button.css({"display": "none"});
         }
         src_block.toggle("slow");
     }
