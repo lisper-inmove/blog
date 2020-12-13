@@ -1,0 +1,35 @@
+#+SETUPFILE: ~/.emacs.d/org-templates/template.org
+#+TITLE: Org Mode - ShortCuts
+
+
+1. C-c C-, (org-insert-structure-template):
+   #+begin_verse
+   Prompt for a type of block structure, and insert the block at point.
+   If the region is active, it is wrapped in the block.
+   Available structure types are defined in *org-structure-template-alist*.
+   #+end_verse
+
+
+2. C-c C-c (org-babel-execute-src-block)
+   #+begin_verse
+   Execute current code block.
+   #+end_verse
+
+
+3. C-c C-v t (org-babel-tangle)
+   #+begin_verse
+   Tangle the current file. With prefix argument only tangle the current code block.
+   #+end_verse
+
+
+4. C-c C-v f (org-babel-tangle-file)
+   #+begin_verse
+   Choose a file to tangle.
+   #+end_verse
+
+
+5. C-c C-v n (org-babel-next-src-block)
+
+6. C-c C-v p (org-babel-previous-src-block)
+
+7. C-c C-v j (org-babel-insert-header-arg)

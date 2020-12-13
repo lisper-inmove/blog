@@ -39,74 +39,74 @@ $(document).ready(function() {
     });
 
     $(".src-emacs-lisp").each(function() {
-        var fold = "折叠EmacsLisp";
-        var unfold = "展开EmacsLisp";
-        var hide_show_switch = $("<button>" + unfold + "</button>");
-        var code_block = $(this);
-        var code_block_width = $(this).width();
-        code_block.css(code_block_css)
+        // var fold = "折叠EmacsLisp";
+        // var unfold = "展开EmacsLisp";
+        // var hide_show_switch = $("<button>" + unfold + "</button>");
+        // var code_block = $(this);
+        // var code_block_width = $(this).width();
+        // code_block.css(code_block_css)
 
-        hide_show_switch.insertBefore($(this));
-        hide_show_switch.css(hide_show_switch_css)
-        hide_show_switch.click(function() {
-            hide_show_switch_click(code_block, $(this), fold, unfold)
-        });
+        // hide_show_switch.insertBefore($(this));
+        // hide_show_switch.css(hide_show_switch_css)
+        // hide_show_switch.click(function() {
+        //     hide_show_switch_click(code_block, $(this), fold, unfold)
+        // });
     });
 
     $(".src-python").each(function() {
-        var fold = "折叠Python";
-        var unfold = "展开Python";
-        var hide_show_switch = $("<button>" + unfold + "</button>");
-        var code_block = $(this);
-        var code_block_width = $(this).width();
-        code_block.css(code_block_css)
+        // var fold = "折叠Python";
+        // var unfold = "展开Python";
+        // var hide_show_switch = $("<button>" + unfold + "</button>");
+        // var code_block = $(this);
+        // var code_block_width = $(this).width();
+        // code_block.css(code_block_css)
 
-        hide_show_switch.insertBefore($(this));
-        hide_show_switch.css(hide_show_switch_css)
-        hide_show_switch.click(function() {
-            hide_show_switch_click(code_block, $(this), fold, unfold)
-        });
+        // hide_show_switch.insertBefore($(this));
+        // hide_show_switch.css(hide_show_switch_css)
+        // hide_show_switch.click(function() {
+        //     hide_show_switch_click(code_block, $(this), fold, unfold)
+        // });
     });
     $(".src-org").each(function() {
-        var fold = "折叠OrgMode";
-        var unfold = "展开OrgMode";
-        var hide_show_switch = $("<button>" + unfold + "</button>");
-        var code_block = $(this);
-        var code_block_width = $(this).width();
-        code_block.css(code_block_css)
+        // var fold = "折叠OrgMode";
+        // var unfold = "展开OrgMode";
+        // var hide_show_switch = $("<button>" + unfold + "</button>");
+        // var code_block = $(this);
+        // var code_block_width = $(this).width();
+        // code_block.css(code_block_css)
 
-        hide_show_switch.insertBefore($(this));
-        hide_show_switch.css(hide_show_switch_css)
-        hide_show_switch.click(function() {
-            hide_show_switch_click(code_block, $(this), fold, unfold)
-        });
+        // hide_show_switch.insertBefore($(this));
+        // hide_show_switch.css(hide_show_switch_css)
+        // hide_show_switch.click(function() {
+        //     hide_show_switch_click(code_block, $(this), fold, unfold)
+        // });
     });
     $(".src-c").each(function() {
-        var fold = "折叠C";
-        var unfold = "展开C";
-        var hide_show_switch = $("<button>" + unfold + "</button>");
-        var code_block = $(this);
-        var code_block_width = $(this).width();
-        code_block.css(code_block_css)
+        // var fold = "折叠C";
+        // var unfold = "展开C";
+        // var hide_show_switch = $("<button>" + unfold + "</button>");
+        // var code_block = $(this);
+        // var code_block_width = $(this).width();
+        // code_block.css(code_block_css)
 
-        hide_show_switch.insertBefore($(this));
-        hide_show_switch.css(hide_show_switch_css)
-        hide_show_switch.click(function() {
-            hide_show_switch_click(code_block, $(this), fold, unfold)
-        });
+        // hide_show_switch.insertBefore($(this));
+        // hide_show_switch.css(hide_show_switch_css)
+        // hide_show_switch.click(function() {
+        //     hide_show_switch_click(code_block, $(this), fold, unfold)
+        // });
     });
     $(".src-common-lisp").each(function() {
-        var fold = "折叠CommonLisp";
-        var unfold = "展开CommonLisp";
-        var hide_show_switch = $("<button>" + unfold + "</button>");
-        var code_block = $(this);
-        var code_block_width = $(this).width();
-        code_block.css(code_block_css)
+        // var fold = "折叠CommonLisp";
+        // var unfold = "展开CommonLisp";
+        // var hide_show_switch = $("<button>" + unfold + "</button>");
+        // var code_block = $(this);
+        // var code_block_width = $(this).width();
+        // code_block.css(code_block_css)
 
-        hide_show_switch.insertBefore($(this));
-        hide_show_switch.css(hide_show_switch_css)
-        hide_show_switch.click(function() {
-            hide_show_switch_click(code_block, $(this), fold, unfold)
-        });
+        // hide_show_switch.insertBefore($(this));
+        // hide_show_switch.css(hide_show_switch_css)
+        // hide_show_switch.click(function() {
+        //     hide_show_switch_click(code_block, $(this), fold, unfold)
+        // });
     });
 })

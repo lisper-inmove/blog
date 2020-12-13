@@ -2,12 +2,27 @@
 
 }
 
+h3 {
+    text-indent: 10px;
+    color: #e87272;
+}
+
+h4 {
+    text-indent: 15px;
+    color: #98e898;
+}
+
+h5 {
+    text-indent: 20px;
+    color: #d3d3ff;
+}
+
 b {
     color: red;
 }
 
 code {
-    color: #E5F70D;
+    color: #ccf0aa;
 }
 
 i {
@@ -16,17 +31,34 @@ i {
 
 table {
     border: 1px solid black;
+    margin-left: 30px;
+    margin-left: auto;
+    margin-right: auto;
 }
 
 td {
     border: 1px solid black;
+    width: 100px;
+    text-align: center;
+}
+
+.org-right {
+
 }
 
 th {
     border: 2px solid black;
-    color: #9e9cda;
-    background: #002b36;
+    background: #383838;
 }
+
+tr:nth-child(odd){
+    background: #383845;
+}
+
+tr:nth-child(even){
+    background: #383838;
+}
+
 
 .t-above {
     display: none;
@@ -35,22 +67,6 @@ th {
 span.timestamp-wrapper {
     display: block;
     text-indent: 30px;
-}
-
-.outline-3 {
-    text-indent: 5px;
-}
-
-.outline-4 {
-    text-indent: 8px;
-}
-
-.outline-5 {
-    text-indent: 13px;
-}
-
-p.verbose {
-    text-indent: 35px;
 }
 
 a[href="index.html"] {
@@ -62,10 +78,6 @@ a[href="template.html"] {
 
 li {
     list-style-type: none;
-}
-
-tr:nth-child(odd){
-    background: #113142;
 }
 
 a {
@@ -82,6 +94,7 @@ a:active {
 
 .tag {
     color: #28f371;
+    background-color: transparent;
 }
 
 #table-of-contents > h2:first-child {
@@ -93,5 +106,34 @@ a:active {
 }
 
 .src-json:before {
-    content: "json";
+    content: "Json";
+    color: red;
+}
+
+.src-python:before {
+    content: "Python";
+    color: red;
+}
+
+.src-org:before {
+    content: "Org Mode";
+    color: red;
+}
+
+.src-emacs-lisp:before {
+    content: "Emacs Lisp";
+    color: red;
+}
+
+body {
+    background: #2b1309;
+    color: white;
+}
+
+p:not(.verse) {
+    text-indent: 20px;
+}
+
+.verse {
+    color: #bf8e1b;
 }
