@@ -36,7 +36,7 @@ The Example below sets ':noweb' header arguments to 'yes', which makes org expan
 Each language can have separate default header arguments by customizing the variable *org-babel-default-header-args:<LANG>*.
 *** Header arguments in Org mode properties
 For header arguments applicable to the buffer, use 'PROPERTY' keyword anywhere in the Org file.
-1. =#+PROPERTY: header-args:python :session *P*=: Only influence the python source block.
+1. =#+PROPERTY: header-args:python :session *P*=: Only influence the python source code block.
 2. =#+PROPERTY: header-args :results silent=: Influence all the source block.
 *** Header arguments in drawers
 This header arguments apply at the sub-tree level on down.

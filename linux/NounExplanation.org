@@ -1,0 +1,8 @@
+#+SETUPFILE: ~/.emacs.d/org-templates/template.org
+#+TITLE: Noun Explanation
+
+1. LAN: 局域网, Local Area Network
+
+2. WAN: 广域网, Wide Area Network
+
+3. DSL: 数字用户线路, Digital Subscriber Line
