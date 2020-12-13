@@ -1,8 +1,8 @@
-#+TITLE: Sitemap for project blog
+#+TITLE: Inmove's Blog
 
 - [[file:index.org][index]]
 - [[file:template.org][template]]
 - org-mode
   - [[file:org-mode/Miscellaneous.org][Org Mode - Miscellaneous]]
   - [[file:org-mode/ShortCuts.org][Org Mode - ShortCuts]]
-  - [[file:org-mode/WorkWithSourceBlock.org][WorkWithSourceBlock]]
+  - [[file:org-mode/WorkWithSourceBlock.org][Org Mode - Working with Source Code]]
