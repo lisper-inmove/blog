@@ -1,5 +1,0 @@
-#+SETUPFILE: ~/.emacs.d/org-templates/level-0.org
-#+TITLE: Emacs 使用过程中遇到的一些问题
-
-* org mode 的版本从9.1升级到9.3之后 <s + TAB 不能再补全
-[[https://emacs.stackexchange.com/questions/46988/why-do-easy-templates-e-g-s-tab-in-org-9-2-not-work][Stack Overflow]]
