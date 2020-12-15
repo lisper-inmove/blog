@@ -1,0 +1,174 @@
+#+SETUPFILE: ~/.emacs.d/org-templates/template.org
+#+PROPERTY: header-args    :results silent
+#+TITLE: APUE Chapter 3 - File I/O
+
+* File Descriptor
+
+#+name: include-headers
+#+begin_src C
+  #include <fcntl.h>
+  #include <stdio.h>
+  #include <stdlib.h>
+  #include <unistd.h>
+  #include <errno.h>
+
+  void err_sys(const char *msg) {
+      printf("%s\n", msg);
+      exit(EXIT_FAILURE);
+  }
+#+end_src
+
+
+When we open an existing file or create a new file, the kernel returns a file
+descriptor to the process. When we want to read or write a file, we identify the
+file with the file descriptor that was returned by open or create as an argument
+to either read or write.
+
+By convention, 0,1,2 represent to standard-input, standard-output and
+standard-error, respectively. 3 constants are defined in the *unistd.h* header,
+that are on behalf of this three valuse. Their names are *STDIN_FILENO*,
+*STDOUT_FILENO* and *STDERR_FILENO*
+** Functions
+*** open and openat
+#+begin_src C
+  #include <fcntl.h>
+  int open(const char *path, int oflag, ... /* mode_t mode*/);
+  int openat(int fd, const char *path, int oflag, ... /* mode_t mode */);
+#+end_src
+A file is opened or created by calling either the *open* function or *openat*
+function.
+
+The arguments for open:
+1. path: The name of the file to open or create.
+2. mode: Determine the file permission bits when create a file, oflag with O_CREAT.
+
+The arguments for openat:
+1. fd: There are three possibilities.
+   1. The path is an absolute pathname, then the fd is ignored.
+   2. The path is a relative pathname, the fd parameter is a file descriptor
+      that specifies the starting location in the file system where the relative
+      pathname is to be evaluated. The fd parameter is obtained by opening a
+      directory.
+   3. The path is a relative pathname, the fd has the special value *AT_FDCWD*.In
+      this case, the pathname is evaluated starting in the current working
+      directory, attention, not current directory.
+2. path: The same as open function.
+3. mode: The same as open function.
+
+There are too many oflag options:
+1. O_RDONLY: Open for reading only.
+2. O_WRONLY: Open for writing only.
+3. O_RDWR: Open for reading and writing.
+4. O_EXEC: Open for execute only.
+5. O_SEARCH: Open for search only(applies for directories).
+Only one of this five constants must be specified. The following constants are optional:
+1. O_APPEND: Append to the end of file on each write.
+2. O_CLOEXEC: Set the *FD_CLOEXEC* file descriptor flag.
+3. O_CREAT: Create the file if it doesn't exist.This option requires the mode
+   parameter.
+4. O_DIRECTORY: Generate an error if path doesn't refer to a directory.
+5. O_EXCL: Generate an error if O_CREAT is also specified and the file already
+   exists.
+6. O_NOCTTY: If path refers to a terminal device, do not allocate the device as
+   the controlling terminal for this process.
+7. O_NOFOLLOW: Generate an error if path refers to a symbolic link.
+8. O_NONBLOCK: If path refers to a FIFO, a block special file, or a character
+   special file, this option sets the nonblocking mode for both the opening of
+   the file and subsequent I/O.
+9. O_SYNC: Wating for physical I/O to complete and file's attribute modified
+   before return when write.
+10. O_DSYNC: Wating for physical I/O to complete before return when write.Do not
+    wait the attribute modify complete.
+11. O_RSYNC: Have each read operation on the file descriptor wait until any
+    pending writes for the same portion of the file are complete.
+12. O_TRUNC: If the file exists and if it is successfully opened for either
+    write-only or read-write, truncate its length to 0.
+13. O_TTY_INIT: When opening a terminal device that is not already open, set the
+    nonstandard termios parameters to values that result in behavior that
+    conforms to the Single UNIX Specification.
+
+#+begin_src C :tangle open.c :noweb yes
+  <<include-headers>>
+  int main(int argc, char *argv[]) {
+      int fd0 = open("test.txt", O_RDONLY);
+      if (fd0 < 0) {
+          err_sys("Open test.txt error");
+      } else {
+          printf("Open test.txt for read only success\n");
+      }
+      return 0;
+  }
+#+end_src
+*** close
+#+begin_src C
+  #include <unistd.h>
+  int close(int fd);
+#+end_src
+Closing a file also release any record locks that the process may have on the
+file. When a process terminates all of its open files are closed automatically
+by the kernel.
+*** lseek
+#+begin_src C
+  #include <unistd.h>
+  off_t lseek(int fd, off_t offset, int whence);
+#+end_src
+Every open file has an associate "current file offset".Read and write operations
+normally start at the current file offset and cause the offset to be incremented
+by the number of bytes read or written.By default this offset is initialized to
+0 when a file is opened, unless the O_APPEND option is specified.
+
+Parameters:
+1. fd: The return value of the open or openat function.
+2. offset: The number of bytes to move.
+3. whence:
+   1. SEEK_SET: The file's offset is set to offset bytes from the beginning of the file
+   2. SEEK_CUR: The file's offset is set to current value plus the offset. The offset can be positive or negative.
+   3. SEEK_END: The file's offset is set to the size of the file plus the offset. The offset can be positive or
+      negative.
+
+If set the offset to 0, whence to SEEK_CUR, the return value is current offset of the file descriptor.If the file
+descriptor refers to a pipe, FIFO, or socket which are not capable lseek sets errno to ESPIPE and returns -1.
+#+begin_src C :tangle lseek.c :noweb yes
+  <<include-headers>>
+
+  int main(int argc, char *argv[]) {
+      char *filename;
+      if (argc > 0) {
+          filename = argv[0];
+      } else {
+          filename = "test.txt";
+      }
+      int fd0 = open(filename, O_RDONLY);
+      if (fd0 <= -1) {
+          err_sys("Cannot open file");
+      } else {
+          int offset = lseek(fd0, 0, SEEK_CUR);
+          if (offset <= -1 && errno == ESPIPE) {
+              err_sys("file is not seekable");
+          } else {
+              printf("current offset of file is : %d", offset);
+          }
+      }
+      return 0;
+  }
+#+end_src
+*** read
+#+begin_src C
+  #include <unistd.h>
+  ssize_t read(int fd, void *buf, size_t nbytes);
+#+end_src
+If the read is successful the number of bytes read is returned. If the end of file is encountered, 0 is returned.
+There are several cases in which the number of bytes actually read is less than the amount requested:
+1. When reading from a regular file, if the end of file is reached before the requested number of bytes has been read.
+2. When reading from a terminal device, Normally, up to one line is read at a time.
+3. When reading from a network, Buffering within the network may cause less than the requested amount to be returned.
+4. When reading from a pipe or FIFO, if the pipe contains fewer bytes than requested.
+5. When reading from a record-oriented device.
+6. When interrupted by a signal and a partial amount of data has already been read.
+*** write
+#+begin_src C
+  #include <unistd.h>
+  ssize_t write(int fd, const void *buf, size_t nbytes);
+#+end_src
+
+* File Sharing

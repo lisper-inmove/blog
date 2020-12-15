@@ -1,0 +1,3 @@
+#+SETUPFILE: ~/.emacs.d/org-templates/template.org
+#+PROPERTY: header-args    :results silent
+#+TITLE: APUE Chapter 5 - Standard I/O Library

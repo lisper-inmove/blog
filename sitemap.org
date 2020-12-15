@@ -2,6 +2,11 @@
 
 - [[file:index.org][index]]
 - [[file:template.org][template]]
+- advanced-programming-in-the-unix
+  - [[file:advanced-programming-in-the-unix/FileIO.org][APUE Chapter 3 - File I/O]]
+  - [[file:advanced-programming-in-the-unix/StandardIOLibrary.org][APUE Chapter 5 - Standard I/O Library]]
+- linux
+  - [[file:linux/NounExplanation.org][Noun Explanation]]
 - org-mode
   - [[file:org-mode/Miscellaneous.org][Org Mode - Miscellaneous]]
   - [[file:org-mode/ShortCuts.org][Org Mode - ShortCuts]]
