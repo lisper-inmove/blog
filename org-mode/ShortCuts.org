@@ -44,3 +44,10 @@
    #+begin_verse
    Insert header arg for current source code block
    #+end_verse
+
+
+8. C-c C-, (org-insert-structure-template)
+   #+begin_verse
+   Prompt for a type of block structure, and insert the block at point. If the region is active, it is wrapped in the block.
+   First prompts the user for keys. If the key is TAB,RET or SPC, the user is prompted to enter a block type.
+   #+end_verse
