@@ -1,0 +1,60 @@
+#+SETUPFILE: ~/.emacs.d/org-templates/template.org
+#+PROPERTY: header-args    :results silent
+#+TITLE: APUE Chapter 4 - Files and Directories
+
+* Functions
+** stat fstat fstatat lstat
+#+begin_src C
+  #include <sys/stat.h>
+  int stat(const char *restrict pathname, struct stat *restrict buf);
+  int fstat(int fd, struct stat *buf);
+  int lstat(const char *restrict pathname, struct stat *restrict buf);
+  int fstatat(int fd, const char *restrict pathname, struct stat *restrict buf, int flag);
+#+end_src
+Giving a pathname, the stat function returns a structure of information about the named file. The fstat function obtains
+information abount the file that is already open on the descriptor fd. The lstat function is similar to stat, but when
+the named file is a symbolic link, lstat returns information about the symbloci link.
+
+The fstatat function.
+1. If pathname is an absolute pathname, then the fd argument is ignored.
+2. If pathname is a relative pathname, and the fd has the value AT_FDCWD, the fstatat evaluates the pathname argument
+   relative to the current directory
+3. If pathanem is a relative pathname, and the fd points to a directory, the fstatat evaluates the pathname argument
+   relative to the fd directory.
+4. If flag's value is AT_SYMLINK_NOFOLLOW and the pathname is a symbolic link, the fstatat returns the information of
+   the symbolic link.
+
+The file's information stores in the stat structure.
+#+begin_src C
+  struct stat {
+      mode_t st_mode; // file type & mode(permission)
+      ino_t st_ino; // i-node number
+      dev_t st_dev; // device number
+      dev_t st_rdev; // device number for special files
+      nlink_t st_nlink; // number of links
+      uid_t st_uid; // user ID of owner
+      git_t st_gid; // group ID of owner
+      off_t st_size; // size of bytes for regular files
+      struct timespec st_atim; // time of last access
+      struct timespec st_mtim; // time of last modification
+      struct timespec st_ctim; // time of last file status change
+      blksize_t st_blksize; // best I/O block size
+      blkcnt_t st_blocks; // number of disk blocks allocated
+  };
+
+  struct timespec {
+      time_t tv_sec; // seconds
+      long tv_nsec; // nanoseconds
+  };
+#+end_src
+
+1. S_ISGER(stat.st_mode): Check if regular file
+2. S_ISDIR(stat.st_mode): Check if directory
+3. S_ISCHR(stat.st_mode): Check if character special file
+4. S_ISBLK(stat.st_mode): Check if block special file
+5. S_ISFIFO(stat.st_mode): Check if pipe or FIFO
+6. S_ISLNK(stat.st_mode): Check if symbolic link
+7. S_ISSOCK(stat.st_mode): Check if socket
+8. S_TYPEISMQ(stat): Check if message queue
+9. S_TYPEISSEM(stat): Check if semaphore
+10. S_TYPEISSHM(stat): Check if shared memory object.
