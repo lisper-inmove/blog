@@ -1,0 +1,8 @@
+#+SETUPFILE: ~/.emacs.d/org-templates/template.org
+#+TITLE: Emacs - ShortCuts
+
+
+1. C-M-h (mark-defun):
+   #+begin_verse
+   Select current function.
+   #+end_verse
