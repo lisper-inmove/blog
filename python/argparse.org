@@ -1,0 +1,99 @@
+#+SETUPFILE: ~/.emacs.d/org-templates/template.org
+#+TITLE: argparse examples
+
+* 常用选项
+#+begin_src python
+  import argparse
+  parser = argparse.ArgumentParser(description='脚本描述')
+  # 普通长选项
+  parser.add_argument("--datemarker")
+  # 带默认值的长选项
+  parser.add_argument("--delta", type=int, default=1)
+  # 长选项 短选项
+  parser.add_argument("--merchant-id", "-m", dest="merchant_id")
+  # boolean 类型的选项
+  # dest用于取值时使用,如: args.enable_w
+  # action="store_true" 表示如果使用了这个参数就设置为true.
+  # action="append", 把相同的选项放到一个列表里,如 xxx --foo 1 --foo b => foo=['1','2']
+  # action="extend", 把相同的选项合并到一个列表里,如 xxx --foo 1 --foo 2 3 4 5 => foo=['1','2','3','4','5']
+  parser.add_argument("--enable-w", dest="enable_w", action="store_true", default=False)
+  parser.add_argument("--disable-p", dest="disable_p", action="store_false", default=True)
+
+  # 消耗一定量的参数作为foo的值
+  # 如 ./example --foo 1 2 3 4 5 6
+  # N: 数字,刚好N个参数
+  # ?: 一个参数
+  # +: 至少一个参数
+  # *: 任意个
+  parser.add_argument("--foo", metavar="FOO", nargs=5, default=13)
+
+  # choices
+  # bar只能使用a,b,c中的一个值
+  parser.add_argument("--bar", choices=["a", "b", "c"])
+
+  # required
+  # 设置为必选项
+  parser.add_argument("--must", required=True)
+
+  # 用type来打开文件
+  parser.add_argument('-i', type=argparse.FileType('r', encoding='UTF-8'))
+  parser.add_argument('-o', type=argparse.FileType('w', encoding='UTF-8'))
+
+  # metavar 没啥用,显示帮忙而已
+
+  # 统一一个地方为参数设置默认值
+  parser.set_defaults(bar=42, baz='badger')
+
+  args = parser.parse_args()
+
+  parser.print_help()
+
+  datemarker = args.datemarker
+  delta = args.delta
+  pflag = args.disable_p
+  wflag = args.enable_w
+  merchant_id = args.merchant_id
+#+end_src
+* 子命令
+#+begin_src python
+  import argparse
+
+  parser = argparse.ArgumentParser(description="脚本描述")
+  subparsers = parser.add_subparsers()
+
+  parser_a = subparsers.add_parser("a", help="subcommand a")
+  parser_a.add_argument("--foo", type=int, help="foo argument")
+  parser_a.add_argument("--bar", type=int, help="bar argument")
+
+  parser_b = subparsers.add_parser("b", help="subcommand b")
+  parser_b.add_argument("--foo", type=int, help="foo argument")
+  parser_b.add_argument("--bar", type=int, help="bar argument")
+
+  args = parser.parse_args()
+#+end_src
+* 必须同时出现在命令行的组命令
+#+begin_src python
+  import argparse
+  parser = argparse.ArgumentParser(prog='PROG', add_help=False)
+  group = parser.add_argument_group('group')
+  group.add_argument('--foo', help='foo help')
+  group.add_argument('--bar', help='bar help')
+  args = parser.parse_args()
+  print(args)
+#+end_src
+#+begin_verse
+foo和bar必须同时出现在命令行中
+#+end_verse
+* 互斥的组命令
+#+begin_src python
+  import argparse
+  parser = argparse.ArgumentParser(prog='PROG')
+  group = parser.add_mutually_exclusive_group()
+  group.add_argument('--foo', action='store_true')
+  group.add_argument('--bar', action='store_false')
+  args = parser.parse_args()
+  print(args)
+#+end_src
+#+begin_verse
+foo和bar不能同时出现在命令行中
+#+end_verse
