@@ -1,0 +1,14 @@
+#+SETUPFILE: ~/.emacs.d/org-templates/template.org
+#+TITLE: Emacs - ShortCuts
+
+
+1. C-M-h (mark-defun):
+   #+begin_verse
+   Select current function.
+   #+end_verse
+
+
+2. M-h (org-mark-element)
+   #+begin_verse
+   Put point at beginning of this element, mark at end
+   #+end_verse
