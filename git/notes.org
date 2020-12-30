@@ -1,0 +1,11 @@
+#+SETUPFILE: ~/.emacs.d/org-templates/template.org
+#+TITLE: Git Notes
+
+* Delete Branch
+1. delete local branch: git branch -d branch-name
+2. force delete local branch: git branch -D branch-name
+3. delete remote branch: git push origin --delete branch-name
+* Show Branch
+1. show local branch: git branch
+2. show remote bracnh: git branch -r
+3. show all branch: git branch -a
