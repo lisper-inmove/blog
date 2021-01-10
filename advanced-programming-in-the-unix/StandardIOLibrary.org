@@ -1,3 +1,369 @@
 #+SETUPFILE: ~/.emacs.d/org-templates/template.org
 #+PROPERTY: header-args    :results silent
 #+TITLE: APUE Chapter 5 - Standard I/O Library
+
+* Buffering
+Three types of buffering are provided:
+1. Fully buffered: Actual I/O takes place when the standard I/O buffer is filled.
+2. Line buffered: The standard I/O library performs I/O when a newline character is encountered on input or output.There
+   are two caveats:
+   1. When the size of the buffer that the standard I/O library uses to collect each line is fixed, so I/O might take
+      place if we fill this buffer before writing a newline.
+   2. Whenever input is requested through the standard I/O library from eight (a) an unbuffered stream or (b) a
+      line-buffered stream, all line-buffered output streams are flushed.
+3. Unbuffered: The standard I/O library does not buffer the characters.
+
+Most implementations default to the following types of buffering:
+1. Standard error is always unbuffered.
+2. All other streams are line buffered if they refer to a terminal device;otherwise they are fully buffered.
+Use [[*setbuf setvbuf][setbuf setvbuf]] to the buffering of a stream.
+
+* Functions
+** fwide
+#+begin_src C
+  #include <stdio.h>
+  #include <wchar.h>
+  int fwide(FILE *fp, int mode);
+#+end_src
+1. If the mode argument is negative, fwide will try to make the specified stream byte oriented.
+2. If the mode argument is positive, fwide will try to make the specified stream wide oriented.
+3. If the mode argument is zero, fwide will not try to set the orientation, but will still return a value identifying
+   the streams's orientation.
+
+With the ASCII character set, a single character is represented by a signle byte, with international character sets, a
+character can be represented by more than one byte.Standard I/O file streams can be used with both single-byte and
+multibyte character sets.A stream's orientation determines whether the characters that are read or written are signle
+byte or multibyte.Initially when a stream is created, it has no orientation.If a multibyte I/O function is used, the
+stream's orientation is set to wide oriented, if a bte I/O function is used, the stream's orientation is set to byte oriented.
+
+Three streams are predefined and automatically available to a process, stdin, stdout and stderr refer to the same files
+as the file descriptors STDIN_FILENO, STDOUT_FILENO and STDERR_FILENO.
+** setbuf setvbuf
+#+begin_src C
+  #include <stdio.h>
+  void setbuf(FILE *restrict fp, char *restrict buf);
+  int setvbuf(FILE *restrict fp, char *restrict buf, int mode, size_t size);
+#+end_src
+This function must called after the stream has been opened buf after any other operation is performed on the stream.
+
+With *setbuf*, we can turn on or off the buffering of the FILE object. If buf points to NULL, the buffering of the fp is
+disabled. To enable buffering the buf must point to a buffer of length BUFSIZ, a constant defined in <stdio.h>. Normally
+the stream is fully buffered, but some systems may set line buffering if the stream is associated with a terminal
+device.
+
+With *setvbuf* we specify exactly which type of buffering we want. This is done with the mode argument:
+1. _IOFBF: fully buffered
+2. _IOLBF: line buffered
+3. _IONBF: unbuffered
+
+If the stream is buffered and buf is NULL, the standard I/O library will automatically allocate its own buffer of the
+apprpriate size for the stream. By appropriate size, we mean the value specified by the constant BUFSIZ.
+** fflush
+#+begin_src C
+  #include <stdio.h>
+  int fflush(FILE *fp);
+#+end_src
+The fflush function causes any unwritten data for the stream to be passed to the kernel.If the fp is NULL, fflush causes
+all output streams to be flushed.
+** fopen freopen fdopen
+#+begin_src C
+  #include <stdio.h>
+  FILE *fopen(const char *restrict pathname, const char *restrict type);
+  FILE *freopen(const char *restrict pathname, const char *restrict type, FILE *restrict fp);
+  FILE *fdopen(int fd, const char *type);
+#+end_src
+The *freopen* function opens a specified file on a specified stream, closing the stream first if it is already open.If
+the stream previously had an orientation, freopen clears it. This function is typically used to open a specified file as
+one of the predefined streams: stdin, stdout or stderr.
+
+| type       | Description                                            | open Flags                |
+|------------+--------------------------------------------------------+---------------------------|
+| r or rb    | open for reading                                       | O_RDONLY                  |
+| w or wb    | truncate to 0 length or create for writing             | O_WRONLY!O_CREAT!O_TRUNC  |
+| a or ab    | append                                                 | O_WRONLY!O_CREAT!O_APPEND |
+| r+ r+b rb+ | open for reading and writing                           | O_RDWR                    |
+| w+ w+b wb+ | truncate to 0 length or create for reading and writing | O_RDWR!O_CREAT!O_TRUNC    |
+| a+ a+b ab+ | open or create for reading and writing at end of file  | O_RDWR!O_CREAT!O_APPEND   |
+
+When a file is opened with a type of append, each write will take place at the then current end of file. If multiple
+processed open the same file with the standard I/O append mode, the data from each process will be correctly written to
+the file.
+
+When a file is opened for reading and writing, two restrictions apply:
+1. Output cannot be directly followed by input without an intervening fflush, fseek, fsetpos or rewind.
+2. Input cannot be directly followed by output without an intervening fseek, fsetpos or rewind, or an input operation
+   that encounters an end of file.
+** flcose
+#+begin_src C
+  #include <stdio.h>
+  int fclose(FILE *fp);
+#+end_src
+** read and write
+*** getc fgetc getchar
+#+begin_src C
+  #include <stdio.h>
+  int getc(FILE *fp);
+  int fgetc(FILE *fp);
+  int getchar(void);
+#+end_src
+This three functions are defined to get a character from stream. *getchar* is equivalent to *getc(stdin)*.The difference
+between *getc* and *fgetc* is that, *getc* maybe implemented as a macro, *fgetc* must be a function, so that:
+1. The argument to *getc* should not be a expression, because it could be evaluatedd more than once.
+2. Since *fgetc* is guaranteed to be a function, we can take its address, also we can pass it as parameter to other
+   function.
+3. Calls to *fgetc* probably take longer than calls to *getc*, as it usually takes more time to call a function.
+*** ferror feof clearerr
+#+begin_src C
+  #include <stdio.h>
+  int ferror(FILE *fp);
+  int feof(FILE *fp);
+  void clearerr(FILE *fp);
+#+end_src
+*** ungetc
+#+begin_src C
+  #include <stdio.h>
+  int ungetc(int c, FILE *fp);
+#+end_src
+The characters that are pushed back are returned by subsequent reads on the stream in reverse order of their pushing.
+*** putc fputc putchar
+#+begin_src C
+  #include <stdio.h>
+  int putc(int c, FILE *fp);
+  int fputc(int c, FILE *fp);
+  int putchar(int c);
+#+end_src
+Output functions are available that correspond to each of the input functions we've already described. *putchar* is equivalent to =putc(c, stdout)=.
+*** fgets gets
+#+begin_src C
+  #include <stdio.h>
+  char *fgets(char *restrict buf, int n, FILE *restrict fp);
+  char *gets(char *buf);
+#+end_src
+These functions are used to read a line into the buf. With *fgets* we have to specify the size of the buffer n, this
+function reads up through and including the next newline, but no more than n - 1 characters into the buf. The buf is
+always null terminated.
+
+*gets* shold never be used. Because it doesn't allow the caller to specify the buffer size. This allows the buffer to
+ overflow if the line is longer than the buffer.
+*** fputs puts
+#+begin_src C
+  #include <stdio.h>
+  int fputs(const char *restrict str, FILE *restrict fp);
+  int puts(const char *str);
+#+end_src
+** fread fwrite
+#+begin_src C
+  #include <stdio.h>
+  size_t fread(void *restrict ptr, size_t size, size_t nobj, FILE *restrict fp);
+  size_t fwrite(const void *restrict ptr, size_t size, size_t nobj, FILE *restrict fp);
+#+end_src
+1. size: The size of one obj
+2. nobj: The number of elements
+3. ptr: The starting address
+
+Both *fread* and *fwrite* return the number of objects read or written. For theh read read case, this number can be less
+than nobj if an error occurs or if the end of the file is encountered. In this situation, *ferror* or *feof* must be
+called. For the write case, if the return value is less than the requested nobj, an error has occurred.
+** ftell fseek rewind ftello fseeko fgetpos fsetpos
+#+begin_src C
+  #include <stdio.h>
+  long ftell(FILE *fp);
+  int fseek(FILE *fp, long offset, int whence);
+  void rewind(FILE *fp);
+  off_t ftello(FILE *fp);
+  int fseeko(FILE *fp, off_t offset, int whence);
+  int fgetpos(FILE *restrict fp, fpos_t *restrict pos);
+  int fsetpos(FILE *fp, const fpos_t *pos);
+#+end_src
+1. ftell, ftello: Rterun current file position.
+2. fseek, fseeko: Set current file position of fp.
+3. rewind: Set position of fp to the beginning of the file.
+4. fgetpos: store the current value of the file's position indicator in the object pointed to by pos.
+5. fsetpos: set the stream's position to pos.
+** printf fprintf dprintf sprintf snprintf
+#+begin_src C
+  #include <stdio.h>
+  int printf(const char *restrict format, ...);
+  int fprintf(FILE *restrict fp, const char *restrict format, ...);
+  int dprintf(int fp, const char *restrict format, ...);
+  int sprintf(char *restrict buf, const char *restrict format, ...);
+  int snprintf(char *restrict buf, size_t n, const char *restrict format, ...);
+#+end_src
+** vprintf vfprintf vdprintf vsprintf vsnprintf
+#+begin_src C
+  #include <stdarg.h>
+  #include <stdio.h>
+  int vprintf(const char *restrict format, va_list arg);
+  int vfprintf(FILE *restrict fp, const char *restrict format, va_list arg);
+  int vdprintf(int fd, const char *restrict format, va_list arg);
+  int vsprintf(char *restrict buf, const char *restrict format, va_list arg);
+  int vsnprintf(char *restrict buf, size_t n, const char *restrict format, va_list arg);
+#+end_src
+** scanf fscanf sscanf
+#+begin_src C
+  #include <stdio.h>
+  int scanf(const char *restrict format, ...);
+  int fscanf(FILE *restrict fp, const char *restrict format, ...);
+  int sscanf(const char *restrict buf, const char *restrict format, ...);
+#+end_src
+** vscanf vfscanf vsscanf
+#+begin_src C
+  #include <stdarg.h>
+  #include <stdio.h>
+  int vscanf(const char *restrict format, va_list arg);
+  int vfscanf(FILE *restrict fp, const char *restrict format, va_list arg);
+  int vsscanf(const char *restrict buf, const char *restrict format, va_list arg);
+#+end_src
+** fileno
+#+begin_src C
+  #include <stdio.h>
+  int fileno(FILE *fp);
+#+end_src
+** tmpnam tmpfile
+#+begin_src C
+  #include <stdio.h>
+  // warning: the use of `tmpnam' is dangerous, better use `mkstemp'
+  char *tmpnam(char *ptr);
+  FILE *tmpfile(void);
+#+end_src
+
+The *tmpfile* creates a temporary binary file that is automatically removed when it is closed or on program termination.
+
+#+begin_src C
+  #include <stdio.h>
+
+  #define MAXLINE 1024
+
+  int main(void) {
+      char name[L_tmpnam], line[MAXLINE];
+      FILE *fp;
+      printf("%s\n", tmpnam(NULL));
+      tmpnam(name);
+      printf("%s\n", name);
+
+      if ((fp = tmpfile()) == NULL) {
+          printf("tmpfile error\n");
+      } else {
+          fputs("one line of output\n", fp);
+          rewind(fp);
+          if (fgets(line, sizeof(line), fp) == NULL) {
+              printf("fgets error\n");
+          } else {
+              fputs(line, stdout);
+          }
+      }
+      return 0;
+  }
+#+end_src
+** mkdtemp mkstemp
+#+begin_src C
+  #include <stdlib.h>
+  char *mkdtemp(char *template);
+  int mkstemp(char *template);
+#+end_src
+The *mkdtemp* function creates a directory with a unique name. And the *mkstemp* function creates a regular file with a
+unique name.
+
+The template is a pathname whose last six characters are set to XXXXXX, for example /your/path/XXXXXX. The function
+replaces these placeholders with different characters to create a unique pathname. If successful, these functions
+modify the template string to reflect the name of the temporary file.
+
+The *mkstemp* function creates a regular file with a unique name and opens it. The file descriptor returned by *mkstemp*
+is open for reading and writing. The file ccreated by *mkstemp* is created with access permisions S_IRUSR | S_IWUSR.
+Unlike *tmpfile*, the temporary file created by mkstemp is not removed automatically for us.
+** fmemopen
+#+begin_src C
+  #include <stdio.h>
+  FILE *fmemopen(void *restrict buf, size_t size, const char *restrict type);
+#+end_src
+The *fmemopen* allows the caller to provide a buffer to be used for the memory stream: the buf argument points to the
+beginning of the buffer and the size argument specifies the size of the buffer in bytes. If the buf argument is null,
+then the *fmemeopen* allocates a buffer of size bytes, in this case, the buffer will be freed when the stream is closed.
+The type argument controls how the stream can be used:
+| type             | Description                                            |
+|------------------+--------------------------------------------------------|
+| r or rd          | open for reading                                       |
+| w or wb          | open for writing                                       |
+| a or ab          | append;open for writing at first null byte             |
+| r+ or r+b or rb+ | open for reading and writing                           |
+| w+ or w+b or wb+ | truncate to 0 length and open for reading and writing  |
+| a+ or a+b or ab+ | append;open for reading and writing at first null byte |
+
+1. If the buf is opened for append, the current file position is set to the first null byte in the buffer.If the buffer
+   contains no null bytes, then the current position is set to one byte past th end of the buffer.
+2. When a stream is not opened for append, the current position is set to the beginning of the buffer, Because the
+   append mode determines the end of the data by the first null byte, memory streams aren't well suited for storing
+   binary data.
+3. A null byte is written at the current position in the stream whenever we increase the amount of data in the stream's
+   buffer and call *fclose* *fflush* *fseek* *fseeko* or *fsetpos*.
+
+
+#+begin_src C
+  #include <stdio.h>
+  #include <string.h>
+
+  #define MAXLINE 1024
+  #define BSZ 48
+
+  int main(void) {
+      FILE *fp;
+      char buf[BSZ];
+      memset(buf, 'a', BSZ-2);
+      buf[BSZ-2] = '\0';
+      buf[BSZ-1] = 'X';
+      if ((fp = fmemopen(buf, BSZ, "w+")) == NULL) {
+          printf("fmemopen failed.");
+          return -1;
+      }
+
+      // offset of fp is at the beginning of the buf
+
+      printf("initial buffer contents: %s\n", buf);
+
+      // offset of fp is index 12
+      fprintf(fp, "hello, world");
+      printf("before flush: %s\n", buf);
+      fflush(fp);
+      printf("after fflush: %s\n", buf);
+      printf("len of string in buf = %ld\n", (long)strlen(buf));
+
+      printf("--------------------------------\n");
+
+      memset(buf, 'b', BSZ-2);
+      buf[BSZ-2] = '\0';
+      buf[BSZ-1] = 'X';
+
+      // buf => bbbbbbbbbbbbhello, world
+      fprintf(fp, "hello, world");
+
+      fseek(fp, 0, SEEK_SET);
+      // offset of fp is at the beginning of the buf
+      printf("after fseek: %s\n", buf);
+      printf("len of string in buf = %ld\n", (long)strlen(buf));
+
+      printf("------------------------------------\n");
+      memset(buf, 'c', BSZ-2);
+      buf[BSZ-2] = '\0';
+      buf[BSZ-1] = 'X';
+      fprintf(fp, "hello, world");
+      fclose(fp);
+      printf("after fclose: %s\n", buf);
+      printf("length of string in buf = %ld\n", (long)strlen(buf));
+
+      return 0;
+  }
+
+#+end_src
+** open_memstream open_wmemstream
+#+begin_src C
+  #include <stdio.h>
+  FILE *open_memstream(char **bufp, size_t *sizep);
+  #include <wchar.h>
+  FILE *open_wmemstream(wchar_t **bufp, size_t *sizep);
+#+end_src
+The *open_memstream* function creates a stream that is byte oriented, and the *open_wmemstream* function crates a stream
+that is wide oriented.
+1. The stream created is only open for writing.
+2. The function allocate memory and save its address in bufp, we have free the buffer ourselves after closing the
+   stream.
+3. The buffer address and length are only valid after a call to flcose or fflush.

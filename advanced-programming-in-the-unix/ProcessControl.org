@@ -1,0 +1,406 @@
+#+SETUPFILE: ~/.emacs.d/org-templates/template.org
+#+PROPERTY: header-args    :results silent
+#+TITLE: APUE Chapter 8 - Process Control
+
+* zombie process
+A process that has terminated but whose parent has not yet waited for it, its becomes a zombie. The ps command prints
+the state of a zombie process as Z.
+* Race Conditions
+#+begin_src C :tangle test4.c
+  #include <stdio.h>
+  #include <unistd.h>
+  #include <stdlib.h>
+
+  static void charatatime(char *);
+
+  int main(void) {
+      pid_t pid;
+      if ((pid = fork()) < 0) {
+          printf("fork error\n");
+          exit(0);
+      } else if (pid == 0) {
+          charatatime("output from child\n");
+      } else {
+          charatatime("output from parent\n");
+      }
+  }
+
+  static void charatatime(char *str) {
+      char *ptr;
+      int c;
+      setbuf(stdout, NULL);
+      for(ptr = str; (c = *ptr++) != 0;) {
+          putc(c, stdout);
+      }
+  }
+#+end_src
+* Functions
+** process ids
+#+begin_src C
+  #include <unistd.h>
+  // process ID of calling process
+  pid_t getpid(void);
+  // parent process ID of calling process
+  pid_t getppid(void);
+  // real user Id of calling process
+  uid_t getuid(void);
+  // effective user ID of calling process
+  uid_t geteuid(void);
+  // real grou ID of calling process
+  gid_t getgid(void);
+  // effective group ID of calling process
+  gid_t getegid(void);
+#+end_src
+** fork
+#+begin_src C
+  #include <unistd.h>
+  pid_t fork(void);
+#+end_src
+This function is called once but returns twice. The return value in the child is 0, whereas the return value in the
+parent is the process ID of the new child.
+#+begin_src C :tangle test.c
+  #include <stdio.h>
+  #include <unistd.h>
+  #include <stdlib.h>
+
+  int globalvar = 6;
+  char buf[] = "a write to stdout\n";
+
+  int main(void) {
+
+      int var;
+      pid_t pid;
+      var = 88;
+      if (write(STDOUT_FILENO, buf, sizeof(buf) - 1) != sizeof(buf) - 1) {
+          printf("write error");
+          exit(1);
+      }
+      printf("before fork\n");
+      printf("before fork: %p\n", &globalvar);
+
+      if ((pid = fork()) < 0) {
+          printf("fork error");
+          exit(1);
+      } else if (pid == 0) {
+          printf("before ++: %p\n", &globalvar);
+          globalvar++;
+          var++;
+      } else {
+          sleep(2);
+      }
+      printf("pid = %ld, tppid = %ld, glob = %d, var = %d, %p\n", (long)getpid(), (long)getppid(), globalvar, var, &globalvar);
+      return 0;
+  }
+#+end_src
+#+begin_verse
+a write to stdout
+before fork
+before fork: 0x5602fc7d0010
+before ++: 0x5602fc7d0010
+pid = 49537, tppid = 49536, glob = 7, var = 89, 0x5602fc7d0010
+before fork
+before fork: 0x5602fc7d0010
+pid = 49536, tppid = 2996, glob = 6, var = 88, 0x5602fc7d0010
+#+end_verse
+The globalvar's value is 7 in child and 6 in parent. When *fork* is done, child gets a copy of the parent's data space,
+heap and stack, a technique called copy-on-write is used. These regions are shared by the parent and the child and have
+their protection changed by the kernel to read-only. If either process tries to modify these regions, the kernel then
+makes a copy of that piece of memory only, typically a "page" in a virtual memory system.
+
+Parent and children process share the same file table entry.
+[[https://inmove.com.cn/SharingOfOpenFilesBetweenParentAndChildAfterFork.png][Sharing of Open Files Between Parent and Child after fork]]
+
+Besides the open files, numerous other properties of the parent are inherited by the child:
+1. Real user ID, real group ID, effective user ID and effective group ID
+2. Supplementary group IDs
+3. Process group ID
+4. Session ID
+5. Controlling terminal
+6. The set-user-ID and set-group-ID flags
+7. Current working directory
+8. Root directory
+9. File mode creation mask
+10. Signal mask and dispositionns
+11. The close-on-exec flag for any open file descriptors
+12. Environment
+13. Attached shared memory segments
+14. Memory mappings
+15. Resource limits
+The differences between the parent and child are:
+1. The return values from fork are different
+2. The process IDs are different
+3. The two processes have different parent process IDs.
+4. The child's tms_utime, tms_stime tms_cutime and tms_cstime values are set to 0
+5. File locks set by the parent are not inherited by the child.
+6. Pending alarms are cleared for the child.
+7. The set of pending signals for the child is set to the empty set.
+
+The two main reasons for *fork* to fail are:
+1. Too many processes are already in the system
+2. The total number of processes for this real user ID exceedsd the system's limit. The CHILD_MAX specifies the maximum
+   number of simultaneous processes per real user ID
+** vfork
+#+begin_src C
+  #include <unistd.h>
+  pid_t vfork(void);
+#+end_src
+The difference of *fork* AND *vfork*: child means child after fork, vchild means child after vfork
+1. Child will copy the address space of parent. Vchild runs in the address space of the parent until vchild calls either
+   exec of exit.
+2. Vparent runs until the vchild calls exec or exit.
+** wait waitpid
+#+begin_src C
+  #include <sys/wait.h>
+  pid_t wait(int *statloc);
+  pid_t waitpid(pid_t pid, int *statloc, int options);
+#+end_src
+When a process terminates, either normally or abnormally, the kernel notifies the parent by sending the *SIGCHLD* signal
+to the parent. When a process call a wait function, the process:
+1. Block if all of its children are still running.
+2. Return immediately with the termination status of a child, if a child has terminated and is wating for its
+   termination status to be fetched.
+3. Return immediately with an error, if it doesn't have any child processes.
+
+The differences between these two functions are as follows:
+1. The *wait* function can block the caller until a child process terminates, whereas *waitpid* has an option that
+   prevents it from blocking
+2. The *waitpid* function doesn't wait for the child that terminates first, it has a number of options that control
+   which process it waits for.
+
+If a child has already terminated and is a zombie *wait* function returns immediately with that child's status.
+
+If statloc argument is not NULL, the termination status of the terminated process is stored in this argument. There are
+some macros that used to check its termination status:
+1. WIFEXITED(status): True if the child is terminated normally. In this case, we can execute *WEXITSTATUS(status)* to
+   fetch the low-order 8 bits of the argument that the child passed to *exit*, *_exit* or *_Exit*
+2. WIFSIGNALED(status): True if status was returned for a child that terminated abnormally, by receipt of a signal that
+   it didn't catch, In this case, we can execute *WTERMSIG(status)* to fetch the signal number. Some implementations
+   define the macro *WCOREDUMP(status)* to check if a core file was generated.
+3 WIFSTOPPED(status): True if status was returned for a child that is currently stopped. In this case, we can execute
+*WSTOPSIG(status)* to fetch the signal number that caused the child to stop.
+4. WIFCONTINUED(status): True if status was returned for a child that has been continued after a job control stop.
+
+The pid argument for *waitpid*:
+1. pid == -1: Waits for any child process, in this respect, waitpid is equivalent to wait.
+2. pid > 0: Waits for the child whose process ID equals pid.
+3. pid == 0: Waits for any child whose process group ID equals that of the calling process.
+. pid < -1: Waits for any child whose process group ID equals the absolute value of pid
+
+The options argument for *waitpid*:
+1. WCONTINUED: If the implementation supports job control, the status of any child specified by pid that has been
+   continued after being stopped, but whose status has not yet been reported, is returned.
+2. WNOHANG: The *waitpid* function will not block if a child specified by pid is not immediately available. In this
+   case, the return value is 0
+3. WUNTRACED: If the implementation supports job control, the status of any child specified by pid that has stopped and
+   whose status has not been reported since it has stopped, is returned.
+
+#+begin_src C :tangle test2.c
+  #include <stdio.h>
+  #include <sys/wait.h>
+  #include <unistd.h>
+  #include <stdlib.h>
+
+  void pr_exit(int);
+
+  int main(void) {
+      pid_t pid;
+      int status;
+
+      pid = fork();
+      if (pid == 0) {
+          printf("child pid: %d\n", getpid());
+          sleep(50);
+          exit(3);
+      } else if (pid > 0) {
+          wait(&status);
+          pr_exit(status);
+      } else {
+          printf("call for error\n");
+      }
+      return 0;
+  }
+
+  void pr_exit(int status) {
+      if (WIFEXITED(status)) {
+          int exit_value = WEXITSTATUS(status);
+          printf("child terminated normally, %d\n", exit_value);
+      } else if (WIFSIGNALED(status)) {
+          printf("abnormal termination, signal number = %d %s\n",
+                 WTERMSIG(status),
+  #ifdef WCOREDUMP
+                 WCOREDUMP(status) ? " (core file generated)" : " (No core file)");
+  #else
+          "No WCOREDUMP");
+  #endif
+      } else if (WIFSTOPPED(status)){
+          printf("child stopped, signal number = %d\n", WSTOPSIG(status));
+      } else {
+          printf("child terminated abnormally\n");
+      }
+  }
+#+end_src
+
+#+begin_src C :tangle test3.c
+  #include <stdio.h>
+  #include <sys/wait.h>
+  #include <stdlib.h>
+  #include <unistd.h>
+
+  int main(void) {
+      pid_t pid;
+      if ((pid = fork()) < 0) {
+          printf("call fork error\n");
+          exit(0);
+      } else if (pid == 0) {
+          if ((pid = fork()) < 0) {
+              printf("call fork error\n");
+              exit(0);
+          } else if (pid > 0) {
+              exit(0);
+          }
+          sleep(5);
+          printf("second child, parent pid = %ld\n", (long)getppid());
+          exit(0);
+      }
+      if (waitpid(pid, NULL, 0) != pid) {
+          printf("waitpid error");
+          exit(0);
+      }
+      return 0;
+  }
+
+#+end_src
+** waitid
+#+begin_src C
+  #include <sys/wait.h>
+  int waitid(idtype_t idtype, id_t id, siginfo_t *infop, int options);
+#+end_src
+The idtype argument:
+1. P_PID: Wait for particular process: id contains the process ID of the child to wait for.
+2. P_PGID: Wait for any child process in a particular process group: id contains the process group ID of the children to
+   wait for.
+3. P_ALL: Wait for any child process: id is ignored.
+
+The options argument is a bitwise OR of the flags shown bellow. These flags indicate which state changes the caller is
+interested in, at least one of WCONTINUED WEXITED or WSTOPPED must be specified:
+1. WCONTINUED: Wait for a process that has previously stopped and has been continued and whose status has not yet been
+   reported.
+2. WEXITED: Wait for processes that have exited.
+3. WNOHANG: Return immediately instead of blocking if there is no child exit status available.
+4. WNOWAIT: Don't destroy the child exit status. The child's exit status can be retrieved by a subsequent call to *wait*
+   *waitid* or *waitpid*
+5. WSTOPPED: Wait for a process that has stopped and whose status has not yet been reported.
+
+The infop argument is a pointer to siginfo structure which contains detailed information about the signal generated that
+caused the state change in the child process.
+** wait3 wait4
+#+begin_src C
+  #include <sys/types.h>
+  #include <sys/wait.h>
+  #include <sys/time.h>
+  #include <sys/resource.h>
+
+  pid_t wait3(int *statloc, int options, struct rusage *rusage);
+  pid_t wait4(pid_t pid, int *statloc, int options, struct rusage *rusage);
+#+end_src
+The rusage argument includes a summary of the resources used by the terminated process and all its child proceses. These
+resources includes such as CPU time, amount of system CPU time, numebr of page faults, number of signals received and
+the like.
+** exec functions
+#+begin_src C
+  #include <unistd.h>
+  int execl(const char *pathname, const char *arg0, ... /* (char *)0 */);
+  int execv(const char *pathname, char *const argv[]);
+  int execle(const char *pathname, const char *arg0, ... /* (char *)0, char *const envp[] */);
+  int execve(const char *pathname, char *const argv[], char *const envp[]);
+  int execlp(const char *filename, const char *arg0, ... /* (char *)0 */);
+  int execvp(const char *filename, char *const argv[]);
+  int fexecve(int fd, char *const argv[], char *const envp[]);
+#+end_src
+
+execX functions merely replaces the current process -- its text, data, heap and stack segments -- with a brand-new program
+from disk.
+
+If the filename contains a slash, it is taken as a pathname. otherwise, the executable file is searched for in the
+directories specified by the PATH environment variable.
+
+In some system implementations, only *execve* is a system call within the kernel. The other six are just library
+functions that eventually invoke this system call.
+
+[[https://inmove.com.cn/RelationshipOfTheSeven-exec-Functions.png][Relationship of the seven exec functions]]
+
+#+begin_src C :tangle exec-test.c
+  #include <stdio.h>
+  #include <unistd.h>
+  #include <stdlib.h>
+  #include <sys/wait.h>
+  #include <errno.h>
+  #include <string.h>
+
+  char *env_init[] = {"USER=unknown", "PATH=/tmp", NULL};
+
+  int main(void) {
+      pid_t pid;
+      pid = fork();
+      if (pid < 0) {
+          printf("fork error\n");
+          exit(-1);
+      }
+      if (pid == 0) {
+          if (execle("/home/inmove/bin/echoall", "echoall", "myarg1", "my arg2", (char *)0, env_init) < 0) {
+              perror("execle error");
+              exit(-1);
+          }
+      }
+      if (waitpid(pid, NULL, 0) < 0) {
+          printf("waitpid error\n");
+          exit(-1);
+      }
+      pid = fork();
+      if (pid < 0) {
+          printf("fork error\n");
+          exit(-1);
+      }
+      if (pid == 0) {
+          if (execlp("echoall", "echoall", "only 1 arg", (char *)0) < 0) {
+              perror("execlp error");
+              exit(-1);
+          }
+      }
+      exit(0);
+  }
+#+end_src
+
+#+begin_src C :tangle echoall.c
+  #include <stdio.h>
+  #include <stdlib.h>
+
+  int main(int argc, char *argv[]) {
+      int i;
+      char **ptr;
+      extern char **environ;
+
+      for (i = 0; i < argc; i++) {
+          printf("argv[%d] %s\n", i, argv[i]);
+      }
+      for (ptr = environ; *ptr != 0; ptr++) {
+          printf("%s\n", *ptr);
+      }
+      exit(0);
+  }
+#+end_src
+** setuid setgid
+#+begin_src C
+  #include <unistd.h>
+  int setuid(uid_t uid);
+  int setgid(gid_t gid);
+#+end_src
+We can set the real user ID and effective user ID with the *setuid* function. Similarly we can set the real group ID and
+the the effective group ID with the *setgid* function.
+
+There are rules for who can change the IDs.:
+1. If the process has superuser privilegeds, the *setuid* function sets the real user ID, effective user ID, and saved
+   set-user-id to uid.
+2. If the process does not have superuser privileges, but uid equals either the real user ID or the saved set-user-ID,
+   *setuid* sets only the effective user ID to uid. The real user ID and the saved set-user-ID are not changed.
+3. If either of these two conditions is true, errno is set to EPERM and -1 is returned.

@@ -1,0 +1,30 @@
+#+SETUPFILE: ~/.emacs.d/org-templates/template.org
+#+TITLE: Linux Notes
+
+* My linux os-release
+NAME="Linux Mint"
+VERSION="20 (Ulyana)"
+ID=linuxmint
+ID_LIKE=ubuntu
+PRETTY_NAME="Linux Mint 20"
+VERSION_ID="20"
+HOME_URL="https://www.linuxmint.com/"
+SUPPORT_URL="https://forums.ubuntu.com/"
+BUG_REPORT_URL="http://linuxmint-troubleshooting-guide.readthedocs.io/en/latest/"
+PRIVACY_POLICY_URL="https://www.linuxmint.com/"
+VERSION_CODENAME=ulyana
+UBUNTU_CODENAME=focal
+* Set generate location of core dump file
+#+begin_src shell
+  echo "/home/inmove/corefile/core-%e-%p-%t" > /proc/sys/kernel/core_pattern
+#+end_src
+Enusre that corefile exists and process effective IDs can write in it.
+1. %p: pid or the process
+2. %u: real uid
+3. %g real gid
+4. %s: number of singal causing dump
+5. %d: time of dump
+6. %h: hostname
+7. %e: executable file
+8. %E: pathname of executable, with slashes('/') replaced by exclamation marks ('!')
+9. %c: core file size soft resource limit of crashing process

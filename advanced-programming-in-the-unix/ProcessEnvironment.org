@@ -1,0 +1,234 @@
+#+SETUPFILE: ~/.emacs.d/org-templates/template.org
+#+PROPERTY: header-args    :results silent
+#+TITLE: APUE Chapter 7 - Process Environment
+
+* Process Termination
+There are eight ways for a process to terminate:
+1. Normal termination:
+   1. Return from main
+   2. Calling *exit*
+   3. Calling *_exit* or *_Exit*
+   4. Return of the last thread from its start routine
+   5. Calling *pthread_exit* from the last thread
+2. Abnormal termination:
+   1. Calling *abort*
+   2. Receipt of a signal
+   3. Response of the last thread to cancellation request
+* Functions
+** main
+#+begin_src C
+  #include <stdio.h>
+
+  int main(int argc, char *argv[], char *envp[]) {
+      int i = 0;
+      for (i=0; i < argc; i++) {
+          printf("parameter: %s\n", argv[i]);
+      }
+      for (i=0;;) {
+          if (envp[i]) {
+              printf("env: %s\n", envp[i]);
+          }
+          i++;
+      }
+      return 0;
+  }
+#+end_src
+** exit _Exit _exit
+#+begin_src C
+  #include <stdlib.h>
+  void exit(int status);
+  void _Exit(int status);
+  #include <unistd.h>
+  void _exit(int status);
+#+end_src
+Historically the *exit* function has always performed a clean shutdown of the standard I/O library: the *fclose*
+function is called for all open streams. Returning an integer value from the *main* function is equivalent to calling
+*exit* with the same value.
+1. *exit* or return expression will call exit handler functions one by one.
+2. *exit* or return expression will cleanup all standard I/O.
+3. *exit* or return expression will call *_exit* or *_Exit* function.
+
+[[https://inmove.com.cn/how-a-C-program-is-started-and-terminated.png][How a C program started and terminated]]
+
+** atexit
+#+begin_src C
+  #include <stdlib.h>
+  int atexit(void (*func)(void));
+#+end_src
+#+begin_src C
+  #include <stdio.h>
+  #include <stdlib.h>
+
+  void atexit_0(void);
+  void atexit_1(void);
+
+  int main(void) {
+      atexit(atexit_0);
+      atexit(atexit_1);
+      return 0;
+  }
+
+  void atexit_0(void) {
+      printf("atexit0\n");
+  }
+
+  void atexit_1(void) {
+      printf("atexit1\n");
+  }
+#+end_src
+** malloc calloc realloc free
+#+begin_src C
+  #include <stdlib.h>
+  void *malloc(size_t size);
+  void *calloc(size_t nobj, size_t size);
+  void *realloc(void *ptr, size_t newsize);
+  void free(void *ptr);
+#+end_src
+1. malloc: Allocate a specified number of bytes of memory. The initial value of the memory is indeterminate. So we
+   always call *bzerro* to set initial value to 0 after the malloc function.
+2. calloc: Allocate space for a specified number of objects of a specified size. The space is initialized to all 0 bits
+3. realloc: Increase or decreases the size of a previously allocated area When the size increases, it may involve moving
+   the previously allocated area somewhere else to provide the additional room at the end. Also when the size increases,
+   the initial value of the space between the old contents and the end of the new area is indeterminate. The newsize is
+   the new size of the area, not the increased size.
+4. realloc: When the ptr is NULL, it behaves like the malloc.
+5. free: the ptr must returned by one of three alloc functions.
+
+The allocation routines are usually implemented with the *sbrk* system call.
+** getenv putenv setenv unsetenv
+#+begin_src C
+  #include <stdlib.h>
+  char *getenv(const char *name);
+  int putenv(char *str);
+  int setenv(const char *name, const char *value, int rewrite);
+  int unsetenv(const char *name);
+#+end_src
+#+begin_src C
+  #include <stdio.h>
+  #include <stdlib.h>
+
+  int main(void) {
+      printf("%s\n", getenv("HOME"));
+      putenv("AAAA=10");
+      printf("%s\n", getenv("AAAA"));
+      setenv("BBBB", "11", 1);
+      printf("%s\n", getenv("BBBB"));
+      setenv("BBBB", "22", 0); // if rewrite == 0, BBBB's value will not changed
+      printf("%s\n", getenv("BBBB"));
+      unsetenv("BBBB");
+      char *bbbb = getenv("BBBB");
+      if (!bbbb) {
+          printf("no BBBB\n");
+      } else {
+          printf("Value of BBBB is %s\n", bbbb);
+      }
+      return 0;
+  }
+#+end_src
+** getrlimit setrlimit
+#+begin_src C
+  #include <sys/resource.h>
+  int getrlimit(int resource, struct rlimit *rlptr);
+  int setrlimit(int resource, const struct rlimit *rlptr);
+
+  struct rlimit {
+      rlim_t rlim_cur; // soft limit, current limit
+      rlim_t rlim_max; // hard limit, maximum value for rlim_cur
+  };
+#+end_src
+1. A process can change its soft limit to a value less than or equal to its hard limit.
+2. A process can lower its hard limit to a value greater than or equal to its soft limit.
+3. Only a superuser process can raise a hard limit.
+4. An infinite limit is specified by the constant RLIM_INFINITY.
+
+Resource can be as follows:
+| Value             | Description                                                                                                                      |
+|-------------------+----------------------------------------------------------------------------------------------------------------------------------|
+| RLIMIT_AS         | Maximum size in bytes of a process's total available                                                                             |
+| RLIMIT_CORE       | The maximum size in bytes of a core file. 0 prevents the creation of a core file.                                                |
+| RLIMIT_CPU        | The maximum amount of CPU time in seconds. When the soft limit is exceeded, The SIGXCPU SIGNAL is sent to the process            |
+| RLIMIT_DATA       | The maximum size in bytes of the data segment                                                                                    |
+| RLIMIT_FSIZE      | The maximum size in bytes of a file that may be created. When the soft limit is exceeded, the process is sent the SIGXFSZ signal |
+| RLIMIT_MEMLOCK    | The maximum amount of memory in bytes that a process can lock into memory using mlock                                            |
+| RLIMIT_MSGQUEUE   | The maximum amount of memory in bytes that a process can allocate for POSIX message queues.                                      |
+| RLIMIT_NICE       | The limit to which a process's nice value can be raised to affect its scheduling priority.                                       |
+| RLIMIT_NOFILE     | The maximum number of open files per process.                                                                                    |
+| RLIMIT_NPROC      | The maximum number of child processes per real user ID                                                                           |
+| RLIMIT_NPTS       | The maximum number of pseudo terminals that a user can have open at one time.                                                    |
+| RLIMIT_RSS        | Maximum resident set size (RSS) in bytes.                                                                                        |
+| RLIMIT_SBSIZE     | The maximum size in bytes of socket buffers that a user can consume at ony given time.                                           |
+| RLIMIT_SIGPENDING | The maximum number of signals that can be queued for a process.This limit is enforced by the sigqueue function                   |
+| RLIMIT_STACK      | The maximum size in bytes of the stack.                                                                                          |
+| RLIMIT_SWAP       | The maximum amount of swap space in bytes that a user can consume.                                                               |
+| RLIMIT_VMEM       | This is a synonym for RLIMIT_AS                                                                                                  |
+#+begin_src C
+  #include <stdio.h>
+  #include <sys/resource.h>
+
+  #define doit(name) pr_limits(#name, name)
+
+  static void pr_limits(char *, int);
+
+  int main(void) {
+  #ifdef RLIMIT_AS
+      doit(RLIMIT_AS);
+  #endif
+      doit(RLIMIT_CORE);
+      doit(RLIMIT_CPU);
+      doit(RLIMIT_DATA);
+      doit(RLIMIT_FSIZE);
+  #ifdef RLIMIT_MEMLOCK
+      doit(RLIMIT_MEMLOCK);
+  #endif
+  #ifdef RLIMIT_NICE
+      doit(RLIMIT_NICE);
+  #endif
+      doit(RLIMIT_NOFILE);
+  #ifdef RLIMIT_NPOC
+      doit(RLIMIT_NPOC);
+  #endif
+  #ifdef RLIMIT_NPTS
+      doit(RLIMIT_NPTS);
+  #endif
+  #ifdef RLIMIT_RSS
+      doit(RLIMIT_RSS);
+  #endif
+  #ifdef RLIMIT_SBSIZE
+      doit(RLIMIT_SBSIZE);
+  #endif
+  #ifdef RLIMIT_SIGPENDING
+      doit(RLIMIT_SIGPENDING);
+  #endif
+      doit(RLIMIT_STACK);
+  #ifdef RLIMIT_SWAP
+      doit(RLIMIT_SWAP);
+  #endif
+  #ifdef RLIMIT_VMEM
+      doit(RLIMIT_VMEM);
+  #endif
+      return 0;
+  }
+
+  static void pr_limits(char *name, int resource) {
+      struct rlimit limit;
+      unsigned long long lim;
+      if (getrlimit(resource, &limit) < 0) {
+          printf("getrlimit error for %s", name);
+      } else {
+          printf("%-14s  ", name);
+          if (limit.rlim_cur == RLIM_INFINITY) {
+              printf("(inifinite)  ");
+          } else {
+              lim = limit.rlim_cur;
+              printf("%10lld   ", lim);
+          }
+          if (limit.rlim_max == RLIM_INFINITY) {
+              printf("(infinite)");
+          } else {
+              lim = limit.rlim_max;
+              printf("%10lld", lim);
+          }
+          putchar((int)'\n');
+      }
+  }
+#+end_src
