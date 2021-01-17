@@ -1,8 +1,0 @@
-#+SETUPFILE: ~/.emacs.d/org-templates/template.org
-#+TITLE: Short But Useful Code Snippets
-
-* Get and save image from url
-#+begin_src python :export code
-  import urllib.request
-  urllib.request.urlretrieve("image-url", "save-filename")
-#+end_src

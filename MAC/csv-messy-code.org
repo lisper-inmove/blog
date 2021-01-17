@@ -1,6 +1,0 @@
-#+SETUPFILE: ~/.emacs.d/org-templates/template.org
-#+TITLE: MAC Messy Code in CSV file
-
-Chinese in a.csv is messy code.
-
-Run command in shell: iconv -f UTF8 -t GB18030 a.csv > b.csv
