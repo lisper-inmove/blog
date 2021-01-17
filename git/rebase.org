@@ -1,0 +1,32 @@
+#+SETUPFILE: ~/.emacs.d/org-templates/template.org
+#+TITLE: Git变基
+
+* 什么是变基以及变基的作用
+*变基(rebase)* 的主要作用是使提交变得更加清晰。比如我们在开发的中途会把部分已经作原功能提交到测试环境给测试人员做测试，然
+ 后又继续做开发。测试人员发现bug，阻碍了测试的时候又需要提交修复bug的代码。最终的提交历史可能会非常多，且提交说明非常杂
+ 乱。
+
+举个例子来说。从分支master上面检出分支A，在A上面进行开发并提交了10次，测试人员测试通过之后，需要合并到master上面并发布到
+正式环境，如果直接进行合并操作的话master上面将会看到10个提交，并且可能非常杂乱。这个时候我们可以从A检出A-rebase分支，然
+后把A-rebase 变其到master上面，并且把所有10次提交合并成一次提交，然后master分支合并A-rebase分支，然后删除A和A-rebase。这
+样我们就能得到一个非常干净的master分支。
+
+* 两个分支变基操作
+这里的branch-name一般为主分支，A-rebase是从branch-name检出的分支。
+1. git rebase -i branch-name: 把当前分支(A-rebase)变基到 branch-name。
+2. git co branch-name: 切换到branch-name分支
+3. git merge A-rebase: 把变基之后的那个分支合并到 branch-name
+
+* 多个分支的变基
+A为基础分支，拥有提交C0，A1为从A检出的分支，提交了C1，C2。然后检出A2，提交了C3，C4。这个时候如果C1和C2还需要测试不能马上
+提交，C3和C4已经测试完毕并且需要发布那么就需要用到rebase的--onto选项。
+
+#+begin_src shell
+  git rebase -i --onto A A1 A2
+#+end_src
+它的意思是把 A2从A1检出之后做出的提交变基到A上面。所有的操作还是在A2分支上，执行完成之后我们可以看到C1，C2在A2上面消失了。
+然后我们就可以把A2合并到A上进行发布到正式环境。
+
+* 变基的缺点
+如果多个人在同一个分支上面开发，并且都有提交到远程版本库，可能会产生非常混乱的情况。应尽量避免这样的情况发生。[[https://git-scm.com/book/zh/v2/Git-%E5%88%86%E6%94%AF-%E5%8F%98%E5%9F%BA][Git 分支-
+变基]] 给了发生这种情况时的处理办法，因为现在主要是我一个人在做开发，所以还没有遇到这样的情况。
