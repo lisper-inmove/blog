@@ -1,0 +1,16 @@
+#+SETUPFILE: ~/.emacs.d/org-templates/template.org
+#+TITLE: MongoDB使用笔记
+
+* 常用的操作
+1. 导出表
+   #+begin_src shell
+     ./mongoexport -h host --port port --authenticationDatabase admin -u user -p password -d db-name -c collection-name -f colname1,colname2 --type csv -o filename.csv
+   #+end_src
+* 常见问题
+1. Failed: CSV mode requires a field list
+
+   导出表时如果指定了 --type csv 就必须用 -f 来指名要导出的列,否则就会报此错误
+
+2. Failed: error connecting to db server: server returned error on SASL authentication step: Authentication failed.
+
+   导出表时如果需要用户名和密码,必须指定在哪张表来验证用户名和密码,用 =--authenticationDatabase collection-name= 来指名在collection-name上做用户名和密码的验证
