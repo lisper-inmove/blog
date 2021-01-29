@@ -1,0 +1,13 @@
+#+SETUPFILE: ~/.emacs.d/org-templates/template.org
+#+TITLE: 分支
+
+* 删除本地分支
+#+begin_src shell
+  git branch -D branchName
+#+end_src
+
+
+* 删除远程分支
+#+begin_src shell
+  git push origin --delete remoteBranchName
+#+end_src
