@@ -1,0 +1,57 @@
+#+SETUPFILE: ~/.emacs.d/org-templates/template.org
+#+TITLE: Shell getopts example
+
+1. =getopt -o f:s::d:a::= :
+   1. -o 后面一串表示可以接短选项,如-f,-s
+   2. 如果字符后面只有一个':', 如 'f:' 'd:' 表示参数必须传
+   3. 如果字符后面有两个':', 如 's::' 'a::' 表示参数是可选的
+2. =--long file-name:,source::,destination:,action::= :
+   1. --long 后面接的是长选项,如 --file-name, --source
+   2. 后面接 一个 ':', 两个 ':' 和短选项相同
+
+#+begin_src shell
+  #!/bin/bash
+
+  # read the options
+  TEMP=`getopt -o f:s::d:a:: --long file-name:,source::,destination:,action:: -- "$@"`
+  eval set -- "$TEMP"
+
+  # extract options and their arguments into variables.
+  while true ; do
+      case "$1" in
+          -f|--file-name)
+              fileName=$2
+              shift 2 ;;
+          -s|--source)
+              case "$2" in
+                  "")
+                      sourceDir='.'
+                      shift 2 ;;
+                  ,*)
+                      sourceDir=$2
+                      shift 2 ;;
+              esac ;;
+          -d|--destination)
+              destinationDir=$2
+              shift 2;;
+          -a|--action)
+              case "$2" in
+                  "copy"|"move")
+                      action=$2
+                      shift 2 ;;
+                  ,*)
+                      action="copy"
+                      shift 2 ;;
+              esac ;;
+          --)
+              shift
+              break ;;
+          ,*)
+              echo "Internal error!"
+              exit 1 ;;
+      esac
+  done
+
+  # Now take action
+  echo "$action file $fileName from $sourceDir to $destinationDir"
+#+end_src

@@ -12,3 +12,13 @@
    #+begin_verse
    Put point at beginning of this element, mark at end
    #+end_verse
+
+3. C-x tab <left> or <right>
+   #+begin_verse
+   批量缩进选中行
+   #+end_verse
+
+4. C-N C-x tab:
+   #+begin_verse
+   批量缩进选中行 N 个空格
+   #+end_verse

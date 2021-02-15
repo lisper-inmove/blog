@@ -1,0 +1,10 @@
+#+SETUPFILE: ~/.emacs.d/org-templates/template.org
+#+TITLE: dired mode
+
+* 常用快捷键
+m: 标记当前文件
+u: 取消当前文件的标记
+U: 取消所有标记
+
+* 批量文本替换
+使用m标记需要替换的文件然后使用Q来做批量文本替换.但是并不会自动保存,需要一个一个手动保存.

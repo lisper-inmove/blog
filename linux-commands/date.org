@@ -1,0 +1,31 @@
+#+SETUPFILE: ~/.emacs.d/org-templates/template.org
+#+TITLE: Linux command: date
+
+[[https://phoenixnap.com/kb/linux-date-command][linux-date-command]]
+
+1. date -d "2020-01-01": 指定日期,如果不指定,则以当前时间作为默认值
+2. date --date="2020-01-01": --date 同 -d
+3. date "+%Y%m%d": 以"年月日"的格式显示当前日期
+4. date --file=filename: filename以一行一个日期写入
+5. date -r filename: 显示filename的最后修改日期
+6. date -d 'TZ="Australia/Sydney" 04:30 next Monday': 指定时区
+
+#+begin_verse
+%D – 以 mm/dd/yy 的格式显示日期
+%Y – 年
+%m – 月
+%B – 月的全名
+%b – 月的缩写
+%d – 月的第几天
+%j – 一年的第几天
+%u – 一周的第几天[1-7]
+%A – 星期的全名
+%a – 星期的缩写
+%H – 小时[0-23]
+%I – 小时[0-12]
+%M – 分钟[0-59]
+%S – 秒[0-60]
+%T - 以 hh:mm:ss 显示时间
+%V - 一年的第几周
+%s - 时间戳
+#+end_verse

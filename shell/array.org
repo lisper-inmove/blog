@@ -1,0 +1,77 @@
+#+SETUPFILE: ~/.emacs.d/org-templates/template.org
+#+TITLE: Array
+
+
+* 基础
+** initial and access
+#+begin_src shell
+  array=(30 10 2 9 4 5)
+  echo ${array}
+  echo ${array[*]}
+  echo ${array[@]}
+  echo ${array[1]} # 不是以0作为开始
+  echo ${array[-1]}
+#+end_src
+
+#+RESULTS:
+| 30 | 10 | 2 | 9 | 4 | 5 |
+| 30 | 10 | 2 | 9 | 4 | 5 |
+| 30 | 10 | 2 | 9 | 4 | 5 |
+| 30 |    |   |   |   |   |
+|  5 |    |   |   |   |   |
+** append
+#+begin_src shell
+  array=(1 2 3 4 5)
+  array+=("hello")
+  array+=("python")
+  echo ${array}
+#+end_src
+
+#+RESULTS:
+: 1 2 3 4 5 hello python
+
+** delete
+#+begin_src shell
+  array=(1 2 3 4)
+  delete=3
+  array=( "${array[@]/$delete}" )
+  echo ${array}
+#+end_src
+
+#+RESULTS:
+: 1 2 4
+
+** iterator
+#+begin_src shell
+  #!/bin/bash
+  array=(1 9 10 8 7)
+  echo ${array[@]:1:2}
+#+end_src
+
+#+RESULTS:
+: 9 10
+
+#+begin_src shell
+  array=(1 2 9 4 5)
+  for t in ${array[@]}; do
+      echo ${t}
+  done
+#+end_src
+
+#+RESULTS:
+| 1 |
+| 2 |
+| 9 |
+| 4 |
+| 5 |
+
+** length
+#+begin_src shell
+  array=(1 2 3 4 5)
+  echo "数组元素个数为: ${#array[*]}"
+  echo "数组元素个数为: ${#array[@]}"
+#+end_src
+
+#+RESULTS:
+| 数组元素个数为: | 5 |
+| 数组元素个数为: | 5 |
