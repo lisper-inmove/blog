@@ -1,11 +1,12 @@
 #+SETUPFILE: ~/.emacs.d/org-templates/template.org
-#+TITLE: msgpack
+#+TITLE: Python
 
-* 什么是MessagePack
+* msgpack
+** 什么是MessagePack
 
 [[https://msgpack.org/][MessagePack]] 是一个效率极高的二进制序列化形式(协议).目前已经有很多种对它做了支持.它比json的效率要高很多.
 
-* Python msgpack
+** Python msgpack
 
 [[https://pypi.org/project/msgpack/][Python - msgpack]]
 
@@ -13,7 +14,7 @@
   pip install msgpack
 #+end_src
 
-* Python msgpack 的使用
+** Python msgpack 的使用
 
 #+begin_src python :results output
   import msgpack
@@ -30,7 +31,7 @@
 : [1, 2, 3] b'\x93\x01\x02\x03'
 : [1, 2, 3] b'\x93\x01\x02\x03'
 
-* 在流中使用
+** 在流中使用
 #+begin_src python :results output
   import msgpack
   import types
@@ -53,7 +54,7 @@
 : <msgpack._cmsgpack.Unpacker object at 0x556a7495d7d0> False
 : hello 0,hello 1,hello 2,hello 3,hello 4,
 
-* 自定义数据类型
+** 自定义数据类型
 #+begin_src python :results output
   import msgpack
 
