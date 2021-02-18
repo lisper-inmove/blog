@@ -1,0 +1,4 @@
+#+SETUPFILE: ~/.emacs.d/org-templates/template.org
+#+TITLE: 记不住的五笔字形
+
+- 贯: xfm

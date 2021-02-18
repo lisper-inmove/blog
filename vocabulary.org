@@ -1,0 +1,55 @@
+#+SETUPFILE: ~/.emacs.d/org-templates/template.org
+#+TITLE: 生词
+
+- durable
+  1. n. 耐用品
+  2. adj. 耐用的,持久的
+
+- durably
+  1. adv. 经久的
+
+- consistently
+  1. adv. 一贯的;一致的;坚实地
+
+- assure
+  1. vt. 保证;担保;使确信;弄清楚
+
+- individual
+  1. adj. 个人的,个别的,独特的
+  2. n. 个人,个体
+
+- excessive
+  1. adj. 过多的;极度的;过分的
+
+- result in
+  1. 导致,结果是
+
+- overhead
+  1. n. 经常性支出，运营费用（常用复数 overheads）；（用于高射投影仪的）透明胶片；（飞机的）顶舱
+  2. adj. 在头上方的，在空中的；地面以上的，高架的；（费用、开支等）经常的，日常的；（驱动装置）顶置式的
+  3. adv. 在头顶上方，在空中；在高处
+
+- as far as
+  1. adv. 至于,直到,远到;就..而言
+
+- tradeoff
+  1. n. 权衡; 折衷;(公平)交易
+  2. This is a /tradeoff/ between latency and throughput: the lager the batches, the more messages that can be handled
+     per unit of time, but the longer it takes an individual message to propagate.
+
+- propagate
+  1. vt. 传播;传送;繁殖;宣传
+  2. vi. 繁殖;增殖
+
+- opaque
+  1. n. 不透明物
+  2. adj. 不透明的；不传热的；迟钝的
+  3. vt. 使不透明；使不反光
+
+- compact
+  1. adj: 袖珍的;紧凑的;坚实的;矮小而健壮的;简洁的
+  2. n. 小汽车;带镜小粉盒;契约
+  3. v. 把...压实;使简洁;使紧密,压缩;订立(协定)
+
+- evenly
+  1. adv. 均匀地;平衡地;平坦地;平等地
