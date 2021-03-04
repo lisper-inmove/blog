@@ -84,3 +84,11 @@
 #+RESULTS:
 : b'\x82\xa5value\n\xa6encode\xc3'
 : <__main__.MyDataType object at 0x7f35838619a0>
+* 获取路径的最后一个部分
+#+begin_src python :results output
+  import os
+  print(os.path.basename(os.path.normpath('/root/path/folder')))
+#+end_src
+
+#+RESULTS:
+: folder
