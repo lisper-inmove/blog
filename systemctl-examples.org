@@ -1,0 +1,44 @@
+#+SETUPFILE: ~/.emacs.d/org-templates/template.org
+#+TITLE: Systemctl Examples
+
+* systemctl configure directory
+=/etc/systemd/system/=
+
+* zookeeper
+#+begin_src ini
+  [Unit]
+  Description=zookeeper01.service
+  After=network.target
+
+  [Service]
+  Type=forking
+  # 指定环境变量
+  Environment=JAVA_HOME=/data/opt/jdk-9
+  ExecStart=/data/opt/zookeeper/z01/bin/zkServer.sh start
+  ExecStop=/data/opt/zookeeper/z01/bin/zkServer.sh stop
+  ExecReload=/data/opt/zookeeper/z01/bin/zkServer.sh restart
+
+  [Install]
+  WantedBy=multi-user.target
+#+end_src
+
+* kafka
+#+begin_src ini
+  [Unit]
+  Description=Apache Kafka server (broker)
+  After=network.target  zookeeper.service
+
+  [Service]
+  # 服务以什么方式启动，如果是shell脚本的方式，则Type=forking，否则不指定作何值（也就是去掉该配置项）
+  Type=forking
+  # 启动环境参数，比如说JAVA_HOME的指定，而这里指定zookeeper的日志目录为/tmp
+  Environment=JAVA_HOME=/data/opt/jdk-9
+  Environment=PATH=/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin:/data/opt/jdk-9/bin
+  Type=simple
+  User=root
+  Group=root
+  ExecStart=/data/opt/kafka/k00/bin/kafka-server-start.sh /data/opt/kafka/k00/config/server.properties
+
+  [Install]
+  WantedBy=multi-user.target
+#+end_src
