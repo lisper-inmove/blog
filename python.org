@@ -84,6 +84,215 @@
 #+RESULTS:
 : b'\x82\xa5value\n\xa6encode\xc3'
 : <__main__.MyDataType object at 0x7f35838619a0>
+* queue
+* threading
+- threading.active_count(): 返回当前存活的Thread对象的数量
+- threading.current_thread(): 返回当前控制线程的Thread对象
+- threading.excepthook(args, /): 处理由Thread.run()引发的异常
+  #+begin_verse
+  args参数具有以下属性
+  1. exc_type: 异常类型
+  2. exc_value: 异常值
+  3. exc_traceback: 异常回溯
+  4. thread: 引发异常的线程
+
+  如果exc_type为 [[https://docs.python.org/zh-cn/3/library/exceptions.html#SystemExit][SystemExit]] 则会被忽略.其它异常被打印到sys.stderr
+  此函数引发的异常会调用sys.excepthook来处理
+  #+end_verse
+- threading.get_ident(): 当前线程的标识符
+- threadding.get_native_id(): 内核分配给当前线程的原生集成线程ID
+- threading.enumerate(): 当前所有存活线程的列表
+- threading.main_thread(): 当前主线程
+- threading.settrace(func)
+- threading.settrace(func): 每个线程的run被调用前,func会被传递给 [[https://docs.python.org/zh-cn/3/library/sys.html#sys.settrace][sys.settrace]]
+- threading.setprofile(func): 每个线程的run被调用前,func会被传递给 [[https://docs.python.org/zh-cn/3/library/sys.html#sys.setprofile][sys.profile]]
+** Thread类
+- class threading.Thread(group=None, target=None, name=None, args=(), kargs={}, *, daemon=None)
+  #+begin_verse
+  group应设置为None,为以后扩展ThreadGroup保留
+  target是用于run方法的可调用对象
+  name是线程名
+  args是用于调用target的参数元组
+  kargs是用于调用target的命名参数
+  daemon: 如果不是None,则该参数显示设置线程的守护模式,如果是None,则继承当前线程的守护模式
+  #+end_verse
+- start(): 开始线程活动.一个线程的start方法只能被调用一次
+- run(): 线程活动方法,不要手动调用此函数.
+- join(timeout=None): 等待,直到线程结束.
+  #+begin_verse
+  timeout,一个以秒为单位的浮点数.
+  如果线程A需要等到线程B结束才执行,则在线程A中调用 B.join(timeout=X)
+  如果不传timeout,则会一直阻塞直到B结束
+  如果传了timeout,则在joinr返回之后还在在A线程中调用 B.is_alive(),如果还存活则表明是超时返回
+  #+end_verse
+- name: 线程名
+- daemon: 是否是守护线程
+** Lock
+- class threading.Lock(): 返回一个线程锁.该锁是不可重入的
+- acquire(blocking=True, timeout=-1): 获取一个线程锁
+  #+begin_verse
+  blocking默认为True,当有其它线程持有这个锁时,acquire函数的调用线程将被阻塞
+  timeout用于blocking为False时表明调用线程的阻塞最长时间.timeout为-1时将无限等待.
+  #+end_verse
+- release(): 释放锁.这个方法可以在任何线程中调用.即使该线程没有获得锁
+- locked(): 当前线程是否获得了锁
+** RLock
+- class threading.Rlock(): 递归锁.区别于Lock的是,RLock是可重入的.如果线程A已经持有锁B了,那么那可以多次调用B.acquire,当然
+  释放也需要调用相同次数的release才会完全释放.RLock支持with语法
+- acquire(blocking=True, timeout=-1)
+- release()
+** Condition
+- class threading.Conition(lock=None)
+  #+begin_verse
+  条件变量对象.多个线程受约束于同一个条件变量.当某一条件达到时,其中一个线程调用notify或者notify_all函数,唤醒一个或多个线程接着执行
+  #+end_verse
+- acquire: 调用lock的acquire函数
+- release: 调用lock的release函数
+- wait(timeout=None): 等待被通知或超时.
+- wait_for(predicate, timeout=None): 等待,直到predicate返回真.predicate是一个无参数的函数.
+- notify(n=1): 唤醒一个或多个等待线程
+- notify_all(): 唤醒所有等待线程
+
+#+begin_src python
+  # -*- coding: utf-8 -*-
+
+  import time
+  import threading
+  from threading import Condition
+  from threading import RLock
+
+  x = 100
+
+
+  def xbigger_than_100():
+      global x
+      return x > 100
+
+
+  def consumer(condition):
+      thread_name = threading.current_thread().name
+      print("current thread: {}".format(thread_name))
+      with condition:
+          print("x value: {}".format(x))
+          condition.wait_for(xbigger_than_100)
+          print("got it: {}, {}".format(thread_name, x))
+
+  def producer(condition):
+      global x
+      print("set x to 101")
+      x = 101
+      with condition:
+          condition.notify(2)
+
+
+  if __name__ == '__main__':
+      lock = RLock()
+      condition = Condition(lock)
+      t0 = threading.Thread(target=consumer, args=(condition,))
+      t1 = threading.Thread(target=consumer, args=(condition,))
+      t0.start()
+      t1.start()
+      time.sleep(2)
+
+      t2 = threading.Thread(target=producer, args=(condition,))
+      t2.start()
+#+end_src
+** Semaphore
+- class threading.Semaphore(value=1): value赋与内部计数器初始值
+- acquire(blocking=True, timeout=None):
+  #+begin_verse
+  如果内部计数器大于0,则计数器值减一,立即返回True
+  如果内部计数器等于0,则线程被阻塞,直到有一个线程调用release函数,使内部计数器值大于0,返回True.或者timeout不为None时,达到超时,返回False.
+  #+end_verse
+- release(n=1): 释放一个信号量.将内部计数器值增加n.
+- class threading.BoundedSemaphore(value=1): 有限的信号量. 内部计数值的值不能小于 value初始值.
+** Event
+- class threading.Event: 事件对象.多个线程可以监听同一个事件对象
+- is_set(): 当内部标识为true时返回True
+- set(): 将内部标识设置为True.此时,所有等待对象将被唤醒
+- clear(): 将内部标识设置为False,之后调用wait方法的线程将被阻塞
+- wait(timeout=None): 阻塞直到内部标识变为true,或者timeout超时.
+** Timer
+- class threading.Timer(interval, function, args=None, kargs=None): 第隔一段时间调用function函数
+** 栅栏对象
+- class threading.Barrier(parties, action=None, timeout=None)
+  #+begin_verse
+  当有parties个线程调用该栅栏的wait函数时,wait函数返回,接着执行后面的语句
+  #+end_verse
+- wait(timeout=None):
+  #+begin_verse
+  wait的返回值是已经有多少个线程从wait函数返回了.
+  #+end_verse
+- reset(): 重置栅栏到初始状态.如果仍有线程等待释放,则会引发BrokenBarrierError异常
+- abort(): 使栅栏处于损坏状态.如此,当前处于等待的线程,以及后面调用wait的线程将引发BrokenBarrierError.
+- parties: 达到目标的线程数.parties个线程调用了wait函数,则达到目标
+- n_waiting: 当前处于等待状态的线程数
+- broken: true/false, 栅栏是否处于破损态
+- exception threading.BrokenBarrierError
+
+
+#+begin_src python :results output
+  # -*- coding: utf-8 -*-
+
+
+  import random
+  import threading
+  import time
+
+  def new_thread(barrier):
+      now = int(time.time())
+      seconds = int(random.random() * 10) % 5
+      print("{} before barrier.wait: {}, sleep: {}s".format(threading.current_thread().name, now, seconds))
+      time.sleep(seconds)
+      try:
+          n = barrier.wait(1)
+          print("barrier return: {}".format(n))
+      except threading.BrokenBarrierError as bb_err:
+          now = int(time.time())
+          print("barrier error: {}, {}".format(bb_err, now))
+      now = int(time.time())
+      print("{} after barrier.wait: {}".format(threading.current_thread().name, now))
+
+  if __name__ == '__main__':
+      barrier = threading.Barrier(3)
+
+      t0 = threading.Thread(target=new_thread, args=(barrier,))
+      t1 = threading.Thread(target=new_thread, args=(barrier,))
+      t2 = threading.Thread(target=new_thread, args=(barrier,))
+
+      t0.start()
+      t1.start()
+      t2.start()
+#+end_src
+
+#+RESULTS:
+: Thread-1 before barrier.wait: 1615133674, sleep: 4s
+: Thread-2 before barrier.wait: 1615133674, sleep: 1s
+: Thread-3 before barrier.wait: 1615133674, sleep: 1s
+: barrier error: , 1615133676
+: Thread-2 after barrier.wait: 1615133676
+: barrier error: , 1615133676
+: Thread-3 after barrier.wait: 1615133676
+: barrier error: , 1615133678
+: Thread-1 after barrier.wait: 1615133678
+** 上下文管理器
+#+begin_verse
+threading中的所有带有acquire和release方法的对象都可以被用作with语句的上下文管理器.
+#+end_verse
+#+begin_example
+  with some_lock:
+      pass
+#+end_example
+等同于:
+#+begin_example
+  lock.acquire()
+  try:
+      do_something()
+  finally:
+      lock.release()
+#+end_example
+
+* multiprocessing
 * 获取路径的最后一个部分
 #+begin_src python :results output
   import os
