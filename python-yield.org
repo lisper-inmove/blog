@@ -1,0 +1,68 @@
+#+SETUPFILE: ~/.emacs.d/org-templates/template.org
+#+TITLE: Python yield
+
+* 用法
+#+begin_verse
+如果一个函数中有 =yield= 关键字,当你调用这个函数的时候,这个函数并不会执行.
+并且你将得到一个生成器,然后可以通过,next或者for-in来从生成器中得到值.
+如下是一个简单的例子.
+生成器是一次性消耗品,循环一次就无法再回到起点.所以两个g并不是相同的.
+#+end_verse
+#+begin_src python :results output
+  def test():
+      yield 1
+      yield 2
+      yield 3
+
+  g = test()
+  print("通过for-in来获取生成器中的值: {}".format(g))
+  for v in g:
+      print("value of: {}".format(v), end=",")
+  print("")
+
+  g = test()
+  print("通过next来获取生成器中的值: {}".format(g))
+  while True:
+      try:
+          value = next(g)
+          print("value: {}".format(value), end=",")
+      except StopIteration:
+          print("\n生成器已经被消耗光的时候再调用next将引发StopIteration")
+          break
+#+end_src
+
+#+RESULTS:
+: 通过for-in来获取生成器中的值: <generator object test at 0x7efd8e8a4740>
+: value of: 1,value of: 2,value of: 3,
+: 通过next来获取生成器中的值: <generator object test at 0x7efd8e915cf0>
+: value: 1,value: 2,value: 3,
+: 生成器已经被消耗光的时候再调用next将引发StopIteration
+* 原理
+#+begin_verse
+原文可以看这篇文章: [[https://hackernoon.com/the-magic-behind-python-generator-functions-bc8eeea54220][The Magic Behind Python Generator Functions]]
+
+像上面的例子,调用test函数的时候,得到了一个Frame对象,被保存在g中.
+这个Frame对象呢,保存了指令入口点,也就是我们把g传给next函数时,将会执行哪一条语句.
+当然呢也保存了所有的临时变量等.但是并不会保存当时的全局变量.
+#+end_verse
+
+* 用inspect来获取当前的frame
+#+begin_src python :results output
+  import inspect
+
+  frame = None
+
+  def add_two_numbers(x, y):
+      global frame
+      s = x + y
+      frame = inspect.currentframe()
+      return s
+
+  add_two_numbers(1, 2)
+  print("Frame: {}".format(frame))
+  print("Locals: {}".format(frame.f_locals))
+#+end_src
+
+#+RESULTS:
+: Frame: <frame at 0x7f6074117240, file '<stdin>', line 9, code add_two_numbers>
+: Locals: {'x': 1, 'y': 2, 's': 3}
