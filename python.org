@@ -293,6 +293,152 @@ threading中的所有带有acquire和release方法的对象都可以被用作wit
 #+end_example
 
 * multiprocessing
+** Pool
+- class multiprocessing.pool.Pool([processes[, initializer[, initargs[, maxtasksperchild[, context]]]]])
+  1. processes: 子进程数
+  2. initializer: 如果initializer不为None的话,每个进程启动前将调用initializer(*initargs)
+  3. maxtaskperchild: 每个子进程能处理的任务数.如果已处理的任务数达到了上限,则子进程会退出.
+#+begin_src python :results output
+  import os
+  import time
+  from multiprocessing import Pool
+
+  def initializer(a, b):
+      print(os.getpid(), a, b)
+      return a + b
+
+  def f(x):
+      print(os.getpid(), time.time())
+      return x * x
+
+  if __name__ == '__main__':
+      with Pool(5, initializer=initializer, initargs=(1, 2)) as p:
+          print(p.map(f, [1, 2, 3]))
+      time.sleep(3)
+#+end_src
+
+#+RESULTS:
+: 5214 1 2
+: 5214 1615307792.1400917
+: 5213 1 2
+: 5213 1615307792.1395216
+: 5217 1 2
+: 5215 1 2
+: 5215 1615307792.1402898
+: 5216 1 2
+: [1, 4, 9]
+
+#+begin_src python :results output
+  import os
+  import time
+  from multiprocessing import Pool
+
+  def f(x):
+      print(os.getpid(), time.time())
+      return x * x
+
+  def callback(x):
+      print(x)
+
+  def error_callback(err):
+      print(err)
+
+  if __name__ == '__main__':
+      # 使用 with Pool(5) as p:
+      #          p.map_async(f, [1, 2, 3])
+      # 会一直超时,不知道原因
+      rets = []
+      pool = Pool(processes=5)
+      rets.append(pool.map_async(f, [1, 2, 3]))
+      pool.close()
+      pool.join()
+      for ret in rets:
+          print(ret.get(timeout=1))
+      time.sleep(3)
+#+end_src
+
+#+RESULTS:
+
+#+begin_src python :results output
+  import os
+  import time
+  from multiprocessing import Pool
+
+  def initializer(a, b):
+      print(os.getpid(), a, b)
+      return a + b
+
+  def f(x):
+      print(os.getpid(), time.time())
+      time.sleep(1)
+      return x * x
+
+  if __name__ == '__main__':
+      with Pool(5, initializer=initializer, initargs=(1, 2)) as p:
+          args = (1, 2, 3)
+          rets = []
+          for arg in args:
+              # apply 函数是一个一个执行,并没有并行执行
+              rets.append(p.apply(f, [arg]))
+          print(rets)
+      time.sleep(3)
+
+#+end_src
+
+#+RESULTS:
+: 4676 1 2
+: 4673 1 2
+: 4673 1615307204.0816004
+: 4677 1 2
+: 4674 1 2
+: 4674 1615307205.0999238
+: 4675 1 2
+: 4675 1615307206.1075408
+: [1, 4, 9]
+
+#+begin_src python :results output
+  import os
+  import time
+  from multiprocessing import Pool
+
+  def f(x):
+      print(os.getpid(), time.time())
+      time.sleep(1)
+      return x * x
+
+  def callback(x):
+      """ 必须是一个参数
+      """
+      print("success callback: {}".format(x))
+
+  def error_callback(err):
+      """ 必须是一个参数的函数
+      """
+      print(err)
+
+  if __name__ == '__main__':
+      with Pool(5) as p:
+          args = (1, 2, 3)
+          rets = []
+          for arg in args:
+              # 打印出的时间都在同一秒内,所以子进程是同时执行的
+              rets.append(p.apply_async(f, [arg], callback=callback))
+          for ret in rets:
+              print(ret.get(timeout=5))
+      time.sleep(3)
+#+end_src
+
+#+RESULTS:
+: 5111 1615307723.2445111
+: 5110 1615307723.2443168
+: 5109 1615307723.2441235
+: success callback: 9
+: success callback: 4
+: success callback: 1
+: 1
+: 4
+: 9
+
 * 获取路径的最后一个部分
 #+begin_src python :results output
   import os
