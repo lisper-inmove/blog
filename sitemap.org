@@ -1,6 +1,7 @@
 #+TITLE: Inmove's Blog
 
 - [[file:bash.org][Bash]]
+- [[file:css.org][CSS]]
 - [[file:git.org][Git]]
 - [[file:httpie.org][Httpie]]
 - [[file:linux.org][Linux]]
@@ -15,6 +16,3 @@
 - [[file:index.org][index]]
 - [[file:kafka.org][kafka]]
 - [[file:shell.org][shell]]
-- css
-  - [[file:css/background.org][background]]
-  - [[file:css/selector.org][selector]]
