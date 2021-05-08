@@ -790,3 +790,24 @@ threading中的所有带有acquire和release方法的对象都可以被用作wit
   pip install pip -U
   pip config set global.index-url https://pypi.tuna.tsinghua.edu.cn/simple
 #+END_SRC
+* requests
+#+BEGIN_SRC python
+  from requests import Request, Session
+
+  s = Session()
+  req = Request(
+      'GET', url,
+      data=data,
+      headers=header)
+  prepped = req.prepare()
+
+  resp = s.send(
+      prepped,
+      stream=stream,
+      verify=verify,
+      proxies=proxies,
+      cert=cert,
+      timeout=timeout
+  )
+  print(resp.status_code)
+#+END_SRC
