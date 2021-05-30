@@ -55,3 +55,10 @@
    #+BEGIN_SRC shell
      sudo apt-get update && sudo apt-get install docker-ce docker-ce-cli containerd.io
    #+END_SRC
+* docker commit 来提交修改
+#+BEGIN_EXAMPLE
+  $ docker run -i -t ubuntu
+  root@739869270af3:/# apt update
+  $ docker commit container-id ubuntu:update
+  $ docker images
+#+END_EXAMPLE
