@@ -62,3 +62,13 @@
   $ docker commit container-id ubuntu:update
   $ docker images
 #+END_EXAMPLE
+* 从容器中导出tar以及导入成镜像
+#+BEGIN_EXAMPLE
+  $ docker export container-id > xxx.tar
+  $ docker import - image-name < xxx.tar
+#+END_EXAMPLE
+* 从镜像中导出成tar以及导入成镜像
+#+BEGIN_EXAMPLE
+  $ docker save -o xxx.tar image-name
+  $ docker load < xxx.tar
+#+END_EXAMPLE
