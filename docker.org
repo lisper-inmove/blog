@@ -72,3 +72,32 @@
   $ docker save -o xxx.tar image-name
   $ docker load < xxx.tar
 #+END_EXAMPLE
+
+* docker run
+1. --name: 为容器命名
+2. -it: 分配一个pseudo-tty
+3. --cidfile filepath: 把容器的id保存到这个文件
+4. --rm: 容器停止时删除这个容器
+5. --previledged: 虽然以root用户进入到容器,但是某些功能是被剔除了的.想要有相关功能需要加上此参数
+6. -w path: 设置工作目录.也就是执行最后的命令时所在的目录
+7. --tmpfs /run: 在容器的内部创建一个临时目录,和/tmp目录拥有相同的权限位
+8. -v computer-path:container-path: 把computer-path挂载到container-path.
+   #+BEGIN_VERSE
+   1. 如果computer-path不存在,会被创建.如果不传
+   2. computer-path,则会在容器中创建container-path目录
+   3. 使用--read-only使容器的根目录为只读,-v指定的目录除外
+   #+END_VERSE
+9. docker run --rm -t -i -v /var/run/docker.sock:/var/run/docker.sock -v /docker-binary:/usr/bin/docker ubuntu /bin/bash
+   #+BEGIN_VERSE
+   把docker的socket的可执行文件挂载到docker中,那么在这个docker内部可以随意管理主机的docker
+   #+END_VERSE
+10. -e/--env: 声明环境变量
+    #+BEGIN_VERSE
+    使用 <var>=<value> 的形式来定义环境变量.
+    也可以使用 <var> 来把主机的环境变量为容器使用
+    如果 使用 <var> 的形式,主机也没有这个环境变量,则此设置不起作用
+    #+END_VERSE
+11. --env-file filepath: 声明环境变量
+    #+BEGIN_VERSE
+    语法也是用 <var>=<value> 或 <var> 的方式
+    #+END_VERSE
