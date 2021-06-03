@@ -1,0 +1,57 @@
+#+SETUPFILE: ~/.emacs.d/org-templates/template.org
+#+TITLE: Python性能相关
+
+* 加速程序运行
+[[https://python3-cookbook.readthedocs.io/zh_CN/latest/c14/p14_make_your_program_run_faster.html][python cookbook: 尽可能加速程序运行]]
+** 尽可能去掉属性访问
+#+BEGIN_VERSE
+以下两段程序:
+  第一段引入 math,然后用math.sqrt的方式去调用函数
+  第二段直接引入 math.sqrt,然后直接调用
+时间上第二段比第一段快了6秒左右
+#+END_VERSE
+#+BEGIN_SRC python :results output
+  import math
+  import time
+
+  def compute_roots(nums):
+      result = []
+      for n in nums:
+          result.append(math.sqrt(n))
+      return result
+
+  start = time.time()
+  # Test
+  nums = range(1000000)
+  for n in range(100):
+      r = compute_roots(nums)
+  end = time.time()
+  print(end - start)
+#+END_SRC
+
+#+RESULTS:
+: 20.5176899433136
+
+#+BEGIN_SRC python :results output
+  import time
+  from math import sqrt
+
+  def compute_roots(nums):
+
+      result = []
+      result_append = result.append
+      for n in nums:
+          result_append(sqrt(n))
+      return result
+
+  start = time.time()
+  # Test
+  nums = range(1000000)
+  for n in range(100):
+      r = compute_roots(nums)
+  end = time.time()
+  print(end - start)
+#+END_SRC
+
+#+RESULTS:
+: 14.966339111328125
