@@ -1,0 +1,86 @@
+#+SETUPFILE: ~/.emacs.d/org-templates/template.org
+#+TITLE: Dockerfile Reference
+#+DATE: Sat 05 Jun 2021 01:17:51 AM CST
+
+
+* Dockerfile Reference
+[[https://docs.docker.com/engine/reference/builder/][Dockerfile Reference]]
+* Dockerfile
+一个Dockerfile必须以 *FROM* 作为第一条指令,用于指明父镜像
+* Parser Directives
+#+BEGIN_VERSE
+*Parser Directive* 必须出现在 Dockerfile 的最前面.其后面的第一条指令与其有一个空行.其它地方出现的 Directive 被视作注释
+目前一共支持两种 *Parser Directive*
+1. syntax
+2. escape
+#+END_VERSE
+
+1. syntax
+   #+BEGIN_SRC dockerfile
+     # syntax=docker/dockerfile:1
+     # syntax=docker.io/docker/dockerfile:1
+     # syntax=example.com/user/repo:tag@sha256:abcdef...
+   #+END_SRC
+   #+BEGIN_VERSE
+   这个语法只有在 *bukldkit* 作为后端的情况下才有效.
+   这个短语的作用是指明Dockerfile的语法
+   #+END_VERSE
+2. escape
+   #+BEGIN_SRC dockerfile
+     # escape=\ (backslash)
+     # escape=` (backtick)
+   #+END_SRC
+   #+BEGIN_VERSE
+   这个短语用于设置Dockerfile中的转义字符,如果不声明默认为 '\'
+   #+END_VERSE
+* 环境变量
+环境变量的使用语法如下:
+1. $variable_name
+2. ${variable_name}
+3. ${variable:-word}: 如果variable未被设置,那么word就被设置为它的值
+4. ${variable:+word}: 如果variable有被设置,那么word就被设置为它的值
+
+
+*注: 环境变量的赋值
+def被设置为hello,ghi被设置为bye.
+#+BEGIN_SRC dockerfile
+  ENV abc=hello
+  ENV abc=bye def=$abc
+  ENV ghi=$abc
+#+END_SRC
+* 语法
+** FROM
+#+BEGIN_EXAMPLE
+  FROM [--platform=<platform>] <image> [AS <name>]
+  FROM [--platform=<platform>] <image>[:<tag>] [AS <name>]
+  FROM [--platform=<platform>] <image>[@<digest>] [AS <name>]
+#+END_EXAMPLE
+*FROM* 用于设置后面的指令的基础镜像.
+
+1. FROM 必须出现在除ARG外的其它的指令的前面
+2. 同一个Dockerfile中可以有多个FROM出现.主要用于:
+   1. 同时创建多个镜像
+   2. 一个镜像作为另一个镜像的依赖的时候
+3. 用 AS name 为镜像赋一个名字,后面指令可以用 --from=<name> 来引用
+4. tag,digest为可选项,如果不设置则为 latest
+*** FROM 前面的 ARG
+#+BEGIN_SRC dockerfile
+  ARG  CODE_VERSION=latest
+  FROM base:${CODE_VERSION}
+  CMD  /code/run-app
+
+  FROM extras:${CODE_VERSION}
+  CMD  /code/run-extras
+#+END_SRC
+
+#+BEGIN_VERSE
+FROM前面的ARG字义的变量只可以在FROM中使用,不能在其它指令中使用,
+如果想在后面的指令中使用FROM前面定义的变量需要重新声明一次这个变量,但是不为其赋值
+#+END_VERSE
+
+#+BEGIN_SRC dockerfile
+  ARG VERSION=latest
+  FROM busybox:$VERSION
+  ARG VERSION
+  RUN echo $VERSION > image_version
+#+END_SRC
