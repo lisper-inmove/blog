@@ -160,7 +160,61 @@ ENV B=$A
 #+BEGIN_VERSE
 src可以是文件,目录,也可以是网络地址
 如果有指明 user/group 但是容器中不存在这个 user/group,那么 ADD 命令将失败
-1. src 必须是以上下文根目录为起始目录
+1. 不论src是以相对路径给出还是绝对路径给出,都会被解释为构建上下文的相对路径
 2. 如果 dest 是由 '/' 结尾的,那么下载的文件将放到 dest 目录下.否则下载的文件将保存为 dest 文件
 3. 如果 src 是可识别的压缩文件,在ADD的时候,它将被解压
+#+END_VERSE
+** COPY
+#+BEGIN_EXAMPLE
+  COPY [--chown=<user>:<group>] <src> ... <dest>
+  COPY [--chown=<user>:<group>] ["<src>",..."<dest>"]
+#+END_EXAMPLE
+#+BEGIN_VERSE
+1. 使用 --from=<name> 来从另一个命名的镜像中复制
+2. dest 是一个绝对路径,或者一个相对于 WORKDIR 的相对路径
+3. user,group 可以是名字的组合,也可以是 UID/GID的组合.如果是名字的组合,要求名字在container的 /etc/passwd,/etc/group中存在
+#+END_VERSE
+** ENTRYPOINT
+#+BEGIN_EXAMPLE
+  execform: ENTRYPOINT ["executable", "param1", "param2"]
+  shellform: ENTRYPOINT command param1 param2
+#+END_EXAMPLE
+#+BEGIN_VERSE
+1. 使用 --entrypoint 来覆盖Dockerfile中的ENTRYPOINT
+#+END_VERSE
+
+#+BEGIN_VERSE
+对于后一全例子,使用 docker stop 不能马上停止容器,而是会在过了超时时间后强制发送 SIGKILL 终止容器
+#+END_VERSE
+#+BEGIN_EXAMPLE
+  FROM ubuntu:latest
+  ENTRYPOINT exec top -b
+#+END_EXAMPLE
+#+BEGIN_EXAMPLE
+  FROM ubuntu:latest
+  ENTRYPOINT top -b
+#+END_EXAMPLE
+** VOLUME
+#+BEGIN_EXAMPLE
+  VOLUME ["/data"]
+#+END_EXAMPLE
+#+BEGIN_VERSE
+创建一个挂载点
+#+END_VERSE
+** USER
+#+BEGIN_EXAMPLE
+  USER <user>[:<group>]
+  USER <UID>[:<GID>]
+#+END_EXAMPLE
+#+BEGIN_VERSE
+为后面的指令声明运行用户和用户组
+#+END_VERSE
+** WORKDIR
+#+BEGIN_EXAMPLE
+  WORKDIR /path/to/workdir
+#+END_EXAMPLE
+#+BEGIN_VERSE
+为后面的指令设置工作目录.
+如果这个目录不存在,将会被创建,即使这个目录没有被后面的指令用到
+如果 /path/to/workdir是一个相对路,那么它将生成一个相对上一个 WORKDIR 的相对路径
 #+END_VERSE
