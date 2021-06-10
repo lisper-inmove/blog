@@ -218,3 +218,66 @@ src可以是文件,目录,也可以是网络地址
 如果这个目录不存在,将会被创建,即使这个目录没有被后面的指令用到
 如果 /path/to/workdir是一个相对路,那么它将生成一个相对上一个 WORKDIR 的相对路径
 #+END_VERSE
+** ARG
+#+BEGIN_EXAMPLE
+  ARG <name>[=<default value>]
+#+END_EXAMPLE
+#+BEGIN_VERSE
+1. 使用ARG定义的变量,可以在使用 docker build 的时候以 --build-arg <varname>=<value> 形式提供和默认值不一样的参数,
+  并且只有用ARG定义了的变量,才能使用--build-arg来传参数
+2. 一个ARG变量的作用域从其声明那一行开始,如果还没有声明,使用这个变量也不能从命令行获得参数值
+3. 一个阶段结束的时候,ARG变量的作用域也相应结束了,后面的阶段想要使用这个变量的话需要重新声明
+#+END_VERSE
+
+#+BEGIN_VERSE
+默认的ARG参数
+1. HTTP_PROXY/http_proxy
+2. HTTPS_PROXY/https_proxy
+3. FTP_PROXY/ftp_proxy
+4. NO_PROXY/no_proxy
+#+END_VERSE
+** ONBUILD
+#+BEGIN_EXAMPLE
+  ONBUILD <INSTRUCTION>
+#+END_EXAMPLE
+#+BEGIN_VERSE
+当镜像被当做其它镜像的基础镜像时,此指令被触发
+如有镜像A有ONBUILD语句,镜像B基础于A构建,镜像C基础于B构建
+1. ONBUILD 对的构建没有任何影响,但是会写入A的元数据中
+2. B 构建时,在FROM语句执行的时候会根据 A的ONBUILD 来执行某些指令.B构建完成时,会清除相关的 ONBUILD
+3. A 的 ONBUILD 对C没有任何作用
+#+END_VERSE
+** STOPSIGNAL
+#+BEGIN_EXAMPLE
+  STOPSIGNAL signal
+#+END_EXAMPLE
+#+BEGIN_EXAMPLE
+容器接收到这个信号时会停止
+#+END_EXAMPLE
+** HEALTHCHECK
+#+BEGIN_EXAMPLE
+  HEALTHCHECK [OPTIONS] CMD command # 通过执行一条命令来做心跳检查
+  HEALTHCHECK NONE # 禁止心跳检查
+#+END_EXAMPLE
+#+BEGIN_VERSE
+可选的 OPTIONS: 容器启动的 start-period秒后开始做心跳检查.每interval秒检查一次,如果超过timeout秒没有收到回复,则认为是不健康的,
+  如果连续retries都是不健康的,那么容器被 docker 后台程序标记为 unhealthy
+1. --interval=DURATION (默认值: 30s)
+2. --timeout=DURATION (默认值: 30s)
+3. --start-period=DURATION (默认值: 0s)
+4. --retries=N (默认值: 3)
+
+command可以是一个可执行文件,可以是一条指令,也可以是一个exec数组.返回码如下
+1. 0: success
+2. 1. unhealthy
+3. 2. reserved: 不要使用这个退出码
+
+#+END_VERSE
+** SHELL
+#+BEGIN_EXAMPLE
+  SHELL ["executable", "parameters"]
+#+END_EXAMPLE
+#+BEGIN_VERSE
+SHELL 指令用于指定 shellform 的shell,如果不设置,其值为 ["/bin/sh", "-c"]
+SHELL 指令可以出现多次,每次都会覆盖前一次的设置,并影响后面的构建语句
+#+END_VERSE
