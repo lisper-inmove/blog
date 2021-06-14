@@ -235,3 +235,16 @@ DEADLINE: <2021-06-15 Fri +3d>
 ** 计划
 SCHEDULED: <2021-06-15 Tue>
 1. C-c C-s: 插入scheduled
+* 捕获
+#+BEGIN_VERSE
+捕获主要用于当我们有某种想法的时候,把想法直接写入到一个固定的文件,以供以后查看
+#+END_VERSE
+
+#+BEGIN_VERSE
+设置保存想法的文件
+#+END_VERSE
+#+BEGIN_SRC emacs-lisp
+  (setq org-default-notes-file (concat org-directory "/notes.org"))
+#+END_SRC
+
+1. org-capture: 捕获想法.打开预设的文件
