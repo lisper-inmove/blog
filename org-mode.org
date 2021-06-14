@@ -1,5 +1,4 @@
 #+SETUPFILE: ~/.emacs.d/org-templates/template.org
-#+FILETAGS: :org:
 #+TITLE: Org Mode
 
 * 说明
@@ -51,6 +50,8 @@
 1. C-c C-t: 切换到下一个关键字,只在同一组关键字切换
 2. S-RIGHT/LEFT: 切换上一个下一个关键字,不管是不是同一个组,按顺序切换
 ** DELEGATED 关键字定义
+   :PROPERTIES:
+   :END:
 #+BEGIN_VERSE
 1. 括号里面一个字母表示快捷键
 2. @: 记录时间戳
@@ -174,3 +175,63 @@
   ,#+TAGS: [ Control : Context Task ]
   ,#+TAGS: [ Persp : Vision Goal AOF Project ]
 #+END_SRC
+* 属性
+:PROPERTIES:
+:COLUMNS:  %25ITEM %TAGS %PRIORITY %TODO
+:END:
+#+BEGIN_VERSE
+使用 =C-c C-x p= 来添加一个属性
+#+END_VERSE
+#+BEGIN_SRC org
+  ,* CD collection
+  ,** Classic
+    :PROPERTIES:
+    :Genres: Classic
+    :END:
+  ,*** Goldberg Variations
+      :PROPERTIES:
+      :Title: Goldberg Variations
+      :Composer: J.S. Bach
+      :Artist: Glenn Gould
+      :Publisher: Deutsche Grammophon
+      :NDisks: 1
+      :Genres+: Baroque
+      :END:
+#+END_SRC
+** 用PROPERTY定义变量
+:PROPERTIES:
+:END:
+#+BEGIN_VERSE
+一共有两种方式定义变量,举例如下
+#+END_VERSE
+#+BEGIN_SRC org
+  ,#+PROPERTY: header-args :var a=1
+  ,#+PROPERTY: header-args+ :var b="2"
+#+END_SRC
+#+BEGIN_SRC org
+  ,* test
+    :PROPERTIES:
+    :header-args: :var a=1
+    :header-args+: :var b="2"
+    :END:
+#+END_SRC
+* 时间与日期
+1. C-c . (org-time-stamp): 插入时间
+   #+BEGIN_VERSE
+   此快捷键会进入到日历界面
+   #+END_VERSE
+   1. S-LEFT (org-timestamp-down-day): 后一天
+   2. S-RIGHT (org-timestamp-up-day): 前一下
+   3. S-UP (org-timestamp-up): 上一天
+   4. S-DOWN (org-timestamp-down): 下一天
+2. C-c ! (org-time-stamp-inactive): 插入不活跃的日期
+3. C-c C-y (org-evaluate-time-range): 计算两个时间之间的时间差
+** 期限
+DEADLINE: <2021-06-15 Fri +3d>
+1. C-c C-d: 插入deadline
+   #+BEGIN_VERSE
+   插入的DEADLINE默认格式为 *2021-06-15 Fri*,修改为 *2021-06-15 +1d* 则变成了每天一次的重复任务
+   #+END_VERSE
+** 计划
+SCHEDULED: <2021-06-15 Tue>
+1. C-c C-s: 插入scheduled
