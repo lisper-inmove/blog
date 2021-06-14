@@ -1,0 +1,7 @@
+#+SETUPFILE: ~/.emacs.d/org-templates/template.org
+#+CATEGORY: OrgMode
+#+TITLE: Agenda
+
+* Agenda 快捷键                                                      :agenda:
+1. C-c [(org-agenda-file-to-front): 添加当前文件到agenda列表
+2. C-c ](org-remove-file): 把当前文件从agenda列表中移除

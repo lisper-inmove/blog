@@ -1,829 +1,176 @@
 #+SETUPFILE: ~/.emacs.d/org-templates/template.org
+#+FILETAGS: :org:
 #+TITLE: Org Mode
 
-
-* 大纲
-  #+BEGIN_SRC org
-    ,* 最高级目录
-    ,** 二级目录
-    ,*** 三级目录
-    ,* 另一个最高级目录
-    ,** 二级目录
-    ,** 二级目录
-    ,* 最后一个最高级目录
-    ,** 二级目录
-    ,*** 三级目录
-    ,**** 四级目录
-  #+END_SRC
-  1. 目录名有些保留字不要使用.查看变量org-footnote-section.
-  2. 默认大纲与大纲之间如果有一行空行,这行空行会在前一个大纲中.如果有多个空行,剩下的就成为这两个大纲的分割符.变量org-cycle-separator-lines可以修改这个分割符.(*我想我一辈子我也不会改它的*)
-** 可视性
-*** 大纲可视性
-    1. TAB(org-cycle): 当前光标所在大纲的可视性
-    2. S-TAB(org-global-cycle): 全局大纲的可视性
-    3. C-c C-r(org-reveal)
-    4. C-c C-k(outline-show-branches): 只显示所有的子大纲.
-    5. C-c C-x b(org-tree-to-indirect-buffer): 在另一个buffer中显示这个大纲的内容
-*** 单个文件大纲可视性设置
-    #+BEGIN_SRC org
-      ,#+STARTUP: overview/content/showall/showeverything
-      # 分别表示'只显示一级标题','显示所有标题','显示所有内容但不包括drawer','显示所有包括drawer'
-    #+END_SRC
-*** 修改文件时设置
-    #+BEGIN_VERSE
-    *org-catch-invisible-edits* 参数可以设置内容不可见时 *编辑* 的作用.
-    #+END_VERSE
-** 移动
-   1. C-c C-n(org-next-visible-heading): 下一个大纲
-   2. C-c C-p(org-previous-visible-heading): 上一个大纲
-   3. C-c C-f(org-forward-heading-same-level): 下一个同级大纲
-   4. C-c C-b(org-backward-heading-same-level): 上一个同级大纲
-   5. C-c C-u(outline-up-heading): 父级大纲
-   6. C-c C-j(org-goto)
+* 说明
+#+BEGIN_VERSE
+一段内容叫大纲,大纲由标题+文档组成
+#+END_VERSE
+* 标题
+** 标题的可视性
+#+BEGIN_VERSE
+1. overview: 默认值,只显示最顶层标题
+2. content: 显示所有标题
+3. showall: 显示所有标题包括内容但是不显示drawer
+4. showeverything: 显示所有内容包括drawer
+#+END_VERSE
 ** 编辑大纲
-   1. C-c @(org-mark-substree): 选中当前大纲
-   2. C-c C-w(org-refile): 把当前这个大纲移动到另一个和父大纲同级的大纲下面
-   3. C-c C-x c(org-clone-substree-with-time-shift): clone当前大纲.具体describe-variable org-clone-substree-with-time-shift
-   4. C-c C-x C-w(org-cut-substree): 剪切当前大纲
-   5. C-c C-x C-y(org-paste-substree): 粘贴
-   6. C-c C-x M-w(org-copy-substree): 复制当前大纲
-   7. M-LEFT/RIGHT(org-do-promote/demote): 大纲级别提高/下降
-   8. M-S-LEFT/RIGHT(org-promote/demote-subtree): 大纲级别提高/下降,包括所有子大纲做相同的改变
-   9. M-UP/DOWN(org-move-subtree-up/down): 和上/下一个同一级别的大纲做交换
-   10. C-c ^(org-sort): 排序.对当前大纲的子大纲排序.如果有选中内容,则只对选中内容排序
-   11. C-x n s(org-narrow-to-subtree): narrow当前大纲
-   12. C-x n b(org-narrow-to-block): narrow当前block
-   13. C-x n w(widen): widen
-   14. C-c *(org-toggle-heading): 把一个普通行或者item变成当前大纲的一个子大纲.相对也可以把一个大纲变成一个普通行.
+1. C-c @(org-mark-substree): 选中当前大纲
+2. C-c C-w(org-refile): 把当前这个大纲移动到另一个和父大纲同级的大纲下面
+3. C-c C-x c(org-clone-substree-with-time-shift): 克隆当前大纲
+4. C-c C-x C-w(org-cut-substree): 剪切当前大纲
+5. C-c C-x C-y(org-paste-substree): 粘贴
+6. C-c C-x M-w(org-copy-substree): 复制当前大纲
+7. M-LEFT/RIGHT(org-do-promote/demote): 大纲级别提高/下降
+8. M-S-LEFT/RIGHT(org-promote/demote-subtree): 大纲级别提高/下降,包括所有子大纲做相同的改变
+9. M-UP/DOWN(org-move-subtree-up/down): 和上/下一个同一级别的大纲做交换
+10. C-c ^(org-sort): 排序.对当前大纲的子大纲排序.如果有选中内容,则只对选中内容排序
+11. C-x n s(org-narrow-to-subtree): narrow当前大纲
+12. C-x n b(org-narrow-to-block): narrow当前block
+13. C-x n w(widen): widen
+14. C-c 星号: (org-toggle-heading): 把一个普通行或者item变成当前大纲的一个子大纲.相对也可以把一个大纲变成一个普通行.
 ** 列表
-   #+BEGIN_VERSE
+#+BEGIN_VERSE
    [-,+]为无序列表
    [1. 1).]为有序列表
-   #+END_VERSE
-*** 移动
-    1. S-UP/DOWN: 光标移动到上/下一个列表元素
-    2. M-UP/DOWN: 和上/下一个元素做交换
-    3. M-LEFT/RIGHT: 增加/减少缩进.子元素位置不变
-    4. M-S-LEFT/RIGHT: 增加/减少缩进.和子元素共同进退
-    5. C-c C-c: 如果当前元素是一个checkbox,那么改变checkbox的状态
-    6. C-c -: 在"+,-,1),1,*"之间遍历
+#+END_VERSE
+** 移动
+   1. C-c -: 在"+,-,1),1,*"之间遍历
 ** 抽屉(Drawers)
-   Sometimes you want to keep information associated with an entry, but you normally do not want to see it
    1. C-c C-x d: 新建一个Drawer
    2. C-c C-z: 添加一个带时间戳的笔记到 drawer 'LOGBOOK'
-* TODO Document Structure                                         :important:
-** Visibility Cycling
-- C-u C-u TAB (org-set-startup-visibility): 切换回文件一开始的可见性
-- C-u C-u TAB (outline-show-all): 显示所有,包括drawer
-- C-c C-k (outline-show-branches): 显示所有headlines
-- C-c C-x b (org-tree-to-indirect-buffer): 在另一个buffer显示当前subtree的内容
-** Initial Visibility
-设置当前文件的内容的可见性
-- overview or fold: 只显示最顶级的headline,默认值
-- content: 显示所有标题
-- showall or nofold: 显示所有,除了drawer
-- showeverything: 显示所有,包括drawer
-
-# 在emacs init文件中设置
-#+BEGIN_SRC emacs-lisp
-  (setq org-startup-folded "content")
-#+END_SRC
-
-在单个文件中设置
-#+BEGIN_SRC org
-  ,#+STARTUP: content
-#+END_SRC
-
-对于有些不可见的区域,有时会不小心改动.修改 *org-catch-invisible-edits* 的设置来阻止不小心的修改.
-#+BEGIN_SRC emacs-lisp
-  (setq org-catch-invisible-edits 'error)
-#+END_SRC
-
-#+RESULTS:
-: error
-** Motion
+** 标题之间移动
 - C-c C-n (org-next-visible-heading): 下一个可见状态的headline
 - C-c C-p (org-previous-visible-heading): 上一个可见状态的headline
 - C-c C-f (org-forward-heading-same-level): 下一个同级headline
 - C-c C-b (org-backward-heading-same-level): 上一个同级headline
 - C-c C-u (outline-up-heading): 父headline
 - C-c C-j (org-goto): 把所有entry都折叠起来,按下enter后跳转到那个headline上面.
-** Structure Editing
-- M-LEFT (org-do-promote): 当前entry升一级
-- M-RIGHT (org-do-demote): 当前entry下降一级
-- M-S-LEFT (org-promote-subtree): 当前entry,以及其subtree都升一级
-- M-S-RIGHT (org-demote-subtree): 当前entry,以及其subtree都降一级
-- M-UP/DOWN (org-move-subtree-up/down): entry和上/下面一个做交换
-- C-c ^ (org-sort): 排序
-- C-x n s (org-narrow-to-subtree): narrow current entry
-- C-x n w (widen)
-- C-x n b(org-narrow-to-block): narrow buffer to current block
-** Sparse Tree
-** Plain Lists
-** Drawers
-Sometimes you want to keep information associated with an entry, but you normally do not want to see it. For this, Org mode has drawers. They can contain anything but a headline and another drawer
-- C-c C-x d: insert a drawer.
-- C-c C-z: Add a time-stamped note to the 'LOGBOOK' drawer.
-** Blocks
-=#+BEGIN ... #+END= 中间的内容叫blocks.
-#+BEGIN_SRC org
-  ,#+STARTUP: hideblocks
-  ,#+STARTUP: nohideblocks
-#+END_SRC
-* TODO Tables                                                     :important:
-* TODO TODO items                                                 :important:
-** Basic TODO Functionality
-Any headline becomes a TODO item when it starts with the word ‘TODO’.改变TODO的状态的时候也会改变tag的状态.查看变量 *org-todo-state-tags-triggers* .
-1. C-c C-t (org-todo): 循环改变TODO的状态.如果TODO items可以使用快捷访问,那么会让你在minibuffer中快捷访问,如果 *org-use-fast-todo-selection* 不是nil的时候,这是默认的方式.当有多个组时,只在当前组上做状态改变.
-2. S-RIGHT/LEFT: 下/上一个状态.如果有多个组,则会在所有状态上做循环.
-3. C-c / t(org-show-todo-tree): 生成TODO items视图.把整个buffer折叠起来,只显示处理未完成状态.
-4. C-c / T: 同第3点,只不过你可以使用关键字来搜索你想要查的TODO items
-5. C-u C-u C-c C-t: 移动到下一个组.比如可以从TODO或者DONE状态移动到REPORT.也可以从REPORT/BUG/KNOWNCAUSE/FIXED等移动到CANCELED.
-** Extended Use of TODO Keywords
-*** org-todo-keywords as sequences
-如下所示.其中'|'用来区分未完成状态和完成状态.如果没有'|',那么最后一个则被当作完成状态.
-#+BEGIN_SRC emacs-lisp
-  (setq org-todo-keywords
-        '((sequence "TODO" "FEEDBACK" "VERIFY" "|" "DONE" "DELEGATED")))
-#+END_SRC
+* 待办记事
+** 快捷键
+1. C-c C-t: 切换到下一个关键字,只在同一组关键字切换
+2. S-RIGHT/LEFT: 切换上一个下一个关键字,不管是不是同一个组,按顺序切换
+** DELEGATED 关键字定义
+#+BEGIN_VERSE
+1. 括号里面一个字母表示快捷键
+2. @: 记录时间戳
+3. !: 记录下一条笔记
+#+END_VERSE
 
-#+RESULTS:
-| sequence | TODO | FEEDBACK | VERIFY |   |   | DONE | DELEGATED |
-*** org-todo-keywords as types                                 :deprecated:
-主要为了把任务下发给不同的人.但是使用tag来做这件工作更合适.
-#+BEGIN_SRC emacs-lisp
+1. 全局设置
+#+BEGIN_SRC emacs-lisp :results silent
   (setq org-todo-keywords
-        '((type "Lucy" "Inmove" "Mei" "|" "DONE")))
+       '((sequence "TODO(t)" "FEEDBACK(f@/!)" "VERIFY(v)" "|" "DONE(d!)" "DELEGATED(D@)")
+         (sequence "ALICE(A)" "INMOVE(I)" "|" "MEI(M)")))
 #+END_SRC
-*** Multiple keyword sets in one file
-这里一共定义了3组状态.使用诸如 =C-c C-t= 这些命令你只能在一组状态中循环使用.注意,这些关键字都不要重复,否则org-mode将无法准确识别这些状态.
-#+BEGIN_SRC emacs-lisp
-  (setq org-todo-keywords
-        '((sequence "TODO" "|" "DONE")
-          (sequence "REPORT" "BUG" "KNOWNCAUSE" "|" "FIXED")
-          (sequence "|" "CANCELED")))
-#+END_SRC
-
-#+RESULTS:
-| sequence | TODO   |     |            | DONE |   |       |
-| sequence | REPORT | BUG | KNOWNCAUSE |      |   | FIXED |
-| sequence |        |     | CANCELED   |      |   |       |
-*** Fast access to TODO states
-当你使用C-c C-t的时候,在minibuffer中会出现一个对话框,你可以使用相应的快捷键来选择要成为的状态
-查看 *org-fast-tag-selection-include-todo* 的说明,可以根据tag的变化相应的改变TODO的状态.具体在后面一章会说到
-快捷键不要使用'!','@','^'.他们有其它用处.
-#+BEGIN_SRC emacs-lisp
-  (setq org-todo-keywords
-        '((sequence "TODO(t)" | "DONE(d)")
-          (sequence "REPORT(r)" "BUG(b)" "KNOWNCAUSE(k)" "|" "FIXED(f)")
-          (sequence "|" "CANCELED(c)")))
-#+END_SRC
-*** Setting up keywords for individual files
+2. 单文件设置
 #+BEGIN_SRC org
-  ,#+TODO: TODO | DONE
-  ,#+TODO: REPORT BUG KNOWNCAUSE | FIXED
-  ,#+TODO: | CANCELED
+  ,#+TODO: TODO FEEDBACK VERIFY | DONE(D@/!) CANCELED(C!)
+  ,#+TOTO: INMOVE(I) | MEI(M@)
 #+END_SRC
-*** Faces for TODO keywords
-While using a list with face properties as shown for ‘CANCELED’ should work, this does not always seem to be the case. If necessary, defne a special face and use that. A string is interpreted as a color. The variable org-faces-easy-properties determines if that color is interpreted as a foreground or a background color.
-#+BEGIN_SRC emacs-lisp
-  (setq org-todo-keyword-faces
-        '(("TODO" . org-warning)
-          ("STARTED" . "yellow")
-          ("CANCELED" . (:foreground "blue" :weight bold))))
+3. 单大纲设置
+#+BEGIN_VERSE
+此设置只能设置关键字的 !,@ 等作用,并不能改变关键字集合
+#+END_VERSE
+#+BEGIN_SRC org
+  ,* TODO Log each state with only a time
+    :PROPERTIES:
+    :LOGGING: TODO WAIT DONE(@) CANCELED(!)
+    :END:
+  ,* Only log when switching to WAIT and when repeating
+    :PROPERTIES:
+    :LOGGING:  WAIT(@)
+    :END:
+  ,* No logging at all
+    :PROPERTIES:
+    :LOGGING:  nil
+    :END:
 #+END_SRC
-*** TODO-item's dependencies
-TODO的依赖有两种情况.
-1. 所有子item没有全完成done的时候,父item不能变成DONE状态. 设置 *org-enforce-todo-dependencies* 为t,开启第1类依赖.
-2. 所有的兄item没有完成的时候,item本身不能标记为完成.  使用ORDERED property开启第2类依赖
-3. 可以设置某些子item没有依赖.使用NOBLOCKING property来设置.
-4. C-c C-x o(org-toggle-ordered-property): 开关ORDERED property. However, if you would like to track the value of this property with a tag for better visibility, customize the variable *org-track-ordered-property-with-tag*.
-5. C-u C-u C-u C-c C-t: 忽略依赖,强制更新item的状态. If you set the variable org-agenda-dim-blocked-tasks, TODO entries that cannot be marked as done because of unmarked children are shown in a dimmed font or even made invisible in agenda views
-6. You can also block changes of TODO states by using checkboxes. If you set the variable org-enforce-todo-checkbox-dependencies, an entry that has unchecked checkboxes is blocked from switching to DONE.
-** Progress Logging                                            :MAYBE_WRONG:
-C-u C-c C-t (org-todo) Prompt for a note and record a the time of the TODO state change. The note is inserted as a list item below the headline, but can also be placed into a drawer.
-书上说使用 =C-u C-c C-t= 会在minibuffer中让你输入一个note,并会记录下一个timestamp.但是我测试发现仅仅只是让我选择变成什么状态,并没有note和timestamp
-*** DONE Closing items
-当entry变成完成状态时,在headline下面一行会记录下完成时间.同时当它再次变成未完成状态时,记录的时间又会消失.
-#+BEGIN_SRC emacs-lisp
+** 其它设置
+#+BEGIN_VERSE
+当待办记事由 未完成 转变成完成某一个状态时增加一个 closed 的时间戳
+#+END_VERSE
+#+BEGIN_SRC emacs-lisp :results silent
   (setq org-log-done 'time)
 #+END_SRC
-把 *org-closed-keep-when-no-todo* 设置为t时,从完成状态到未完成状态的改变不会让记录的时间消失.
-#+BEGIN_SRC emacs-lisp
-  (setq org-closed-keep-when-no-todo t)
-#+END_SRC
-记录timestamp的同时,写下一条笔记.
-#+BEGIN_SRC emacs-lisp
+
+#+BEGIN_VERSE
+当待办记事由 未完成 转变成完成时,增加一条笔记和时间戳
+#+END_VERSE
+#+BEGIN_SRC emacs-lisp :results silent
   (setq org-log-done 'note)
 #+END_SRC
-
-#+RESULTS:
-: note
-
-对单个文件设置则使用STARTUP.
-#+BEGIN_SRC org
-  ,#+STARTUP: logdone
-  ,#+STARTUP: lognotedone
-#+END_SRC
-*** Tracking TODO state changes
-:PROPERTIES:
-:END:
-如果entry的状态多次改变,可能会有很多note,看起来会很麻烦.配置 *org-log-into-trawer* 则会把所有的note写入到一个叫 *LOGBOOK* 的drawer里面.You can also overrule the setting of this variable for a subtree by setting a ‘LOG_INTO_DRAWER’ property
+** 优先级
+*** 快捷键
+1. S-UP/DOWN: 切换优先级
+** 复选框
+*** 快捷键
+1. C-c C-c: 切换复选框的状态
+* 标签                                                           :tag:agenda:
+** 标签的继承
+#+BEGIN_VERSE
+标签用于标记一个大纲.如果一个大纲被标记为标签A,那么它的所有子大纲都继承这个标签.
+当变量 =org-use-tag-inheritance= 不为 nil 的时候,标签可被子大纲继承.这个变量也可以是列表,表示这些标签是可以被继承的.
+变量 =org-tags-exclude-from-inheritance= 用于记录不能被继承的标签.且优先级高于 =org-use-tag-inheritance=
+#+END_VERSE
+** 如何设置标签
+1. 在标题那一行使用 =C-c C-c=
+2. 用 =#+FILETAGS: :tag0:tag1:= ,这样整个文件的所有大纲都继承这个标签
+** 预定义标签
+#+BEGIN_VERSE
+变量 =org-tag-alist= 用于保存预定义标签列表
+也可以用 =#+TAGS= 在org文件中定义文件级别的预定义标签列表.并且此设置会覆盖 =org-tag-alist= 的设置
+变量 =org-tag-persistent-alist= 的作用和 =org-tag-alist= 相同,但是它不会被 =#+TAGS= 覆盖
+使用 =#+STARTUP: noptag= 来禁用 =org-tag-persistent-alist= 列表
+#+END_VERSE
+*** 预定义标签举例
 #+BEGIN_SRC emacs-lisp
-  (setq org-log-into-drawer nil)
+  (setq org-tag-alist '(("@work" . ?w) ("@home" . ?h) ("laptop" . ?l)))
 #+END_SRC
-前面说了可以使用快捷键选择状态,也可以设置 *当变成某个状态时是否设置timestamp或者note*
-1. 其中@表示 note with timestamp
-2. !表示 timestamp
-3. /! 表示离开这个状态时记录下一个 timestamp.前提是目标状态不记录任何东西.比如从WAIT到DONE,因为进入DONE要求一个timestamp,所以不会记录离开WAIT的timestamp.从WAIT到TODO则会记录离开WAIT的timestamp.因为TODO不要求记录任何东西
+#+BEGIN_SRC org
+  ,#+TAGS: @work(w) @home(h) @tennisclub(t) laptop(l) pc(p)
+#+END_SRC
+** 标签分组
+#+BEGIN_VERSE
+同一个组之间的标签是互斥的
+#+END_VERSE
+#+BEGIN_VERSE
+用 *startgroup* *endgroup* 来分组
+#+END_VERSE
 #+BEGIN_SRC emacs-lisp
-  (setq org-todo-keywords
-        '((sequence "TODO(t)" "WAIT(w@/!)" "|" "DONE(d!)" "CANCELED(c@)")))
-#+END_SRC
-或者只为单个文件定义
-#+BEGIN_SRC org
-  ,#+TODO: TODO(t) WAIT(w@/!) | DONE(d!) CANCELED(c@)
-#+END_SRC
-使用property LOGGING来设置单个entry TODO item状态改变时的动作.
-对于A每个状态都记录下timestamp
-对于B状态变成WAIT时记下一个笔记.
-对于C则是什么都不做
-#+BEGIN_SRC org
-  ,* TODO A: Log each state with only a time
-  :PROPERTIES:
-  :LOGGING: TODO(!) WAIT(!) DONE(!) CANCELED(!)
-  :END:
-  ,* TODO B: Only log when switching to WAIT, and when repeating
-  :PROPERTIES:
-  :LOGGING: WAIT(@) logrepeat
-  :END:
-  ,* TODO C: No logging at all
-  :PROPERTIES:
-  :LOGGING: nil
-  :END:
-#+END_SRC
-*** TODO Tracking Your habits
-SCHEDULED: <2020-03-06 Fri .+2d/4d>
-:PROPERTIES:
-:STYLE:    habit
-:LAST_REPEAT: [2020-03-04 Wed 22:21]
-:END:
-costumize *org-modules* 来开启habit功能.
-1. habit是一个TODO item.
-2. habit的STYLE property被设置为habit
-3. The TODO has a scheduled date
-4. 使用".+2d/3d"来表明这个habit最多2天执行一次,最少3天执行一次.
-5. State logging for the DONE state is enabled, in order for historical data to be represented in the consistency graph. If it is not enabled it is not an error, but the consistency graphs are largely meaningless.
-What’s really useful about habits is that they are displayed along with a consistency graph, to show how consistent you’ve been at getting that task done in the past
-- Blue If the task was not to be done yet on that day.
-- Green If the task could have been done on that day.
-- Yellow If the task was going to be overdue the next day.
-- Red If the task was overdue on that day.
-*** Priorities
-org mode默认有三个级别.A,B,C.A最高,B是默认.Priority的最大作用是用在Agenda搜索的时候.查看变量 *org-priority-faces* 来修改priority的显示样式.
-C-c ,(org-priority): 为headline设置一个级别.
-S-UP/DOWN(org-priority-up/down): 上升/下降一个级别
-*org-highest-priority* *org-lowest-priority* *org-default-priority* 分别表示最高,最低,默认级别.也可以使用#+PRIORITIES: A C B来进行设置
-** Breaking Down Tasks into Subtasks
-:PROPERTIES:
-:END:
-#+BEGIN_SRC org
-  ,* Organize Party [33%]
-  ,** TODO Call people [1/2]
-  ,*** TODO Peter
-  ,*** DONE Sarah
-  ,** TODO Buy food
-  ,** DONE Talk to neighbor
-#+END_SRC
-使用 =[%]= 来开启百分比
-使用 =[/]= 来开启分数比
-每次子item状态更新为完成时,父item的完成度也会随之更新.
-修改变量 *org-hierarchical-todo-statistics* 来设置父item的状态更新的模式.如果它的值为t,那么只处理父item直接子item.否则每有子孙的item更新,父item的完成度就会更新.
-
-也可以使用COOKIE_DATA来完成这个设置,只不过只对单个entry有效.
-#+BEGIN_SRC org
-  ,* TODO Parent capturing statistics [6/7]
-    :PROPERTIES:
-    :COOKIE_DATA: todo recursive
-    :END:
-  ,** TODO one
-     - CLOSING NOTE [2020-03-04 Wed 22:49]
-  ,*** DONE one-one
-      CLOSED: [2020-03-04 Wed 22:49]
-      - CLOSING NOTE [2020-03-04 Wed 22:49]
-  ,*** DONE one-two
-      CLOSED: [2020-03-04 Wed 22:47]
-      - CLOSING NOTE [2020-03-04 Wed 22:47]
-  ,** DONE two
-     CLOSED: [2020-03-04 Wed 22:49]
-     - CLOSING NOTE [2020-03-04 Wed 22:49]
-  ,*** DONE two-one
-      CLOSED: [2020-03-04 Wed 22:49]
-      - CLOSING NOTE [2020-03-04 Wed 22:49]
-  ,*** DONE two-two
-      CLOSED: [2020-03-04 Wed 22:49]
-      - CLOSING NOTE [2020-03-04 Wed 22:49]
-  ,*** DONE two-three
-      CLOSED: [2020-03-04 Wed 22:49]
-      - CLOSING NOTE [2020-03-04 Wed 22:49]
+  (setq org-tag-alist '((:startgroup . nil)
+                        ("@work" . ?w) ("@home" . ?h)
+                        ("@tennisclub" . ?t)
+                        (:endgroup . nil)
+                        ("laptop" . ?l) ("pc" . ?p)))
 #+END_SRC
 
-定义如下函数: 当所有子item完成时,自动更新父item为完成.
+#+BEGIN_VERSE
+用 *大括号* 来对标签分组,注意 大括号 与标签之间有空格.
+#+END_VERSE
+#+BEGIN_SRC org
+  ,#+TAGS: { @work(w) @home(h) } laptop(l) pc(p)
+#+END_SRC
+** 命名分组标签                                               :@work:laptop:
+#+BEGIN_VERSE
+用 *:startgrouptag* *:grouptags* *:endgrouptag* 来创建全局命名分组标签
+*:startgrouptag* *:endgrouptag* 可以用 *:startgroup* *:endgroup* 代替
+#+END_VERSE
 #+BEGIN_SRC emacs-lisp
-  (defun org-summary-todo (n-done n-not-done)
-    "Switch entry to DONE when all subentries are done, to TODO otherwise."
-    (let (org-log-done org-log-states) ; turn off logging
-      (org-todo (if (= n-not-done 0) "DONE" "TODO"))))
-  (add-hook 'org-after-todo-statistics-hook 'org-summary-todo)
-#+END_SRC
+  (setq org-tag-alist '(
+                        (:startgrouptag)
+                        ("GTD")
+                        (:grouptags) ("Control") ("Persp" . ?P) (:endgrouptag)
 
-#+RESULTS:
-| org-summary-todo |
-** Checkboxes
-Every item in a plain list can be made into a checkbox by starting it with the string ‘[ ]’
-Checkboxes work hierarchically, so if a checkbox item has children that are checkboxes, toggling one of the children checkboxes makes the parent checkbox reﬂect if none, some, or all of the children are checked.
-If the current outline node has an ‘ORDERED’ property, checkboxes must be checked off in sequence, and an error is thrown if you try to check oﬀ a box while there are unchecked boxes above it.
-1. C-c C-c (org-toggle-checkbox): 修改checkboxr状态
-2. C-c C-x C-b (org-toggle-checkbox):
-3. (org-insert-todo-heading): 插入一个checkbox.如果在一个headline行上,插入一个TODO headline.如果在一个plain list,就插入一个checkbox.
-4. C-c #(org-update-statistics-cookies): 更新完成百分比.增加C-u则更新整个buffer. If you delete boxes/entries or add/change them by hand, use this command to get things back into sync.
-* TODO Tags                                                       :important:
-通过变量 *org-tag-faces* 设置org tag的显示.
-** Tag Inheritance
-最后一个headline同时拥有work,boss,notes,action三个标签.
-#+BEGIN_SRC org
-  ,* Meeting with the French group                                        :work:
-  ,** Summary by Frank                                              :boss:notes:
-  ,*** TODO Prepare slides form him                                     :action:
-#+END_SRC
-也可以定义整个文件都继承的标签
-#+BEGIN_SRC org
-  ,#+FILETAGS: :Peter:Boss:Secret:
+                        (:startgrouptag)
+                        ("Control")
+                        (:grouptags) ("Context") ("Task") (:endgrouptag)))
 #+END_SRC
 #+BEGIN_VERSE
-关键字 *org-use-tag-inheritance* 关掉tag的继承
-关键字 *org-tags-excludes-from-inheritance* 关掉部分tag的继承
-If you only want to see the frst tags match in a subtree, confgure the variable *org-tags-match-list-sublevels* (not recommended).
-Tag inheritance is relevant when the agenda search tries to match a tag, either in the
-tags or tags-todo agenda types. In other agenda types, org-use-tag-inheritance has
-no eﬀect. Still, you may want to have your tags correctly set in the agenda, so that tag
-fltering works fne, with inherited tags. Set org-agenda-use-tag-inheritance to control
-this: the default value includes all agenda types, but setting this to nil can really speed
-up agenda generation.
+用 *中括号* 来对创建文件级命名分组标签
 #+END_VERSE
-** Setting Tags
-C-c C-q(org-set-tags-command): 为当前的headline创建新的tag.
-C-c C-c: 当光标在一个headline上面的时候,它的作用和C-c C-q一样.
-
-在emacs init文件中预设tag
-#+BEGIN_SRC emacs-lisp
-  (setq org-tag-alist
-        '(("@work" . ?w) ("@home" . ?h) ("@laptop" . ?l)))
-#+END_SRC
-
-在单个文件中预设tag.此设置会清空 *org-tag-alist* 的设置,设置成TAGS指定的tags.第2条配置则清空所有tags.
 #+BEGIN_SRC org
-  ,#+TAGS: @work(w) @home(h) @tennisclub(t)
-
-  ,#+TAGS:
-#+END_SRC
-
-这个的设置也是全局的,并且不会被TAGS清除.
-#+BEGIN_SRC emacs-lisp
-  (setq org-tag-persistent-alist
-        '(("Math" . ?m) ("English" . ?e)))
-#+END_SRC
-
-使用noptag来在本文件中关闭 *org-tag-persistent-alist* 列表.
-#+BEGIN_SRC org
-  ,#+STARTUP: noptag
-#+END_SRC
-
-设置一组tag中同一时间只能有一个存在.注意,第一个和最后一个一定要和大括号有个空格.
-#+BEGIN_SRC org
-  ,#+TAGS: { @work(w) @home(h) @tennisclub(t) } laptop(l) pc(p)
-#+END_SRC
-
-在 *org-tag-alist* 中设置分组
-#+BEGIN_SRC emacs-lisp
-  (setq org-tag-alist
-        '(
-          (:startgroup . nil)
-          ("@work" . ?w) ("@home" . ?h) ("@tennisclub" . ?t)
-          (:endgroup . nil)
-
-          ("laptop" . ?l)
-          ("pc" . ?p))
-        )
-#+END_SRC
-
-需要注意的一些问题:
-1. TAB: 如果有设置 *org-tag-alist* 或者 #+TAGS 那么只能从这些列表中选择要使用的TAG.但是如果使用 TAB键,则可以在minibuffer中输入其它的自定义tag.
-2. SPC: 清除所有已有的TAG
-3. RET: 接受修改
-4. C-g: Abort修改,对原有的tag什么都不动.
-6. !: 临时关闭tag组.这样便可以使用一个组中的多个TAG
-7. C-c: 开关当你作出下个选择时自动退出minibuffer. 设置变量 *org-fast-tag-selection-single-key* 为t,使之成为默认方式.
-** Tag Hierarchy
-TAG的层次结构.意思就是说如果标记了AOF那么相当于被标记了Persp和GTD.
-#+BEGIN_SRC org
-  ,#+TAGS: [ GTD: Control Persp ]
+  ,#+TAGS: [ GTD : Control Persp ]
   ,#+TAGS: [ Control : Context Task ]
   ,#+TAGS: [ Persp : Vision Goal AOF Project ]
 #+END_SRC
-
-同时也可以使用正则表达式.当我们查找Vision的时候,所有满足正则表达式"V@.+"的也都会被查出来.
-#+BEGIN_SRC org
-  ,#+TAGS: [ Vision : {V@.+} ]
-#+END_SRC
-
-在Emacs init文件中定义Tag的层次结构
-When setting org-tag-alist you can use :startgroup and :endgroup instead of :startgrouptag and :endgrouptag to make the tags mutually exclusive.
-#+BEGIN_SRC emacs-lisp
-  (setq org-tag-alist
-        '(
-          (:startgrouptag) ("GTD") (:grouptags) ("Control") ("Persp") (:endgrouptag)
-          (:startgrouptag) ("Control") (:grouptags) ("Context") ("Task") (:endgrouptag)
-          (:startgrouptag) ("Persp") (:grouptags) ("Vision") ("Goal") ("AOF") ("Project") (:endgrouptag)
-          ))
-#+END_SRC
-
-- C-c C-x q (org-toggle-tags-groups): 开关tag分组.也可以设置 *org-group-tags* 为nil来禁用这个功能
-** Tag Searches
-sparse tree 或者 apgenda view
-* TODO Properties and Columns                                     :important:
-property和tags的不同点主要在于property是一个k-v对.对于同一个k值,可以有不同的v.
-** Property Syntax
-:PROPERTIES:
-:END:
-变量 *org-use-property-inheritance* 用于property的继承.
-它的默认值是nil.如果设置为t,那么当在property上面进行查找的时候会消耗更多的资源,这也是它默认设置为nil的原因.有些特殊property除外,它们设置之后,所有的子item都会继承这个property.比如CATEGORY,ARCHIVE,COLUMNS和所有_ALL结尾的property.更多可以查看这个变量的帮助文档.
-
-对于以_ALL结尾的property,也可以使用下面这种方式来进行文档级别的全局设置.
-#+BEGIN_SRC org
-  ,#+PROPERTY: NDisks_ALL 1 2 3 4
-  ,#+PORPERTY: var foo=1
-  ,#+PROPERTY: var+ bar=2
-  ,* test0
-    :PROPERTIES:
-    :NDisks:   1
-    :END:
-#+END_SRC
-- C-c C-x p(org-set-property): set a property
-- C-u M-x org-insert-drawer: insert a drawer named PROPERTIES
-- C-c C-c(org-property-action): 当光标在一个property的k上面的时候,使用这个快捷键可以对这个k做些操作
-  - s: 设置值
-  - d: 删除
-  - D: 在整个buffer中进行删除
-  - c: 计算
-- S-RIGHT/LEFT: (org-property-next/previous-allowed-value): 下一个值,上一个值
-** Special Properties
-** Propertiy Searches
-sparse tree 或者 agenda view
-** Property Inheritance
-If the parent in a tree has a certain property, the children can inherit this property. Org mode does not turn this on by default.
-However, if you fnd inheritance useful, you can turn it on by setting the variable org-use-property-inheritance. It may be set to t to make all properties inherited from the parent, to a list of properties that should be inherited, or to a regular expression that matches inherited properties.
-If a property has the value nil, this is interpreted as an explicit un-defne of the property, so that inheritance search stops at this value and returns nil.
-虽然org mode默认不打开property的继承,但是下面这些属性是hard-coded继承的.
-- COLUMNS: 定义column view的格式
-- CATEGORY: for agenda view
-- ARCHIVE: archive location for the entire subtree.
-- LOGGING: define logging settings for an entry or a subtree.
-** Column View
-*** defining columns
-**** Scope of column definitions
-文档级
-#+BEGIN_SRC org
-  ,#+COLUMNS: %25ITEM %TAGS %PRIORITY %TODO
-#+END_SRC
-
-entry级
-#+BEGIN_SRC org
-  ,* Top node for columns view
-    :PROPERTIES:
-    :COLUMNS:  %25ITEM %TAGS %PRIORITY %TODO
-    :END:
-#+END_SRC
-
-Emacs init file
-#+BEGIN_SRC emacs-lisp
-  (setq org-columns-default-format "%25ITEM %TODO %3PRIORITY %TAGS")
-#+END_SRC
-**** Column attributes
-- %[WIDTH]PROPERTY[(TITLE)][{SUMMARY-TYPE}]
-  - WIDTH: 这一列最多有多少个字符
-  - PROPERTY: The property that should be edited in this column. Special properties representing meta data are allowed here as well.
-  - TITLE: 这一列的名字
-  - SUMMARY-TYPE: summary type.如果指定的话,父结点的值,由子结点计算得来.
-    也可以设置 *org-columns-summary-types* 来自定义.
-    #+BEGIN_VERSE
-    ‘+’ Sum numbers in this column.
-    ‘+;%.1f’ Like ‘+’, but format result with ‘%.1f’.
-    ‘$’ Currency, short for ‘+;%.2f’.
-    ‘min’ Smallest number in column.
-    ‘max’ Largest number.
-    ‘mean’ Arithmetic mean of numbers.
-    ‘X’ Checkbox status, ‘[X]’ if all children are ‘[X]’.
-    ‘X/’ Checkbox status, ‘[n/m]’.
-    ‘X%’ Checkbox status, ‘[n%]’.
-    ‘:’ Sum times, HH:MM, plain numbers are minutes.
-    ‘:min’ Smallest time value in column.
-    ‘:max’ Largest time value.
-    ‘:mean’ Arithmetic mean of time values.
-    ‘@min’ Minimum age2 (in days/hours/mins/seconds).
-    ‘@max’ Maximum age (in days/hours/mins/seconds).
-    ‘@mean’ Arithmetic mean of ages (in days/hours/mins/seconds).
-    ‘est+’ Add low-high estimates.
-    #+END_VERSE
-- 例子
-  - %25ITEM: means the frst 25 characters of the item itself, i.e., of the headline. You probably always should start the column defnition with the ‘ITEM’ specifer.
-  - Summaries are created for the ‘Time_Estimate’ column by adding time duration expressions like HH:MM, and for the ‘Approved’ column, by providing an ‘[X]’ status if all children have been checked. The ‘CLOCKSUM’ and ‘CLOCKSUM_T’ columns are special, they lists the sums of CLOCK intervals in the subtree, either for all clocks or just for today.
-  #+BEGIN_EXAMPLE
-  :COLUMNS: %25ITEM %9Approved(Approved?){X} %Owner %11Status %10Time_Estimate{:} %CLOCKSUM %CLOCKSUM_T
-  :Owner_ALL: Tammy Mark Karl Lisa Don
-  :Status_ALL: "In progress" "Not started yet" "Finished" ""
-  :Approved_ALL: "[ ]" "[X]
-  #+END_EXAMPLE
-*** Using column view
-- C-c C-x C-c(org-columns): 按优先级依次使用上面说到的三种方式定义的COLUMNS.
-- r or g(org-columns-redo): recreate the column view.
-- q(org-columns-quit): 退出
-- LEFT,RIGHT,UP,DOWN: 光标移动
-- n/p or S-RIGHT/S-LEFT: (org-columns-next/previous-allowed-value): 把field里的值设置为上/下一个
-- e(org-column-edit-value): 修改v的值
-- C-c C-c (org-columns-set-tags-or-toggle): 如果光标下是这个checkbox.改变它的状态
-- v (org-columns-show-value): 显示field的完整值
-- a (org-columns-edit-allowed): 修改当前field允许的值列表
-- < (org-columns-narrow): narrower the column
-- > (org-columns-widen); wider the column
-- S-M-RIGHT (org-column-new): 新插入一列
-- S-M-LEFT (org-columns-delete): 删除一列
-*** Capturing column view
-*column view* 被包裹在 #+BEGIN: #+END: 之间.
-1. C-c C-x i (org-insert-columns-dblock): insert a dynamic block capturing a column view.
-2. C-c C-c C-c C-x C-u (org-dblock-update): update the dynamic block.使用 =C-c C-c= 也可以
-3. C-u C-c C-x C-u (org-update-all-dblock): 更新整个buffer的dynamic block.
-常用属性:
-1. :id
-2. :hlines
-3. :vlines
-4. :maxlevel: 只作用于多少层的headline
-5. :skip-empty-rows: 如果只有ITEM是非空的,那么跳过这一行
-6. ：exclude-tags: 忽略的tag
-7. :indent: 缩进
-8. :format: Specify a column attribute.
-* TODO Dates and Times
-* TODO Refling and Archiving
-* TODO Capture and Attachments
-* TODO Agenda Views                                        :agenda:important:
-*Agenda View* 的作用主要是为了可以把散落在各处的TODO items,time-stamped items,tagged headlines等等之类的东西收集起来.让用户可以在一个buffer中统揽全局.可以根据不同的状态,时间,properties等元素来过滤查找需要完成的工作.
-*Agenda View* 有多种证券标准.它提供了6种不同的 *视图* 类型:
-#+BEGIN_VERSE
-1. an agenda that is like a calendar and shows information for specifc dates,
-2. a TODO list that covers all unfnished action items,
-3. a match view, showings headlines based on the tags, properties, and TODO state associated with them,
-4. a text search view that shows all entries from multiple fles that contain specifed keywords,
-5. a stuck projects view showing projects that currently do not move along, and
-6. custom views that are special searches and combinations of diﬀerent views.
-#+END_VERSE
-** configs                                                       :important:
-1. 默认情况下收集到信息是不会包含commented entries和archived entries的.使用下面的配置来使之包含
-   #+BEGIN_SRC emacs-lisp
-     (setq org-agenda-skip-comment-trees t
-           org-agenda-skip-archived-trees t)
-   #+END_SRC
-2. Two variables control how the agenda buﬀer is displayed and whether the window confguration is restored when the agenda exits: *org-agenda-window-setup* and *org-agendarestore-windows-after-quit*
-** Agenda Files                                                  :important:
-1. /Agenda Files/ 可以在Emacs的启动文件中配置.可以设置单个文件,也可以设置目录,目录下的所有org文件都会被当作 /Agenda File/ .
-   #+BEGIN_SRC emacs-lisp
-     (org-agenda-files (quote ("~/code/blog/org-mode.org" "~/code/blog/TODO.org" "~/code/work/")))
-   #+END_SRC
-2. =C-c [= (org-agenda-file-to-front):
-   添加当前文件到org-agenda-files列表中.默认是添加到最前面.如果文件已经在列表中,则把这个文件移动到列表的最前面.使用 =C-u C-c [= 则是添加到最后面.
-3. =C-c ]= (org-remove-file):
-   从 /Agenda Files/ 列表中移除
-4. (org-cycle-agenda-files): 移动到下一个 /Agenda File/ 中去.
-5. =C-c C-x <= (org-agenda-set-restriction-lock): Restrict the agenda to the current subtree.
-6. =C-c C-x >= (org-agenda-remove-restriction-lock): Remove the restriction created by =C-c C-x <=
-** The Agenda Dispatcher
-调用使用 =M-x org-agenda= 来开启 /Agenda Dispatcher/.会在另一个buffer中打开一个菜单.提供以下选项:
-1. a: Weekly Agenda
-2. t/T: 列出所有未完成的TODO items Agenda
-3. m/M: 创建一个headlines matching Agenda
-4. s: Create a list of entries selected by a boolean expression of keywords and/or regular expressions that must or must not occur in the entry
-5. /: 通过正则表达式在所有 *Agenda Files* 和列表 *org-agenda-text-search-extra-files* 中查找
-6. #/!: Create a list of stuck projects.. If narrowing is in effect restrict to the narrowed part of the buﬀer. After pressing <, you still need to press the character selecting the command
-7. <: Restrict an agenda command to the current buffer
-8. <<: If there is an active region, restrict the following agenda command to the region. Otherwise, restrict it to the current subtree4. After pressing < <, you still need to press the character selecting the command
-9. *: 切换 /Agenda Views/ 的自动更新.在Emacs的启动文件中通变量 /org-agenda-sticky/ 来设置默认值,默认是自动更新的.或者使用 /M-x org-toggle-sticky-agenda/ 来切换.
-** The Built-in Agenda Views
-*** Weekly/Daily agenda                                         :important:
-#+BEGIN_VERSE
-使用 *M-x agenda-mode a* 打开agenda buffer.默认显示当前周的工作内容.
-使用 *C-u x M-x agenda-mode a* 来指明天数.x表示天数.
-在Emacs的配置文件中使用设置 *org-agenda-span* 的值来配置默认的天数.
-1. 可以设置为一个数字.表示从今天开始的未来n天
-2. 可以设置day,week,month,year.分别表示今天,当前周,当前月,今年.
-3. 设置date shift.比如 =(setq org-agenda-start-day "+10d")= 表示从10天之后开始.
-#+END_VERSE
-#+BEGIN_SRC emacs-lisp
-  (setq org-agenda-span 'week)
-  (setq org-agenda-start-day "+1d")
-#+END_SRC
-
-#+RESULTS:
-: +1d
-*** Calendar/Diary integration                                  :important:
-:PROPERTIES:
-:END:
-在Emacs的启动文件中把 *org-agenda-include-diary* 设置为t.那么 *Agenda Buffer* 中就会显示所有的holiday和diary.
-#+BEGIN_SRC emacs-lisp
-  (setq org-agenda-include-diary t)
-#+END_SRC
-
-或者在某个 *Agenda File* 中使用如下配置.类型分别为 *Holiday* 和 *Ann* 就会在 *Agenda Buffer* 中显示 *Holifay* 和 *Anniversary*
-#+BEGIN_SRC org
-  ,* Holidays
-    :PROPERTIES:
-    :CATEGORY: Holiday
-    :END:
-  %%(org-calendar-holiday)
-
-  ,* Birthdays
-    :PROPERTIES:
-    :CATEGORY: Ann
-    :END:
-  %%(org-anniversary 1990 8 25)
-  %%(org-anniversary 1988 10 21)
-#+END_SRC
-*** Anniversaries from BBDB
-pass
-*** Appointment reminders
-pass
-*** The global TODO list                                        :important:
-=M-x org-agenda t= (org-todo-list): 列出所有未完成的TODO list.
-=M-x org-agenda T= (org-toto-list): 同上,不同的是它会让你使用关键字搜索.如果你使用如下设置,你可以搜索的关键字有TODO,TEST,DONE,CANCELED
-#+BEGIN_SRC org
-  ,#+SEQ_TODO: TODO TEST | DONE CANCELED
-#+END_SRC
-
-#+BEGIN_SRC emacs-lisp
-  (setq org-agenda-todo-ignore-scheduled t ;; 忽略有scheduled的TODO
-        org-agenda-todo-ignore-deadlines t ;; 忽略有deadline的TODO
-        org-agenda-todo-ignore-timestamp t ;; 忽略有timestamp的TODO
-        org-agenda-todo-ignore-with-date t ;; 忽略至少有一个进行中的timestamp的TODO
-        org-agenda-todo-list-sublevels nil ;; nil表示不关注sublevel的TODO
-        )
-#+END_SRC
-*** Matching Tags and Properties                                :important:
-=M-x org-agenda m= (org-tags-view): 列出所有有相应tag的headlines.使用如+work+urgent-withboss,或者work|home的形式来做多重过滤.
-=M-x org-agenda M= (org-tags-view): 同上,只不过只列出TODO headlines.检查一个headline是不是TODO状态,是否检查它的subitems看一下 *org-tags-match-list-sublevels* 变量的说明.是否包含scheduled/deadline items则查看 *org-agenda-tags-todo-honor-ignore-options* 变量的说明
-关键字举例说明:
-1. +work-bosss: tag work but discard boss
-2. work|laptop: work or laptop
-3. work|laptop+night: work or (laptop also night)
-4. work+{^boss.*}: work or 所有以boss开头的tag
-5. +work: 如果work是一个tag group(如 :work:lab:conf),那么等同于{\(?:work\|lab\|conf\)}
-6. -work: 同+work,同时排除整个组
-7. TODO=x: 查询TODO列表状态为x的headlines
-8. property: 使用方式为key=value.如.test="test"
-   property可以使用的比对方式很多
-   - 数字: <,=,>,<=,>=,<>
-   - 字符串: 用"括起来的会被当作字符串来做对比.做字典序对比
-   - enclosed in double-quotes and angular brackets: 如 /DEADLINE<="<2008-12-24 18:30>"/,也可以使用<now>,<today>,<tomorrow>,<+5d>,<-2m>,<1y>之类的用法.
-   - =: =号后面可以使用正则表达式表示match.<>后面的正则表达式则表示not match.
-   - example: +work-boss+PRIORITY="A"+Coffee="unlimited"+Effort<2+With={Sarah|Denny}+SCHEDULED>="<2008-10-11>": finds entries tagged ‘work’ but not ‘boss’, which also have a priority value ‘A’, a ‘Coffee’ property with the value ‘unlimited’, an ‘EFFORT’ property that is numerically smaller than 2, a ‘With’ property that is matched by the regular expression ‘Sarah|Denny’, and that are scheduled on or after October 11, 2008.
-*** Search view
-=M-x org-agenda s= (org-search-view): 关键字搜索.搜索的内容包手headlines,tags,properties,content.任何出现了这个关键字,这个headline都会出现在 *Agenda Buffer* 中.查看 command *org-search-view* 的帮助.这个命令不仅查找 *Agenda Buffer* 也查找 *org-agenda-text-search-extra-files* 中的文件.
-*** Stuck Projects
-If you are following a system like David Allen’s *GTD* to organize your work, one of the “duties” you have is a regular review to make sure that all projects move along.
-所谓的stuck project是指那种 *暂时没有下一步动作的project* .
-=M-x org-agenda #= (org-agenda-list-stuck-projects): 列出所有stuck projects
-=M-x org-agenda != : 配置 *org-stuck-projects* 定义什么样的project是stuck的
-** Presentation and Sorting
-You can customize in which column tags are displayed through *org-agendatags-column*.
-You can also customize the prefx using the option *org-agenda-prefixformat*.
-*** category
-使用CATEGORY这个property用来在 *Agenda Buffer* 中作为这个headline第一列的标签. 配置 *org-agenda-category-icon-alist* 来配置这个标签的图标.
-*** Time-of-day specifications
-The time grid can be turned on and oﬀ with the variable *org-agenda-use-time-grid*, and can be confgured with *org-agenda-time-grid*.
-*** Sorting of agenda items
-Before being inserted into a view, the items are sorted. How this is done depends on the type of view.
-Customize sorting using the variable *org-agenda-sorting-strategy*.
-1. For the daily/weekly agenda, the items for each day are sorted
-2. For the TODO list, items remain in the order of categories, but within each category, sorting takes place according to priority.
-3. For tags matches, items are not sorted at all, but just appear in the sequence in which they are found in the agenda fles
-*** TODO Filtering/limiting agenda items
-**** TODO Filtering in the agenda
-**** TODO Computed tag fltering
-**** TODO Setting limits for the agenda
-1. *org-agenda-max-entries* Limit the number of entries.
-2. *org-agenda-max-effort* Limit the duration of accumulated eﬀorts (as minutes).
-3. *org-agenda-max-todos* Limit the number of entries with TODO keywords.
-4. *org-agenda-max-tags* Limit the number of tagged entries
-** Commands in the Agenda Buffer
-*** Motion
-1. n (org-agenda-next-line): Next line
-2. p (org-agenda-previous-line): Previous line
-*** View/Go to Org file
-1. SPC (org-agenda-show-and-scroll-up): 在另一个窗口定位到这个headline
-2. L (org-agenad-recenter): 把这个headline定位到最中间
-3. TAB (org-agenda-goto): 光标移动到这个headline
-4. RET (org-agenda-switch-to): 把 *Agenda Buffer* 使用这个buffer填充
-5. F (org-agenda-follow-mode): 另一个窗体跟着 *Agenda Buffer* 中的光标移动.
-6. C-c C-x b(org-agenda-tree-to-indirect-buffer): 在另一个窗体中显示这个subtree.
-7. C-c C-o(org-agenda-open-link): Follow a link in the entry. This offers a selection of any links in the text belonging to the referenced Org node. If there is only one link, follow it without a selection prompt
-*** TODO Change display
-1. A: 打开另一个view,加在当前这个view的下面
-2. o: delete other windows
-*** TODO Quit and exit
-** TODO Custom Agenda Views
-*** Storing searches
-*** Block agenda
-*** Setting options for custom commands
-** Exporting Agenda Views
-** Using Column View in the Agenda
-* TODO Markup for Rich Contents
-* TODO Exporting
-* TODO Publishing
-* TODO Working with Source Code                                   :important:
-** 源代码
-1. 指定语言
-2. :var 定义变量
-3. :results results的生成方式,默认值为output.output可以认为等同于标准输出.value则是
-4. :wrap 生成的内容会被 =BEGIN_SRC= =END_SRC= 包裹.并且它使用的语言为 =json=
-#+BEGIN_SRC shell :var host="http://test.shilai.zhiyi.cn" :results value code :wrap SRC json
-  http GET ${host}/order/get/f888e6bd12414fd8af5624dd15f60b40 userId:$inmove
-#+END_SRC
-
-#+RESULTS:
-#+BEGIN_SRC json
-{"data":{"appointmentTime":"08:06","couponReduce":0,"dishList":[{"attrs":"","discountPrice":0,"image":"https://img-static.keruyun.com/kry-dir/c5e2440d1da44c66bdaec2eab0289ae1.jpg","name":"\u6d2a\u4e03\u516c\u7a91\u9e21","price":0,"quantity":1,"totalFee":70},{"attrs":"","discountPrice":0,"image":"https://img-static.keruyun.com/kry-dir/566e00709182412b9304dd0c10246c67.jpg","name":"\u5c0f\u6253\u5305\u76d2","price":0,"quantity":1,"totalFee":100}],"enableIfeedu":true,"id":"f888e6bd12414fd8af5624dd15f60b40","logisticsPlatform":"","mealCode":"1003","mealType":"SELF_PICK_UP","merchantId":"d3348a6659ac401486d53753ea58e8d2","merchantPhone":"1","paidFee":170,"paidTime":"1585899267","phone":"17666102150","redPacketId":"","remark":"","riderName":"","riderPhone":"","shippingAddress":{"city":"","gender":"","houseNumber":"","id":"","latitude":0.0,"longitude":0.0,"mobilePhone":"","province":"","street":"","username":""},"shippingFee":0,"shippingStatus":"NO_SHIPPING","storeName":"\u667a\u6613\u4e00\u5e97","tableId":"290488013365891072","tableName":"\u81ea\u63d0","totalFee":170,"transactionId":"1ab8dffce9134c69853852a9325be362"},"errcode":0,"errmsg":"success"}
-#+END_SRC
-
-* TODO Miscellaneous                                              :important:
-** Completion
-使用TAB自动补全,例如 =<c= 然后TAB自动补全成 =#+BEGIN_CENTER= ... =#+END_CENTER=
-** Structure Templates
-Org Tempo expands snippets to structures defined in *org-structure-template-alist* and *org-tempo-keywords-alist* .
-1. a
-   #+BEGIN_SRC org
-     ,#+BEGIN_EXPORT ascii
-
-     ,#+END_EXPORT
-   #+END_SRC
-2. c: 居中
-   #+BEGIN_SRC org
-     ,#+BEGIN_CENTER
-
-     ,#+END_CENTER
-   #+END_SRC
-3. C: 注解
-   #+BEGIN_SRC org
-     ,#+BEGIN_COMMENT
-
-     ,#+END_COMMENT
-   #+END_SRC
-4. e: 例子
-   #+BEGIN_SRC org
-     ,#+BEGIN_EXAMPLE
-
-     ,#+END_EXAMPLE
-   #+END_SRC
-5. h: export to html
-   #+BEGIN_SRC org
-     ,#+BEGIN_EXPORT html
-
-     ,#+END_EXPORT
-   #+END_SRC
-6. l: 导出成latex
-   #+BEGIN_SRC org
-     ,#+BEGIN_EXPORT latex
-
-     ,#+END_EXPORT
-   #+END_SRC
-7. q: 引用
-   #+BEGIN_SRC org
-     ,#+BEGIN_QUOTE
-
-     ,#+END_QUOTE
-   #+END_SRC
-8. s: 源码
-   #+BEGIN_SRC org
-     ,#+BEGIN_SRC
-
-     ,#+END_SRC
-   #+END_SRC
-9. v: verse
-    #+BEGIN_SRC org
-      ,#+BEGIN_VERSE
-
-      ,#+END_VERSE
-    #+END_SRC
-** Speed Keys
-   当光标在headline的最前面的时候可以使用快捷键.而不用使用那些前缀命令.此功能默认是关闭的,把 *org-use-speed-commands* 设置为t来打开这个功能.通过 =M-x org-speed-commands-help= 来查看可以使用的快捷键.
-   或者当光标在headline最前面的时候使用'?'来查看帮助.
-   #+BEGIN_SRC emacs-lisp
-     (setq org-use-speed-commands t)
-   #+END_SRC
-* TODO Hacking

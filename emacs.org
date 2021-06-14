@@ -1,0 +1,2 @@
+#+SETUPFILE: ~/.emacs.d/org-templates/template.org
+#+TITLE: Emacs

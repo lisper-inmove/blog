@@ -2,11 +2,8 @@
 #+TITLE: Dockerfile Reference
 #+DATE: Sat 05 Jun 2021 01:17:51 AM CST
 
-
 * Dockerfile Reference
 [[https://docs.docker.com/engine/reference/builder/][Dockerfile Reference]]
-* Dockerfile
-一个Dockerfile必须以 *FROM* 作为第一条指令,用于指明父镜像
 * Parser Directives
 #+BEGIN_VERSE
 *Parser Directive* 必须出现在 Dockerfile 的最前面.其后面的第一条指令与其有一个空行.其它地方出现的 Directive 被视作注释

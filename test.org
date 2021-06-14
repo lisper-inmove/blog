@@ -1,0 +1,35 @@
+#+SETUPFILE: ~/.emacs.d/org-templates/template.org
+#+TODO: TODO WAIT DONE CANCELED
+#+TITLE: Test
+
+* 代码块
+#+BEGIN_SRC python
+  class A:
+      def __init__(self):
+          self.a = 10
+
+  if __name__ == '__main__':
+      a = A()
+      print(a.a)
+#+END_SRC
+* 引用
+#+BEGIN_QUOTE
+这里引用了一个名言
+#+END_QUOTE
+* 表格
+| a | b | c | d | e |
+|---+---+---+---+---|
+| 1 | 2 | 3 | 4 | 5 |
+
+* Log each state with only a time
+  :PROPERTIES:
+  :LOGGING: TODO(!) WAIT(!) DONE(!) CANCELED(!)
+  :END:
+* WAIT Only log when switching to WAIT and when repeating
+  :PROPERTIES:
+  :LOGGING:  WAIT(@)
+  :END:
+* No logging at all
+  :PROPERTIES:
+  :LOGGING:  nil
+  :END:
