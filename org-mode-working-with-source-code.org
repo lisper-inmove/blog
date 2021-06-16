@@ -1,0 +1,69 @@
+#+SETUPFILE: ~/.emacs.d/org-templates/template.org
+#+OPTIONS: toc:1
+#+TITLE: OrgMode中的源代码
+
+* Header Arguments
+#+BEGIN_VERSE
+1. 全局的HeaderArguments被定义在 *org-babel-default-header-args* 中.默认值为
+:session => none
+:results => replace
+:exports => code
+:cache => no
+:noweb => no
+变量 *org-babel-default-header-args:<LANG>* 保存语言相关的HeaderArguments的设置
+
+2. 在属性中设置HeaderArguments
+#+END_VERSE
+#+BEGIN_SRC org
+  ,#+PROPERTY: header-args:R :session *R*
+  ,#+PROPERTY: header-args :results silent
+#+END_SRC
+#+BEGIN_VERSE
+3. 为某个大纲设置HeaderArguments,这个大纲以及它的所有子大纲都使用这个设置
+#+END_VERSE
+#+BEGIN_SRC org
+  ,* test
+    :PROPERTIES:
+    :header-args: :cache yes
+    :header-args:R: :session *R*
+    :END:
+#+END_SRC
+#+BEGIN_VERSE
+4. 为CodeBlock设置HeaderArguments
+#+END_VERSE
+#+BEGIN_SRC org
+  ,#+NAME: factorial
+  ,#+BEGIN_SRC haskell :results silent :exports code :var n=0
+    fac 0 = 1
+    fac n = n * fac (n - 1)
+  ,#+END_SRC
+#+END_SRC
+#+BEGIN_VERSE
+5. 内联的HeaderArguments
+#+END_VERSE
+#+BEGIN_SRC org
+  src_haskell[:exports both]{fac 5}
+#+END_SRC
+#+BEGIN_VERSE
+6. HEADER 定义的 HeaderArguments
+#+END_VERSE
+#+BEGIN_SRC org
+  ,#+HEADER: :var a=1
+  ,#+HEADER: :var b=2
+  ,#+BEGIN_SRC emacs-lisp :var c=3
+    (message "a: %s, b: %s, c: %s" a b c)
+  ,#+END_SRC
+#+END_SRC
+#+BEGIN_VERSE
+7. 用 CALL 传递HeaderArguments
+#+END_VERSE
+#+BEGIN_SRC org
+  ,#+NAME: test
+  ,#+HEADER: :var a=10
+  ,#+BEGIN_SRC python :results output
+    print(a)
+  ,#+END_SRC
+
+  ,#+CALL: test(a=10) :exports results
+  ,#+CALL: test[:cache yes](a=10)
+#+END_SRC

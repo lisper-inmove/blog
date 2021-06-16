@@ -1,5 +1,6 @@
 #+TITLE: Inmove's Blog
 
+- [[file:org-mode-agenda.org][Agenda]]
 - [[file:bash.org][Bash]]
 - [[file:css.org][CSS]]
 - [[file:dockerfile.org][Dockerfile Reference]]
@@ -10,6 +11,7 @@
 - [[file:mongodb.org][MongoDB]]
 - [[file:nginx.org][Nginx]]
 - [[file:org-mode.org][Org Mode]]
+- [[file:org-mode-working-with-source-code.org][OrgMode中的源代码]]
 - [[file:python.org][Python]]
 - [[file:python-profile.org][Python性能相关]]
 - [[file:redis.org][Redis]]
