@@ -67,3 +67,62 @@
   ,#+CALL: test(a=10) :exports results
   ,#+CALL: test[:cache yes](a=10)
 #+END_SRC
+* 代码块传参
+#+BEGIN_VERSE
+1. 使用 =header-args :var= 来向代码块传参.比如
+#+END_VERSE
+#+BEGIN_SRC org
+  ,#+NAME: var0
+  1
+  ,#+NAME: var1
+  2
+
+  ,#+BEGIN_SRC python :var v0=var0 v1=var1 :results output
+  print("v0={}v1={}typeOf-v0={} typeOf-v1={}".format(v0, v1, type(v0), type(v1)))
+  ,#+END_SRC
+
+  ,#+RESULTS:
+  : v0=1
+  : v1=2
+  : typeOf-v0=<class 'str'> typeOf-v1=<class 'str'>
+
+#+END_SRC
+
+#+BEGIN_VERSE
+2. 可以用 =#+NAME= 来定义不同类型的变量.
+字符串,数字,表格,列表,文字常量(用 BEGIN_EXAMPLE,END_EXAMPLE 包裹),另一个代码块,或者另一个代码块的返回值
+#+END_VERSE
+
+#+BEGIN_VERSE
+3. *colnames* HeaderArguments.它有三种值
+    1. nil
+       默认值.当第一行下面有水平线的时候,会被当作头.当用表格作参数时,头会被去掉,调用完代码块之后再把头加回到表格头中返回
+    2. yes
+       同nil,即使没有水平线,第一行都会被当作头
+    3. no
+       不做处理,头也被当作普通行
+#+END_VERSE
+
+#+BEGIN_SRC org
+  ,#+NAME: table0
+  | a |
+  |---|
+  | b |
+
+  ,#+BEGIN_SRC python :var tab=table0 :colnames yes
+    return [[val + '*' for val in row] for row in tab]
+  ,#+END_SRC
+
+  ,#+RESULTS:
+  | a  |
+  |----|
+  | b* |
+
+  ,#+BEGIN_SRC python :var tab=table0 :colnames no
+    return [[val + '*' for val in row] for row in tab]
+  ,#+END_SRC
+
+  ,#+RESULTS:
+  | a* |
+  | b* |
+#+END_SRC
