@@ -67,6 +67,33 @@
   ,#+CALL: test(a=10) :exports results
   ,#+CALL: test[:cache yes](a=10)
 #+END_SRC
+** sessions
+#+BEGIN_VERSE
+为不同的代码块设置相同的session,那么这些代码块就处于同一个session中
+设置方式为 =:session name= 如果name不传,那么所有有未命名的相同语言的代码都块处于同一session中
+#+END_VERSE
+** dir
+#+BEGIN_VERSE
+=:dir DIRECTORY= 用于设置代码块的工作目录,设置 *mkdirp* 为 non-nil 表示当 DIRECTORY 不存在时创建这个目录
+dir也可以指向一个远程目录
+#+END_VERSE
+#+BEGIN_SRC shell :dir /ssh:inmove@inmove.com.cn:
+  pwd
+#+END_SRC
+
+#+RESULTS:
+: /home/inmove
+
+** prologue
+#+BEGIN_VERSE
+reset 或者 epilogue
+还不知道作用是什么
+#+END_VERSE
+#+BEGIN_SRC emacs-lisp
+  (add-to-list 'org-babel-default-header-args:python
+               '((:prologue . "reset")))
+#+END_SRC
+
 * 代码块传参
 #+BEGIN_VERSE
 1. 使用 =header-args :var= 来向代码块传参.比如
@@ -125,4 +152,70 @@
   ,#+RESULTS:
   | a* |
   | b* |
+#+END_SRC
+
+#+BEGIN_VERSE
+4. *rownames* 和 colnames 一样,作用于第一列
+    1. no: 默认值
+    2. yes: 意义同 colnames 的nil
+#+END_VERSE
+
+#+BEGIN_VERSE
+5. 列表参数
+#+END_VERSE
+#+BEGIN_SRC org
+  ,#+NAME: example-list
+  - simple
+    - not
+    - nested
+  - list
+
+  ,#+BEGIN_SRC emacs-lisp :var x=example-list
+    (print x)
+  ,#+END_SRC
+
+  ,#+RESULTS:
+  | simple | (unordered (not) (nested)) |
+  | list   |                            |
+#+END_SRC
+
+#+BEGIN_VERSE
+6. 索引表格参数.表格参数可以看作以0为基数的数组.当索引为负数时则表示从最后一个元素开始处算起
+表格索引优先与所有其它 HeaderArguments
+[0,-1] 等同于 python 的 array[0][-1]
+[0:2] 等同于 python的 array[0:3] (元素 0,1,2)
+[*] 表示整个表格
+#+END_VERSE
+#+BEGIN_SRC org
+  ,#+NAME: example-table
+  | 1 | a |
+  | 2 | b |
+  | 3 | c |
+  | 4 | d |
+
+  ,#+BEGIN_SRC emacs-lisp :var data=example-table[0,-1]
+   data
+  ,#+END_SRC
+
+  ,#+RESULTS:
+  : a
+
+  ,#+BEGIN_SRC emacs-lisp :var data=example-table[1:3]
+   data
+  ,#+END_SRC
+
+  ,#+RESULTS:
+  | 2 | b |
+  | 3 | c |
+  | 4 | d |
+
+  ,#+BEGIN_SRC emacs-lisp :var data=example-table[*]
+   data
+  ,#+END_SRC
+
+  ,#+RESULTS:
+  | 1 | a |
+  | 2 | b |
+  | 3 | c |
+  | 4 | d |
 #+END_SRC
