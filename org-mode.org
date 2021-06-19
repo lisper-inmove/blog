@@ -8,13 +8,6 @@
 一段内容叫大纲,大纲由标题+文档组成
 #+END_VERSE
 * 标题
-** 标题的可视性
-#+BEGIN_VERSE
-1. overview: 默认值,只显示最顶层标题
-2. content: 显示所有标题
-3. showall: 显示所有标题包括内容但是不显示drawer
-4. showeverything: 显示所有内容包括drawer
-#+END_VERSE
 ** 编辑大纲
 1. C-c @(org-mark-substree): 选中当前大纲
 2. C-c C-w(org-refile): 把当前这个大纲移动到另一个和父大纲同级的大纲下面
@@ -278,20 +271,25 @@ but not any simpler --- Albert Einstein
 #+BEGIN_VERSE
 5+个 '-' 号会变成水平分割线
 #+END_VERSE
-* COMMENT 导出
-1. OPTIONS
-   1. TOC: table of contents的缩写,导出的文件是否包含目录.
-      1. ^: 完整目录
-      2. nil: 没有目录
-      3. 数字: 只有前几级的标题成为目录
-* 块
-#+BEGIN_JUSTIFYLEFT
-It's just a jump to the left...
-#+END_JUSTIFYLEFT
-#+BEGIN_JUSTIFYRIGHT
-...and then a step to the right.
-#+END_JUSTIFYRIGHT
+* OPTIONS
+1. TOC: table of contents的缩写,导出的文件是否包含目录.
+  1. ^: 完整目录
+  2. nil: 没有目录
+  3. 数字: 只有前几级的标题成为目录
+* STARTUP:
+1. indent/noindent: 是否自动缩进
+2. hidestars/showstarts: 是否使用精简模式
+3. overview: 默认值,只显示最顶层标题
+4. content: 显示所有标题
+5. showall: 显示所有标题包括内容但是不显示drawer
+6. showeverything: 显示所有内容包括drawer
+7. hideblocks/nohideblocks: 显示隐藏代码代码块
 * COMMENT preamble and postamble
 #+BEGIN_SRC emacs-lisp
   (setq org-html-preamble "Hello inmove")
+#+END_SRC
+* 结构模板
+#+BEGIN_SRC emacs-lisp
+  (add-to-list 'org-structure-template-alist '("el" "#+BEGIN_SRC emacs-lisp\n?\n#+END_SRC"))
+  (add-to-list 'org-structure-template-alist '("sh" "#+BEGIN_SRC sh\n?\n#+END_SRC"))
 #+END_SRC
