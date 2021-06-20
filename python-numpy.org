@@ -98,3 +98,14 @@ np.array(array)
    :        [ 1,  8],
    :        [ 2, 10]], dtype=int32),
    :  array([0.2, 1.6]))
+5. indices(dimensions, dtype=<class 'int'>, sparse=False)
+   #+BEGIN_VERSE
+   创建一堆数组.一共有len(dimensions)+1维.每个数字表示每个维度的最大值
+   #+END_VERSE
+   #+BEGIN_SRC python :results pp :noweb strip-export
+     <<import-np>>
+     return np.indices((2,))
+   #+END_SRC
+
+   #+RESULTS:
+   : array([[0, 1]])
