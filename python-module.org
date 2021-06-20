@@ -1,0 +1,176 @@
+#+SETUPFILE: ~/.emacs.d/org-templates/template.org
+#+TITLE: Python - 模块
+
+* os
+** 变量
+*** environ
+#+BEGIN_VERSE
+一个表示字符串环境的mapping对象.
+这个映射是在第一次导入os模块时捕获.
+#+END_VERSE
+** 函数
+*** getenv
+#+BEGIN_VERSE
+os.getenv(key, default=None)
+如果存在,返回环境变量的值,否则返回default
+#+END_VERSE
+*** get_exec_path
+#+BEGIN_VERSE
+os.get_exec_path(env=None)
+返回将用于搜索可执行文件的目录列表
+#+END_VERSE
+* os.path
+1. abspath(path):
+   #+BEGIN_VERSE
+   返回path的绝对路径
+   #+END_VERSE
+   #+BEGIN_SRC python
+     import os
+     return os.path.abspath("a/b/c/d")
+   #+END_SRC
+
+   #+RESULTS:
+   : /home/inmove/code/blog/a/b/c/d
+2. basename(path)
+   #+BEGIN_VERSE
+   返回路径的文件部分.如果path以 '/' 结尾,那么返回空字符串
+   #+END_VERSE
+   #+BEGIN_SRC python :results pp
+     import os
+     a = os.path.basename("a/b/c/")
+     b = os.path.basename("/a/b/c/x.txt")
+     return a, b
+   #+END_SRC
+
+   #+RESULTS:
+   : ('', 'x.txt')
+3. dirname(path)
+   #+BEGIN_VERSE
+   返回路径的目录部分
+   #+END_VERSE
+   #+BEGIN_SRC python :results pp
+     import os
+     a = os.path.dirname("/a/b/c/x.txt")
+     b = os.path.dirname("a/b/c/d")
+     return a, b
+   #+END_SRC
+
+   #+RESULTS:
+   : ('/a/b/c', 'a/b/c')
+4. exists(path)
+   #+BEGIN_VERSE
+   path存在返回true,不存在返回false
+   如果path是失效的link时也返回false6
+   #+END_VERSE
+5. expanduser(path)
+   #+BEGIN_VERSE
+   把 path中的 '~' 做替换
+   #+END_VERSE
+6. expandvars(path)
+   #+BEGIN_VERSE
+   把 path 中的 $name 或 ${name} 做替换
+   #+END_VERSE
+7. getatime(path)
+   #+BEGIN_VERSE
+   path的最后访问时间
+   #+END_VERSE
+8. getmtime(path)
+   #+BEGIN_VERSE
+   path的最后修改时间
+   #+END_VERSE
+9. getctime(path)
+   #+BEGIN_VERSE
+   path在系统中的ctime
+   #+END_VERSE
+10. getsize(path)
+    #+BEGIN_VERSE
+    返回path的大小,以字节为单位
+    #+END_VERSE
+11. isabs(path):
+    #+BEGIN_VERSE
+    返回path是不是绝对路径
+    #+END_VERSE
+12. isfile(path):
+    #+BEGIN_VERSE
+    返回是不是常规文件.本方法会跟踪符号链接
+    #+END_VERSE
+13. isdir(path):
+    #+BEGIN_VERSE
+    返回是不是目录
+    #+END_VERSE
+14. islink(path):
+    #+BEGIN_VERSE
+    如果是符号链接,则返回true
+    #+END_VERSE
+15. join(path, *paths):
+    #+BEGIN_VERSE
+    路径拼接
+    #+END_VERSE
+16. splitext(path)
+    #+BEGIN_VERSE
+    把path拆分为 (root,ext) 的
+    #+END_VERSE
+    #+BEGIN_SRC python :results pp
+      import os
+      a = os.path.splitext("/a/b/c/d.txt")
+      b = os.path.splitext("https://www.example.com/a/b/c/image.png")
+      return a, b
+    #+END_SRC
+
+    #+RESULTS:
+    : (('/a/b/c/d', '.txt'), ('https://www.example.com/a/b/c/image', '.png'))
+17. split(path)
+    #+BEGIN_VERSE
+    把path折分为(head,tail)部分
+    #+END_VERSE
+    #+BEGIN_SRC python :results pp
+      import os
+      a = os.path.split("/a/b/c/d.txt")
+      b = os.path.split("https://www.example.com/a/b/c/image.png")
+      return a, b
+    #+END_SRC
+
+    #+RESULTS:
+    : (('/a/b/c', 'd.txt'), ('https://www.example.com/a/b/c', 'image.png'))
+18. sameopenfile(fp1, fp2)
+    #+BEGIN_VERSE
+    如果fp1,fp2指向相同的文件,返回True
+    #+END_VERSE
+19. samestat(stat1, stat2)
+    #+BEGIN_VERSE
+    如果stat1,stat2指向相同的文件,返回true
+    #+END_VERSE
+20. samefile(path1, path2):
+    #+BEGIN_VERSE
+    如果都指向相同的目录或文件,返回True
+    #+END_VERSE
+21. relpath(path, start=os.curdir)
+    #+BEGIN_VERSE
+    返回从start目录访问path时的相对路径
+    #+END_VERSE
+    #+BEGIN_SRC python :results pp
+      import os
+      return os.path.relpath("hello/a/b")
+    #+END_SRC
+
+    #+RESULTS:
+    : 'hello/a/b'
+22. realpath(path)
+    #+BEGIN_VERSE
+    返回path的绝对路径
+    #+END_VERSE
+    #+BEGIN_SRC python :results pp
+      import os
+      return os.path.realpath("a//b/c/d/../c")
+    #+END_SRC
+
+    #+RESULTS:
+    : '/home/inmove/code/blog/a/b/c/c'
+23. normpath(path):
+    #+BEGIN_SRC python :results pp
+      import os
+      return os.path.normpath("a//b////c/d/e/t.txt")
+    #+END_SRC
+
+    #+RESULTS:
+    : 'a/b/c/d/e/t.txt'
