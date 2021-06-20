@@ -19,6 +19,17 @@ os.getenv(key, default=None)
 os.get_exec_path(env=None)
 返回将用于搜索可执行文件的目录列表
 #+END_VERSE
+*** walk(top, topdown=True, onerror=None, followlinks=False)
+#+BEGIN_VERSE
+1. top是要遍历的目录地址
+2. topdown 为true同优先遍历top,再遍历其子目录
+3. onerror: 遍历出错时调用的函数
+4. followlinks: 为true时会访问链接的实际文件
+5. 返回一个三元组(root,dirs,files)
+    1. root: 正在遍历的目录本身
+    2. dirs: 所有子目录
+    3. files: 所有文件
+#+END_VERSE
 * os.path
 1. abspath(path):
    #+BEGIN_VERSE

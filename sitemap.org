@@ -13,6 +13,7 @@
 - [[file:org-mode.org][Org Mode]]
 - [[file:org-mode-working-with-source-code.org][OrgMode中的源代码]]
 - [[file:python.org][Python]]
+- [[file:python-module.org][Python - 模块]]
 - [[file:python-profile.org][Python性能相关]]
 - [[file:redis.org][Redis]]
 - [[file:systemctl.org][Systemctl]]
