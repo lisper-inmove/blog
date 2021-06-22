@@ -1,0 +1,7 @@
+#+SETUPFILE: ~/.emacs.d/org-templates/template.org
+#+TITLE: plantuml
+
+#+BEGIN_SRC plantuml :dir ~/code/blog/images :file ./test.png :exports both
+  Alice -> Bob: synchronous call
+  Alice ->> Bob: asynchronous call
+#+END_SRC

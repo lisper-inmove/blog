@@ -1,0 +1,33 @@
+#+SETUPFILE: ~/.emacs.d/org-templates/template.org
+#+TITLE: ditaa
+
+#+begin_src ditaa :dir ~/code/blog/images :file ./test_ditaa.png :cmdline -r -s 0.8 :exports both
+      +-----------+        +---------+
+      |    PLC    |        |         |
+      |  Network  +<------>+   PLC   +<---=---------+
+      |    cRED   |        |  c707   |              |
+      +-----------+        +----+----+              |
+                                ^                   |
+                                |                   |
+                                |  +----------------|-----------------+
+                                |  |                |                 |
+                                v  v                v                 v
+        +----------+       +----+--+--+      +-------+---+      +-----+-----+       Windows clients
+        |          |       |          |      |           |      |           |      +----+      +----+
+        | Database +<----->+  Shared  +<---->+ Executive +<-=-->+ Operator  +<---->|cYEL| . . .|cYEL|
+        |   c707   |       |  Memory  |      |   c707    |      | Server    |      |    |      |    |
+        +--+----+--+       |{d} cGRE  |      +------+----+      |   c707    |      +----+      +----+
+           ^    ^          +----------+             ^           +-------+---+
+           |    |                                   |
+           |    +--------=--------------------------+
+           v
+  +--------+--------+
+  |                 |
+  | Millwide System |            -------- Data ---------
+  | cBLU            |            --=----- Signals ---=--
+  +-----------------+
+#+END_SRC
+
+
+#+BEGIN_SRC ditaa :dir ~/code/blog/images :file ./hello-world.png :cmdline -r -s 0.8 :exports both
+#+END_SRC
