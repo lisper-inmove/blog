@@ -1,33 +1,163 @@
 #+SETUPFILE: ~/.emacs.d/org-templates/template.org
-#+TITLE: ditaa
+#+TITLE: ditaa examples
 
-#+begin_src ditaa :dir ~/code/blog/images :file ./test_ditaa.png :cmdline -r -s 0.8 :exports both
-      +-----------+        +---------+
-      |    PLC    |        |         |
-      |  Network  +<------>+   PLC   +<---=---------+
-      |    cRED   |        |  c707   |              |
-      +-----------+        +----+----+              |
-                                ^                   |
-                                |                   |
-                                |  +----------------|-----------------+
-                                |  |                |                 |
-                                v  v                v                 v
-        +----------+       +----+--+--+      +-------+---+      +-----+-----+       Windows clients
-        |          |       |          |      |           |      |           |      +----+      +----+
-        | Database +<----->+  Shared  +<---->+ Executive +<-=-->+ Operator  +<---->|cYEL| . . .|cYEL|
-        |   c707   |       |  Memory  |      |   c707    |      | Server    |      |    |      |    |
-        +--+----+--+       |{d} cGRE  |      +------+----+      |   c707    |      +----+      +----+
-           ^    ^          +----------+             ^           +-------+---+
-           |    |                                   |
-           |    +--------=--------------------------+
-           v
-  +--------+--------+
-  |                 |
-  | Millwide System |            -------- Data ---------
-  | cBLU            |            --=----- Signals ---=--
-  +-----------------+
+
+* 举例
+1. 圆形角
+#+BEGIN_SRC ditaa :dir ~/code/blog/images :file ./ditaa-corner.png :cmdline -v :exports both
+  /--\  +--+
+  |  |  |  |
+  |  |  |  |
+  \--/  +--+
 #+END_SRC
 
+2. 颜色: 只有贴着边的时候颜色才有效
+#+BEGIN_SRC ditaa :dir ~/code/blog/images :file ./ditaa-color.png :cmdline -r -s 0.8 :exports both
+  +--------------+
+  | c33F         |
+  |              |
+  |              |
+  |              |
+  +--------------+
+#+END_SRC
+3. 标签
+#+BEGIN_SRC ditaa :dir ~/code/blog/images :file ./ditaa-tag.png :cmdline -r -s 0.8 :exports both
+  +-----+       +-----+       +-----+
+  |{d}  |       |{s}  |       |{io} |
+  |     |       |     |       |     |
+  |     |       |     |       |     |
+  +-----+       +-----+       +-----+
+#+END_SRC
+4. 虚线
+#+BEGIN_SRC ditaa :dir ~/code/blog/images :file ./ditaa-dashed-lines.png :cmdline -r -s 0.8 :exports both
+  ----+    /----+    +----+
+      :    |    |    :    |
+      |    |    |    |{s} |
+      v    \-=--+    +----+
+#+END_SRC
+5. 点标记
+#+BEGIN_SRC ditaa :dir ~/code/blog/images :file ./ditaa-point-markers.png :cmdline -r -s 0.8 :exports both
+  ,*---*
+  |   |       /--*
+  ,*   *       |
+  |   |   -*--+
+  ,*---*
 
-#+BEGIN_SRC ditaa :dir ~/code/blog/images :file ./hello-world.png :cmdline -r -s 0.8 :exports both
+#+END_SRC
+6. 文字
+#+BEGIN_SRC ditaa :dir ~/code/blog/images :file ./ditaa-text-handling.png :cmdline -r -s 0.8 :exports both
+  /-----------------------------\
+  | Things to do                |
+  | cGRE                        |
+  | o Cut the grass             |
+  | o Buy Jam                   |
+  | o Fix car                   |
+  | o Make website              |
+  \-----------------------------/
+#+END_SRC
+
+* 别人的例子
+
+[[https://github.com/changcs/ditaa-examples][Github: Ditaa Examples]]
+
+** GRO Modules
+
+#+BEGIN_SRC ditaa :dir ~/code/blog/images :file ./ditaa-gro-modules.png :cmdline -r -s 1.2 :exports both
+
+                                        GRO Architecture
+   -----------------------------------------------------------------------------------------------------
+                                          Top Modules
+    /----------\
+    |    GUI   |
+    | cRED     |
+    +----------+
+   ---------=----------------------------------------------------------------------------------=--------
+    +----------+ +-----------\/-----------------\/--------+
+    | UCI      | |LUCI-SHARED|| SDK-LIBC-SCRIPT || DNSMASQ|
+    | c516     | | cBLU      || cBLU            ||   cBLU |
+    +----------+ +-----------/\-----------------/\--------+
+   -----------------------------------------------------------------------------------------------------
+                                          Lower Modules
+    +-----------------------------------------------------------------------------------------------+
+    |                                         netfilter                                             |
+    |  +------------------+                                                                         |
+    |  | Access Control   |                                                                         |
+    |  |   c277           |                                                                         |
+    |  +------------------+                                                                         |
+    |                                           cA7A                                                |
+    +-----------------------------------------------------------------------------------------------+
+    +-----------+  +--------------+
+    |SDK-LIBC   |  | Busybox      |
+    |cBLU       |  | Driver  cPNK |
+    +-----------+  +--------------+
+
+
+
+#+END_SRC
+
+** Feature Modules
+#+BEGIN_SRC ditaa :dir ~/code/blog/images :file ./ditaa-feature-modules.png :cmdline -r -s 1.2 :exports both
+
+          +-------------+
+          |   UCI       |
+          |   c516      |
+          +------+------+
+                 | config get
+                 v                   /----------------------------------------------------\
+          +-------------+            | - Translate configratuion items from UCI to uci    |
+          | LUCI-SHARED |............| - Provide luci script to bring up feature          |
+          |    cBLU     |            | - Provide Ada scripts                              |
+          +------+------+            \----------------------------------------------------/
+                 |
+                 v
+         +----------------+
+         | Openwrt config |
+         | cGRE           |
+         +-------+--------+
+                 |
+                 v
+        +-------------------+         +------------+
+        |  SDK-LIBC-SCRIPT  +-------->|  DNSMASQ   |
+        |     cBLU          |         |   cBLU     |
+        +---------+---------+         +------+-----+
+                  |                          | (Ada configuration)
+                  |      /-------------------+
+                  |      |
+                  v      v
+        +-------------------+
+        |     SDK-LIBC      |
+        |       cBLU        |
+        +-------------------+
+
+
+
+#+END_SRC
+
+#+begin_src ditaa :dir ~/code/blog/images :file ./ditaa-test_ditaa.png :cmdline -r -s 1.0 :exports both
+
+    +-----------+        +---------+
+    |    PLC    |        |         |
+    |  Network  +<------>+   PLC   +<---=---------+
+    |    cRED   |        |  c707   |              |
+    +-----------+        +----+----+              |
+                              ^                   |
+                              |                   |
+                              |  +----------------|-----------------+
+                              |  |                |                 |
+                              v  v                v                 v
+      +----------+       +----+--+--+      +-------+---+      +-----+-----+       Windows clients
+      |          |       |          |      |           |      |           |      +----+      +----+
+      | Database +<----->+  Shared  +<---->+ Executive +<-=-->+ Operator  +<---->|cYEL| . . .|cYEL|
+      |   c707   |       |  Memory  |      |   c707    |      | Server    |      |    |      |    |
+      +--+----+--+       |{d} cGRE  |      +------+----+      |   c707    |      +----+      +----+
+         ^    ^          +----------+             ^           +-------+---+
+         |    |                                   |
+         |    +--------=--------------------------+
+         v
++--------+--------+
+|                 |
+| Millwide System |            -------- Data ---------
+| cBLU            |            --=----- Signals ---=--
++-----------------+
+
 #+END_SRC
