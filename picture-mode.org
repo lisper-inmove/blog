@@ -4,10 +4,10 @@
 * 快捷键
 1. C-c C-c: 退出picture-mode
 2. C-c ^(picture-movement-up): 画图方向设为向上
-3. C-c .(down): 向下
-4. C-c >(right): 向右
-5. C-c <(left): 向左
-6. C-c `(northwest): 西北
-7. C-c '(northeast): 东北
-8. C-c /(southwest): 西南
-9. C-c \(southeast): 东南
+3. C-c .(picture-movement-down): 向下
+4. C-c >(picture-movement-right): 向右
+5. C-c <(picture-movement-left): 向左
+6. C-c `(picture-movement-nw): 西北
+7. C-c '(picture-movement-ne): 东北
+8. C-c /(picture-movement-sw): 西南
+9. C-c \(picture-movement-se): 东南
