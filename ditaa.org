@@ -1,6 +1,37 @@
 #+SETUPFILE: ~/.emacs.d/org-templates/template.org
 #+TITLE: ditaa examples
 
+* ditaa *cmdline*
+1. -E, --no-separation
+
+   #+BEGIN_VERSE
+   有 -E 参数
+   #+END_VERSE
+   #+BEGIN_SRC ditaa :dir ~/code/blog/images :file ./ditaa-no-separation.png :cmdline -E -v :exports both
+     +------------------+
+     | cBLU             |
+     |                  |
+     |           +------+
+     |           |cPNK  |
+     |           |      |
+     +-----------+------+
+   #+END_SRC
+
+   #+BEGIN_VERSE
+   无 -E 参数
+   #+END_VERSE
+   #+BEGIN_SRC ditaa :dir ~/code/blog/images :file ./ditaa-with-separation.png :cmdline -v :exports both
+     +------------------+
+     | cBLU             |
+     |                  |
+     |           +------+
+     |           |cPNK  |
+     |           |      |
+     +-----------+------+
+   #+END_SRC
+
+2. -r,--round-corners: 全设置为圆角
+3. -s,--scale <SCALE>: 设置生成的图片的缩放
 
 * 举例
 1. 圆形角
