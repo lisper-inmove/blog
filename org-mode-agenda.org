@@ -2,6 +2,10 @@
 #+CATEGORY: OrgMode
 #+TITLE: Agenda
 
-* 日程表                                                             :agenda:
+* 日程表文件
+#+BEGIN_VERSE
+变量 *org-agenda-files* 列出了被加入到日程表的所有org文件.如果有目录被加入,那么目录下的所有的 .org 文件全被加入到日程表中
+#+END_VERSE
+* 快捷键                                                             :agenda:
 1. C-c [(org-agenda-file-to-front): 添加当前文件到agenda列表
 2. C-c ](org-remove-file): 把当前文件从agenda列表中移除

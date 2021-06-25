@@ -3,10 +3,6 @@
 #+OPTIONS: toc:1
 #+TITLE: Org Mode
 
-* 说明
-#+BEGIN_VERSE
-一段内容叫大纲,大纲由标题+文档组成
-#+END_VERSE
 * 标题
 ** 编辑大纲
 1. C-c @(org-mark-substree): 选中当前大纲
