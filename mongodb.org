@@ -1,184 +1,66 @@
 #+SETUPFILE: ~/.emacs.d/org-templates/template.org
 #+TITLE: MongoDB
 
-* 插入 document
-1. =db.collection.insertOne=
+
+* CRUD
+** 插入
 #+BEGIN_VERSE
-插入一条document到数据库.如果没有显示的提供_id字段,mongodb会自动加上
+1. insertOne
+  1. 与db.collection.explain不兼容
+  2. 可以用于多文档的事务中
+2. insertMany
 #+END_VERSE
-#+BEGIN_SRC shell
-  db.inventory.insertOne(
-     { item: "canvas", qty: 100, tags: ["cotton"], size: { h: 28, w: 35.5, uom: "cm" } }
-  )
-#+END_SRC
-
+** 查找
 #+BEGIN_VERSE
-insertedId为新插入的document的_id字段的值
+1. find
 #+END_VERSE
-#+BEGIN_SRC json
-  {
-      "acknowledged": true,
-      "insertedId": ObjectId("60925ac1cbcce416a51333bf")
-  }
-#+END_SRC
-
-2. =db.collection.insertMany=
+*** 操作符查找
+**** 等于查找
+#+BEGIN_EXAMPLE
+db.collection.find({key: value})
+#+END_EXAMPLE
 #+BEGIN_VERSE
-插入多条document到数据库
+数据库中 key指向的内容定义为v
+1. 当v为字符串,数组,json格式时,value相应也为字符串,数组,json格式,那么当v==value时查找成功
+2. 如果v是一个数组,value是字符串时,当 value in v 时查找成功
 #+END_VERSE
-#+BEGIN_SRC shell
-  db.inventory.insertMany([
-     { item: "journal", qty: 25, tags: ["blank", "red"], size: { h: 14, w: 21, uom: "cm" } },
-     { item: "mat", qty: 85, tags: ["gray"], size: { h: 27.9, w: 35.5, uom: "cm" } },
-     { item: "mousepad", qty: 25, tags: ["gel", "blue"], size: { h: 19, w: 22.85, uom: "cm" } }
-  ])
-#+END_SRC
+**** AND 查找
+#+BEGIN_EXAMPLE
+db.collection.find({key1: v1, key2: v2})
+#+END_EXAMPLE
+**** OR 查找
+#+BEGIN_EXAMPLE
+db.collection.find({"$or": [{k1: v1}, {k2: v2}]})
+#+END_EXAMPLE
+*** 数组查找
+**** 精确匹配
 #+BEGIN_VERSE
-返回的insertedId是一个数组,其值是每个document的_id字段的值
+tags是一个数组,完全等同于 ["red", "blank"] 时才匹配成功,顺序也要一致
+=$all= 用于去除顺序的一致性
 #+END_VERSE
-#+BEGIN_SRC json
-  {
-      "acknowledged": true,
-      "insertedId": [
-          ObjectId("60925ac1cbcce416a51333af"),
-          ObjectId("60925ac1cbcce416a51333bf"),
-          ObjectId("60925ac1cbcce416a51333cf")
-      ]
-  }
-#+END_SRC
-* 查询 document
-
-等于
-#+BEGIN_SRC shell
-  db.collection.find({"key": "value"})
-  # 相当于 sql
-  select * from collection where key="value";
-#+END_SRC
-
-AND
-#+BEGIN_SRC shell
-  db.collection.find({"key1": "value1", "key2": "value2"})
-  # 相当于 sql
-  select * from collection where key1="value1" and key2="value2";
-#+END_SRC
-
-IN
-#+BEGIN_SRC shell
-  db.collection.find({"status": {"$in": ["A", "B"]}})
-
-  select * from collection where status in ("A", "B");
-#+END_SRC
-
-OR
-#+BEGIN_SRC shell
-  db.collection.find({"$or": [{"status": "A"}, {"name": "DOG"}]})
-
-  select * from collection where status="A" or name="DOG";
-#+END_SRC
-
-AND 与 OR
-#+BEGIN_SRC shell
-  db.collection.find({"status": "A", "$or": [{"qty": {"$lt": 30}}, {"name": "DOG"}]})
-
-  select * from collection where status="A" and (qty<30 OR name="DOG")
-#+END_SRC
-
-嵌套字段查询
-#+BEGIN_SRC shell
-  db.collection.find({"size.uom": "abc"})
-#+END_SRC
-
-** 数组查询
-
-顺序也要一样
-#+BEGIN_SRC shell
-  db.inventory.find( { tags: ["red", "blank"] } )
-#+END_SRC
-
-顺序无关
-#+BEGIN_SRC shell
-  db.inventory.find( { tags: { $all: ["red", "blank"] } } )
-#+END_SRC
-
-数组里所有元素只要有一个满足即返回
-#+BEGIN_SRC shell
-  db.inventory.find( { tags: "red"} )
-#+END_SRC
-
-所有条件只要全部满足即可返回
+#+BEGIN_EXAMPLE
+  db.collection.find({"tags": ["red", "blank"]})
+  db.collection.find({"tags": {"$all": ["red", "blank"]}})
+#+END_EXAMPLE
+**** 单个元素匹配
 #+BEGIN_VERSE
-A: [15.5]
-B: [14, 21]
-都满足以下条件
+只要有一个元素满足条件即匹配成功
+=$elemMatch= 用于控制只能是单个元素满足所有条件
 #+END_VERSE
-#+BEGIN_SRC shell
-  db.inventory.find( { dim_cm: { $gt: 15, $lt: 20 } } )
-#+END_SRC
+#+BEGIN_EXAMPLE
+  db.collection.find({dim_cm: value})
+  db.collection.find({dim_cm: {"$operator0": value0, "$operator1": value1}})
+  db.collection.find({dim_cm: {"$elemMatch": {"$operator0": val0, "$operator1": val1}}})
+#+END_EXAMPLE
 
-一个元素满足所有条件
-#+BEGIN_SRC shell
-  db.inventory.find( { dim_cm: { $elemMatch: { $gt: 22, $lt: 30 } } } )
-#+END_SRC
-
-第x个元素满足条件则返回.下标从0开始
-#+BEGIN_SRC shell
-  db.inventory.find( { "dim_cm.1": { $gt: 25 } } )
-#+END_SRC
-
-根据长度查询
-#+BEGIN_SRC shell
-  db.inventory.find( { "tags": { $size: 3 } } )
-#+END_SRC
-
-** 数组嵌套查询
+** 更新
 #+BEGIN_VERSE
-数组嵌套查询指数组中的元素不是基础数据类型.同样也是json类型或者数组
+1. updateOne
+2. updateMany
+3. replaceOne
 #+END_VERSE
-
-完全等同
-#+BEGIN_SRC shell
-  db.inventory.find( { "instock": { warehouse: "A", qty: 5 } } )
-#+END_SRC
-
-至少有一个元素满足: 只要有一个元素的qty小于等于20即可
-#+BEGIN_SRC shell
-  db.inventory.find( { 'instock.qty': { $lte: 20 } } )
-#+END_SRC
-
-至少有一个元素完全满足条件: instock中至少有一个元素满足 qty=5,warehouse="A"
-#+BEGIN_SRC shell
-  db.inventory.find( { "instock": { $elemMatch: { qty: 5, warehouse: "A" } } } )
-#+END_SRC
-
-** 指明返回字段
-_id默认返回,如果不想要,则把_id设置为0.
-#+BEGIN_SRC shell
-  db.collection.find( { status: "A" }, { item: 1, status: 1 } )
-  # 等同于
-  SELECT item,status,_id from collection where status="A";
-#+END_SRC
-
-返回嵌套数据的一部分: instock数组的最后一个元素
+** 删除
 #+BEGIN_VERSE
-$slice <n>: 如果是正数,则返回最开始的n个元素.负数则返回最后的n个元素
-$slice <n to skip> <m to return>: 跳过前n个元素,返回m个元素.如果n为正数,则从0开始往后跳过,如果n是负数,则从最后一个开始往前跳.
+1. deleteOne
+2. deleteMany
 #+END_VERSE
-#+BEGIN_SRC shell
-  db.collection.find( { status: "A" }, { item: 1, status: 1, instock: { $slice: -1 } } )
-#+END_SRC
-
-** 空字段查找
-存在或为null都返回
-#+BEGIN_SRC shell
-  db.collection.find({item: null})
-#+END_SRC
-
-只返回值为null的
-#+BEGIN_SRC shell
-  db.collection.find({item: {"$type": 10}})
-#+END_SRC
-
-只返回某个字段不存在的
-#+BEGIN_SRC shell
-  db.collection.find({item: {"$exists": false}})
-#+END_SRC
