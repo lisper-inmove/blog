@@ -113,11 +113,10 @@ typeSpecification1是一个json格式,默认值为 ={"$type": "date"}=
 * aggregation
 ** $addFields
 #+BEGIN_VERSE
-[[https://docs.mongodb.com/manual/reference/operator/aggregation/addFields/][MongoDB: addFields]]
-在返回的数据里面增加额外的字段.增加的字段可以根据已有的字段计算得来
+[[https://docs.mongodb.com/manual/reference/operator/aggregation/addFields/][MongoDB: $addFields]]
+在返回的数据里面增加额外的字段.增加的字段可以根据已有的字段计算得来,语法如下:
 ={$addFields:{<newField>:<expression>,...}}=
 #+END_VERSE
-
 *** 例子
 #+BEGIN_SRC json
   [
@@ -213,7 +212,29 @@ typeSpecification1是一个json格式,默认值为 ={"$type": "date"}=
           }
      ] )
 #+END_SRC
-
+** $bucket
+#+BEGIN_VERSE
+[[https://docs.mongodb.com/manual/reference/operator/aggregation/bucket/][MongoDB: $bucket]]
+根据条件对数据进行分组,语法如下:
+1. groupBy: 数据根据 groupBy 指定的表达式进行分组
+2. boundaries: 数组.用于分级的条件.当groupBy的计算结果在同一个区间的数据被分在同一个分组
+3. default: 如果groupBy的结果不能被boundraies分组,那么就归于这个默认分组
+4. output: 最终输出结果
+#+END_VERSE
+#+BEGIN_SRC shell
+  {
+    $bucket: {
+        groupBy: <expression>,
+        boundaries: [ <lowerbound1>, <lowerbound2>, ... ],
+        default: <literal>,
+        output: {
+           <output1>: { <$accumulator expression> },
+           ...
+           <outputN>: { <$accumulator expression> }
+        }
+     }
+  }
+#+END_SRC
 ** distinct
 #+BEGIN_VERSE
 把所有key去重返回
