@@ -110,3 +110,114 @@ typeSpecification1是一个json格式,默认值为 ={"$type": "date"}=
   current_date = {"updateTime": {"$type": "timestamp"}}
   collection.update_one(matcher, {"$set": json_data, "$currentDate": current_date}, upsert=True)
 #+END_SRC
+* aggregation
+** $addFields
+#+BEGIN_VERSE
+[[https://docs.mongodb.com/manual/reference/operator/aggregation/addFields/][MongoDB: addFields]]
+在返回的数据里面增加额外的字段.增加的字段可以根据已有的字段计算得来
+={$addFields:{<newField>:<expression>,...}}=
+#+END_VERSE
+
+*** 例子
+#+BEGIN_SRC json
+  [
+      {
+          "extraCredit": 0,
+          "quiz": [
+              10, 8
+          ],
+          "homework": [
+              10, 5, 10
+          ],
+          "student": "Maya",
+          "_id": 1
+      },
+      {
+          "extraCredit": 8,
+          "quiz": [
+              8, 8
+          ],
+          "homework": [
+              5, 6, 5
+          ],
+          "student": "Ryan",
+          "_id": 2
+      }
+  ]
+#+END_SRC
+#+BEGIN_VERSE
+1. totalHomework值为homework数组的各元素之和
+2. totalQuiz值为 quiz数组的各元素之和
+3. totalScore值为 totalHomework + totalQuiz + extraCredit
+由此可知,后面的addFields阶段是可以用前面的addFields新添加的字段的
+#+END_VERSE
+#+BEGIN_SRC shell
+  db.scores.aggregate( [
+     {
+       $addFields: {
+         totalHomework: { $sum: "$homework" } ,
+         totalQuiz: { $sum: "$quiz" }
+       }
+     },
+     {
+       $addFields: { totalScore:
+         { $add: [ "$totalHomework", "$totalQuiz", "$extraCredit" ] } }
+     }
+  ] )
+#+END_SRC
+#+BEGIN_SRC json
+  [
+      {
+          "_id" : 1,
+          "student" : "Maya",
+          "homework" : [ 10, 5, 10 ],
+          "quiz" : [ 10, 8 ],
+          "extraCredit" : 0,
+          "totalHomework" : 25,
+          "totalQuiz" : 18,
+          "totalScore" : 43
+      },
+      {
+          "_id" : 2,
+          "student" : "Ryan",
+          "homework" : [ 5, 6, 5 ],
+          "quiz" : [ 8, 8 ],
+          "extraCredit" : 8,
+          "totalHomework" : 16,
+          "totalQuiz" : 16,
+          "totalScore" : 40
+      }
+
+  ]
+#+END_SRC
+
+#+BEGIN_VERSE
+通过 $concatArrays 往 homework 数组中添加一个元素
+#+END_VERSE
+#+BEGIN_SRC shell
+  db.scores.aggregate([
+     { $match: { _id: 1 } },
+     { $addFields: { homework: { $concatArrays: [ "$homework", [ 7 ] ] } } }
+  ])
+#+END_SRC
+
+#+BEGIN_VERSE
+在返回的数据里面增加内嵌的字段
+#+END_VERSE
+#+BEGIN_SRC shell
+  db.vehicles.aggregate( [
+          {
+             $addFields: {
+                "a.c.b": "test"
+             }
+          }
+     ] )
+#+END_SRC
+
+** distinct
+#+BEGIN_VERSE
+把所有key去重返回
+#+END_VERSE
+#+BEGIN_SRC shell
+  db.collection.distinct("key")
+#+END_SRC
