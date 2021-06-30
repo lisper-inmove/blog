@@ -217,9 +217,9 @@ typeSpecification1是一个json格式,默认值为 ={"$type": "date"}=
 [[https://docs.mongodb.com/manual/reference/operator/aggregation/bucket/][MongoDB: $bucket]]
 根据条件对数据进行分组,语法如下:
 1. groupBy: 数据根据 groupBy 指定的表达式进行分组
-2. boundaries: 数组.用于分级的条件.当groupBy的计算结果在同一个区间的数据被分在同一个分组
-3. default: 如果groupBy的结果不能被boundraies分组,那么就归于这个默认分组
-4. output: 最终输出结果
+2. boundaries: 数组.用于分级的条件.当groupBy的计算结果在同一个区间的数据被分在同一个分组.这个分组被命名为值较小的那个索引
+3. default: 如果groupBy的结果不能被boundraies分组,那么就归于这个默认分组.如果groupBy的计算结果小于boundaries[0]的或者大于boundaries[-1]的将被分在default中
+4. output: 最终输出结果,如果不指定,则只返回各个分组的元素个数
 #+END_VERSE
 #+BEGIN_SRC shell
   {
