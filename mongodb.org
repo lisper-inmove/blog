@@ -257,7 +257,26 @@ typeSpecification1是一个json格式,默认值为 ={"$type": "date"}=
           ]
      }
   }
-
+#+END_SRC
+** $bucketAuto
+[[https://docs.mongodb.com/manual/reference/operator/aggregation/bucketAuto/][MongoDB: $bucketAuto]]
+#+BEGIN_VERSE
+同 $bucket 一样用于对数据做分组,参数基本和 $bucket 一样.所不同的是不用提供 boundaries,mongodb会根据buckets来做均匀的划分.
+1. granularity 用于设置粒度,以后有需要再看文档,最近应该也用不上
+2. buckets: 把数据分成几个组
+#+END_VERSE
+#+BEGIN_SRC javascript
+  {
+    $bucketAuto: {
+        groupBy: <expression>,
+        buckets: <number>,
+        output: {
+           <output1>: { <$accumulator expression> },
+           ...
+        }
+        granularity: <string>
+    }
+  }
 #+END_SRC
 ** distinct
 #+BEGIN_VERSE
