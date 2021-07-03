@@ -1,0 +1,75 @@
+#+SETUPFILE: ~/.emacs.d/org-templates/template.org
+#+TITLE: whoosh
+
+* 什么是Whoosh
+#+BEGIN_VERSE
+[[https://whoosh.readthedocs.io/en/latest/][Whoosh Read The Doc]]
+Whoosh 是用纯 Python 开发的一个库.作为创建搜索引擎的基础而存在
+#+END_VERSE
+* 内置数据类型
+#+BEGIN_VERSE
+1. whoosh.fields.TEXT: 对文字进行分词.对拆分之后的术语以及术语的位置进行索引.保存位置是为了可以索引短语
+analyzer用于设置分词器,默认使用 StandardAnalyzer 做分词
+phrase=False用于设置不保存位置以节省空间
+stored=True用于保存 TEXT 的内容,默认是不保存的
+#+END_VERSE
+#+BEGIN_VERSE
+2. whoosh.fields.KEYWORD: 设置关键词.关键词默认用 " " 分隔,也可以用 "," 分隔.不支持短语索引
+lowercase=True,把关键字都转换成小写
+commas=True,用","分隔
+scorable=True,计算匹配的分数
+#+END_VERSE
+#+BEGIN_VERSE
+3. whoosh.fields.ID: 保存一个完全匹配的索引.这类型的字段不会进行分词,并且只有完全匹配时才会返回
+#+END_VERSE
+#+BEGIN_VERSE
+4. whoosh.fields.STORED: 表示一个保存的字段,不能用于索引
+#+END_VERSE
+#+BEGIN_VERSE
+5. whoosh.fields.NUMERIC: 紧凑的形式保存数字
+#+END_VERSE
+#+BEGIN_VERSE
+6. whoosh.fields.DATETIME: 紧凑的形式保存日期,可以用于排序
+#+END_VERSE
+#+BEGIN_VERSE
+7. whoosh.fields.BOOLEAN: 允许用户以 yes,no,true,false,1,0,t,f来查找
+add_document的时候把它值设置为 True,False, 然后用 字符串 yes,true,1,t 表示真 no,false,0,f 表示假 来查找
+#+END_VERSE
+#+BEGIN_VERSE
+8. whoosh.fields.NGRAM: 用于用户自定义数据类型
+#+END_VERSE
+* 创建schema
+#+BEGIN_VERSE
+用内置的Schema类来创建
+#+END_VERSE
+#+BEGIN_SRC python
+  from whoosh.fields import Schema, TEXT, KEYWORD, ID
+  from whoosh.analysis import StemmingAnalyzer
+  schema = Schema(from_addr=ID(stored=True),
+                  to_addr=ID(stored=True),
+                  subject=TEXT(stored=True),
+                  body=TEXT(analyzer=StemmingAnalyzer()),
+                  tags=KEYWORD)
+#+END_SRC
+
+#+BEGIN_VERSE
+继承SchemaClass基类来创建一个Schema类
+#+END_VERSE
+#+BEGIN_SRC python
+  from whoosh.fields import SchemaClass, TEXT, KEYWORD, ID
+  class MySchema(SchemaClass):
+      path = ID(stored=True)
+      title = TEXT(stored=True)
+      content = TEXT
+      tags = KEYWORD
+#+END_SRC
+* 添加和移除域
+#+BEGIN_VERSE
+添加和移除必须在第一个add_document的前面.移除一个域的时候,硬盘上的索引并不会发生改变,必须等到optimize=True的时候才会修改
+#+END_VERSE
+#+BEGIN_SRC python
+  writer = ix.writer()
+  writer.add_field(fieldname, fields.TEXT(stored=True))
+  writer.remove_field(fieldname)
+  writer.commit(optimize=True)
+#+END_SRC
