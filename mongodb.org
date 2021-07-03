@@ -278,6 +278,33 @@ typeSpecification1是一个json格式,默认值为 ={"$type": "date"}=
     }
   }
 #+END_SRC
+** $collStats
+[[https://docs.mongodb.com/manual/reference/operator/aggregation/collStats/][MongoDB: $collStats]]
+** $count
+[[https://docs.mongodb.com/manual/reference/operator/aggregation/count/][MongoDB: $count]]
+#+BEGIN_SRC javascript
+  {$count: name}
+#+END_SRC
+#+BEGIN_VERSE
+对上一阶段的结果数量进行统计,并将结果存在name中
+#+END_VERSE
+#+BEGIN_SRC javascript
+  // 把 score 大于80的查找出来,统计出总数并,保存在 passing_scores 中
+  db.scores.aggregate(
+    [
+      {
+        $match: {
+          score: {
+            $gt: 80
+          }
+        }
+      },
+      {
+        $count: "passing_scores"
+      }
+    ]
+  )
+#+END_SRC
 ** distinct
 #+BEGIN_VERSE
 把所有key去重返回
