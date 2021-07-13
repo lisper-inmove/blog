@@ -1,0 +1,10 @@
+#+SETUPFILE: ~/.emacs.d/org-templates/template.org
+#+TITLE: Emacs Lisp
+
+
+* Debug Emacs Lisp
+1. 在函数的定义处使用 =M-x edebug-defun=,下一次函数调用的时候就会进入断点状态
+
+2. =M-x debug-on-entry=: 设置某个函数成为断点的入口
+3. =M-x toggle-debug-on-error=: 报错时,进入断点状态
+4. =M-x toggle-debug-on-quit=: 用户使用 =C-g= 时进入断点状态
