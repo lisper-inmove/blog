@@ -2,11 +2,21 @@
 @tailwind components;
 @tailwind utilities;
 
-@font-face {
-  font-family: "GiveYouGlory";
-  src: url("../assets/GiveYouGlory-Regular.ttf") format ("truetype");
+/* Add this to your global stylesheet or component-specific CSS */
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+  }
+
+  to {
+    opacity: 1;
+  }
 }
 
-body {
-  font-family: "GiveYouGlory";
+.fadeIn2S {
+  animation: fadeIn 2s ease-out;
+}
+
+::-webkit-scrollbar {
+  width: 0;
 }

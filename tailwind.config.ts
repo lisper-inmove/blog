@@ -8,7 +8,11 @@ const config: Config = {
   ],
   darkMode: "class",
   theme: {
-    extend: {},
+    extend: {
+      boxShadow: {
+        neu: "3px 3px 5px #d1d9e6, -3px -3px 5px #ffffff",
+      },
+    },
   },
   plugins: [],
 };
