@@ -2,7 +2,6 @@
 @tailwind components;
 @tailwind utilities;
 
-/* Add this to your global stylesheet or component-specific CSS */
 @keyframes fadeIn {
   from {
     opacity: 0;
@@ -15,6 +14,20 @@
 
 .fadeIn2S {
   animation: fadeIn 2s ease-out;
+}
+
+@keyframes slideInLeft {
+  from {
+    transform: translateX(-300px);
+  }
+
+  to {
+    transform: translate(0px);
+  }
+}
+
+.slideInLeft2S {
+  animation: slideInLeft 2s ease-out;
 }
 
 ::-webkit-scrollbar {

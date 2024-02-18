@@ -3,7 +3,7 @@ import { lfont } from "@/utils/constants";
 import { CategoryMap, PostMetadata } from "../models/post";
 import { Card } from "@mui/material";
 import { useThemeStore } from "../stores/ThemeStore";
-import { useEffect, useMemo, useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 
 interface Props {
   params: {
@@ -13,7 +13,6 @@ interface Props {
 
 export default function Home({ params }: Props) {
   const { isDarkMode, themeColor, toggleTheme } = useThemeStore();
-  let setCategory = false;
   const [selectCategory, setSelectCategory] = useState<CategoryMap | null>(
     null,
   );
@@ -30,9 +29,6 @@ export default function Home({ params }: Props) {
           acc[category] = [];
         }
         acc[category].push(element);
-        // if (selectCategory === null) {
-        //   setSelectCategory({ [category]: acc[category] });
-        // }
       });
       return acc;
     }, {});
@@ -61,7 +57,7 @@ export default function Home({ params }: Props) {
             <Card
               key={category}
               onClick={() => setSelectCategory({ [category]: posts })}
-              className="mt-8 h-12 flex items-center justify-center fadeIn2S text-2xl hover:cursor-pointer transform transition-transform active:scale-105"
+              className="mt-8 h-12 flex items-center justify-center slideInLeft2S text-2xl hover:cursor-pointer transform transition-transform active:scale-105"
               style={{
                 backgroundColor: themeColor.postCategoryCardBgColor,
                 boxShadow: `3px 3px 5px 1px ${themeColor.postCategoryCardShadowColor1}, -3px -3px 5px 1px ${themeColor.postCategoryCardShadowColor2}`,
@@ -74,12 +70,30 @@ export default function Home({ params }: Props) {
         </div>
       </div>
       {/* Right Section: List Posts */}
-      <div className="h-[90vh] w-5/6 overflow-y-auto">
+      <div className="h-[90vh] w-5/6 overflow-y-auto flex flex-wrap justify-start content-start">
         {selectCategory != null &&
           Object.values(selectCategory)
             .flat()
             .map((post, index) => {
-              return <div key={post.id}>{post.title}</div>;
+              return (
+                <Card
+                  key={post.id}
+                  className="m-8 h-36 w-80 flex flex-col items-start p-4 fadeIn2S"
+                  style={{
+                    backgroundColor: themeColor.postCategoryCardBgColor,
+                    boxShadow: `3px 3px 5px 1px ${themeColor.postCategoryCardShadowColor1}, -3px -3px 5px 1px ${themeColor.postCategoryCardShadowColor2}`,
+                    borderRadius: "8px",
+                  }}
+                >
+                  <div className={`${lfont.className}`}>
+                    <h1 className="text-2xl">{post.title}</h1>
+                  </div>
+                  <br />
+                  <div>
+                    <h3 className="text-sm">{post.subtitle}</h3>
+                  </div>
+                </Card>
+              );
             })}
       </div>
     </div>
