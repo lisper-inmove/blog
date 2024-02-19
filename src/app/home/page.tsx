@@ -2,9 +2,9 @@
 import { lfont } from "@/utils/constants";
 import { CategoryMap, PostMetadata } from "../models/post";
 import { Card } from "@mui/material";
-import { useThemeStore } from "../stores/ThemeStore";
 import { useEffect, useMemo, useRef, useState } from "react";
 import Link from "next/link";
+import { lightModeColor } from "../stores/ThemeColors";
 
 interface Props {
   params: {
@@ -13,7 +13,6 @@ interface Props {
 }
 
 export default function Home({ params }: Props) {
-  const { isDarkMode, themeColor, toggleTheme } = useThemeStore();
   const [selectCategory, setSelectCategory] = useState<CategoryMap | null>(
     null,
   );
@@ -47,8 +46,8 @@ export default function Home({ params }: Props) {
     <div
       className="flex justify-around"
       style={{
-        backgroundColor: themeColor.commonBgColor,
-        color: themeColor.commonTextColor,
+        backgroundColor: lightModeColor.commonBgColor,
+        color: lightModeColor.commonTextColor,
       }}
     >
       {/* Left Section: Post Category List */}
@@ -60,8 +59,8 @@ export default function Home({ params }: Props) {
               onClick={() => setSelectCategory({ [category]: posts })}
               className="mt-8 h-12 flex items-center justify-center slideInLeft2S text-2xl hover:cursor-pointer transform transition-transform active:scale-105"
               style={{
-                backgroundColor: themeColor.postCategoryCardBgColor,
-                boxShadow: `3px 3px 5px 1px ${themeColor.postCategoryCardShadowColor1}, -3px -3px 5px 1px ${themeColor.postCategoryCardShadowColor2}`,
+                backgroundColor: lightModeColor.postCategoryCardBgColor,
+                boxShadow: `3px 3px 5px 1px ${lightModeColor.postCategoryCardShadowColor1}, -3px -3px 5px 1px ${lightModeColor.postCategoryCardShadowColor2}`,
                 borderRadius: "8px",
               }}
             >
@@ -81,8 +80,8 @@ export default function Home({ params }: Props) {
                   key={post.id}
                   className="m-8 h-36 w-80 flex flex-col items-start p-4 fadeIn2S"
                   style={{
-                    backgroundColor: themeColor.postCategoryCardBgColor,
-                    boxShadow: `3px 3px 5px 1px ${themeColor.postCategoryCardShadowColor1}, -3px -3px 5px 1px ${themeColor.postCategoryCardShadowColor2}`,
+                    backgroundColor: lightModeColor.postCategoryCardBgColor,
+                    boxShadow: `3px 3px 5px 1px ${lightModeColor.postCategoryCardShadowColor1}, -3px -3px 5px 1px ${lightModeColor.postCategoryCardShadowColor2}`,
                     borderRadius: "8px",
                   }}
                 >

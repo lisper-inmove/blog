@@ -1,7 +1,5 @@
-"use client";
-
-import { useThemeStore } from "@/app/stores/ThemeStore";
 import { LineContentProps, LineComponent } from "./LineContentComponents";
+import { lightModeColor } from "@/app/stores/ThemeColors";
 
 interface CenterComponentProps {
   params: {
@@ -10,14 +8,12 @@ interface CenterComponentProps {
 }
 
 export default function CenterComponent({ params }: CenterComponentProps) {
-  const { isDarkMode, themeColor, toggleTheme } = useThemeStore();
-
   return (
     <div
       className="px-56 pt-4 text-center"
       style={{
-        backgroundColor: themeColor.commonBgColor,
-        color: themeColor.commonTextColor,
+        backgroundColor: lightModeColor.commonBgColor,
+        color: lightModeColor.commonTextColor,
       }}
     >
       {params.contents.map((content: LineContentProps) => {

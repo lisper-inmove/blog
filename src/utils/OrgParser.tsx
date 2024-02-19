@@ -49,7 +49,7 @@ export default class OrgParser {
       this.ast = orga.parse(content);
       this.readProperty();
       this.start();
-      return BodyComponent(<div className="mb-96">{this.components}</div>);
+      return BodyComponent(<div>{this.components}</div>);
     } catch (error) {
       console.error("Error reading or parsing OrgMode file:", error);
     }

@@ -1,6 +1,4 @@
-"use client";
-
-import { useThemeStore } from "@/app/stores/ThemeStore";
+import { lightModeColor } from "@/app/stores/ThemeColors";
 import {
   LineComponent,
   LineContentProps,
@@ -22,8 +20,6 @@ interface TableComponentProps {
 }
 
 export default function TableComponent({ params }: TableComponentProps) {
-  const { isDarkMode, themeColor, toggleTheme } = useThemeStore();
-
   let rows: any[] = [];
   for (let row of params.rows) {
     let cells: any[] = [];
@@ -41,8 +37,8 @@ export default function TableComponent({ params }: TableComponentProps) {
     <div
       className="pt-8 flex flex-col px-52 pb-8"
       style={{
-        backgroundColor: themeColor.commonBgColor,
-        color: themeColor.commonTextColor,
+        backgroundColor: lightModeColor.commonBgColor,
+        color: lightModeColor.commonTextColor,
       }}
     >
       <table className="min-w-max w-4/5 table-auto border border-gray-800 m-auto">

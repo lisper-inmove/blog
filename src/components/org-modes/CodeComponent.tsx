@@ -1,8 +1,7 @@
-"use client";
-import { useThemeStore } from "@/app/stores/ThemeStore";
 import { Prism as SyntaxHighlighter } from "react-syntax-highlighter";
 import { oneDark } from "react-syntax-highlighter/dist/cjs/styles/prism";
 import { lfont } from "@/utils/constants";
+import { lightModeColor } from "@/app/stores/ThemeColors";
 
 interface Props {
   line: string;
@@ -10,7 +9,6 @@ interface Props {
 }
 
 export default function CodeParser({ line, language }: Props) {
-  const { isDarkMode, themeColor, toggleTheme } = useThemeStore();
   let showLineNumbers = true;
   if (language == "picture") {
     showLineNumbers = false;
@@ -19,15 +17,15 @@ export default function CodeParser({ line, language }: Props) {
     <div
       className="pt-4 px-56"
       style={{
-        backgroundColor: themeColor.commonBgColor,
-        color: themeColor.codeLanguageTextColor,
+        backgroundColor: lightModeColor.commonBgColor,
+        color: lightModeColor.codeLanguageTextColor,
       }}
     >
       <div className={`flex text-white absolute right-60 ${lfont.className}`}>
         <span
           className="mr-5"
           style={{
-            color: themeColor.codeLanguageTextColor,
+            color: lightModeColor.codeLanguageTextColor,
           }}
         >
           {language}

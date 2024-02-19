@@ -1,6 +1,4 @@
-"use client";
-
-import { useThemeStore } from "@/app/stores/ThemeStore";
+import { lightModeColor } from "@/app/stores/ThemeColors";
 import { LineContentProps, LineComponent } from "./LineContentComponents";
 
 interface ParagraphComponentProps {
@@ -12,14 +10,12 @@ interface ParagraphComponentProps {
 export default function ParagraphComponent({
   params,
 }: ParagraphComponentProps) {
-  const { isDarkMode, themeColor, toggleTheme } = useThemeStore();
-
   return (
     <div
       className="px-56 pt-4"
       style={{
-        backgroundColor: themeColor.commonBgColor,
-        color: themeColor.commonTextColor,
+        backgroundColor: lightModeColor.commonBgColor,
+        color: lightModeColor.commonTextColor,
       }}
     >
       {params.contents.map((content: LineContentProps) => {

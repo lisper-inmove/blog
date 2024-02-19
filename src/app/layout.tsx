@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import "./globals.css";
 import NavBar from "@/components/NavBar";
+import { lightModeColor } from "./stores/ThemeColors";
 
 export const metadata: Metadata = {
   title: "inmove's blog",
@@ -14,7 +15,12 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="en">
-      <body className="flex flex-col">
+      <body
+        className="flex flex-col"
+        style={{
+          backgroundColor: lightModeColor.commonBgColor,
+        }}
+      >
         <div className="flex fixed">
           <NavBar></NavBar>
         </div>

@@ -1,18 +1,5 @@
-"use client";
-
-import { useThemeStore } from "@/app/stores/ThemeStore";
-import {
-  BoldText,
-  EmptyLine,
-  InnercodeText,
-  ItalicText,
-  LineContentProps,
-  StrikeThroughText,
-  UnderlineText,
-  VerbatimText,
-  CommonText,
-  LineComponent,
-} from "./LineContentComponents";
+import { LineContentProps, LineComponent } from "./LineContentComponents";
+import { lightModeColor } from "@/app/stores/ThemeColors";
 
 export interface ListItemComponentProps {
   contents: LineContentProps[];
@@ -25,14 +12,12 @@ interface ListComponentProps {
 }
 
 export default function ListComponent({ params }: ListComponentProps) {
-  const { isDarkMode, themeColor, toggleTheme } = useThemeStore();
-
   return (
     <div
       className="px-56 pt-4"
       style={{
-        backgroundColor: themeColor.commonBgColor,
-        color: themeColor.commonTextColor,
+        backgroundColor: lightModeColor.commonBgColor,
+        color: lightModeColor.commonTextColor,
       }}
     >
       {params.items.map((contents: ListItemComponentProps) => {

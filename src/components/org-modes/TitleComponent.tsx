@@ -1,6 +1,4 @@
-"use client";
-
-import { useThemeStore } from "@/app/stores/ThemeStore";
+import { lightModeColor } from "@/app/stores/ThemeColors";
 
 interface TitleComponentProps {
   params: {
@@ -12,13 +10,12 @@ interface TitleComponentProps {
 }
 
 export default function TitleComponent({ params }: TitleComponentProps) {
-  const { isDarkMode, themeColor, toggleTheme } = useThemeStore();
   return (
     <div
       className="pt-8 flex flex-col px-52 pb-8"
       style={{
-        backgroundColor: themeColor.commonBgColor,
-        color: themeColor.commonTextColor,
+        backgroundColor: lightModeColor.commonBgColor,
+        color: lightModeColor.commonTextColor,
       }}
     >
       <div className="flex justify-center">
