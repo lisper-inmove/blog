@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import "./globals.css";
 import NavBar from "@/components/NavBar";
 import { lightModeColor } from "./stores/ThemeColors";
+import { Box } from "@mui/material";
 
 export const metadata: Metadata = {
   title: "inmove's blog",
@@ -16,15 +17,15 @@ export default function RootLayout({
   return (
     <html lang="en">
       <body
-        className="flex flex-col"
+        className="flex flex-col h-screen"
         style={{
           backgroundColor: lightModeColor.commonBgColor,
         }}
       >
-        <div className="flex fixed">
+        <header className="text-white text-center">
           <NavBar></NavBar>
-        </div>
-        <div className="mt-[10vh]">{children}</div>
+        </header>
+        <main className="overflow-y-auto h-screen">{children}</main>
       </body>
     </html>
   );

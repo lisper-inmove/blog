@@ -4,6 +4,7 @@ import {
   LineContentProps,
   generateRandomKey,
 } from "./LineContentComponents";
+import { Box } from "@mui/material";
 
 export interface TableRow {
   cells: TableCell[];
@@ -34,7 +35,7 @@ export default function TableComponent({ params }: TableComponentProps) {
   }
 
   return (
-    <div
+    <Box
       className="pt-8 flex flex-col px-52 pb-8"
       style={{
         backgroundColor: lightModeColor.commonBgColor,
@@ -62,6 +63,6 @@ export default function TableComponent({ params }: TableComponentProps) {
           ))}
         </tbody>
       </table>
-    </div>
+    </Box>
   );
 }

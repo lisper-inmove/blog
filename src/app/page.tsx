@@ -3,7 +3,7 @@ import Home from "./home/page";
 import { PostMetadata } from "./models/post";
 import { loadPostsMetadataHttp } from "./api/post-category/loadPostsMetadataHttp";
 import { useEffect, useState } from "react";
-import { useThemeStore } from "./stores/ThemeStore";
+import { Box } from "@mui/material";
 
 export default function Root() {
   const [postsMetadatas, setPostsMetadatas] = useState<PostMetadata[]>([]);
@@ -16,8 +16,8 @@ export default function Root() {
       .catch((error) => console.log("Load posts metadatas error", error));
   }, []);
   return (
-    <div className="">
+    <Box className="">
       <Home params={{ postsMetadatas: postsMetadatas }}></Home>
-    </div>
+    </Box>
   );
 }

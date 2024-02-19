@@ -1,8 +1,8 @@
 "use client";
 import { lfont } from "@/utils/constants";
 import { CategoryMap, PostMetadata } from "../models/post";
-import { Card } from "@mui/material";
-import { useEffect, useMemo, useRef, useState } from "react";
+import { Box, Card } from "@mui/material";
+import { useEffect, useMemo, useState } from "react";
 import Link from "next/link";
 import { lightModeColor } from "../stores/ThemeColors";
 
@@ -43,7 +43,7 @@ export default function Home({ params }: Props) {
   }, [postCategories]);
 
   return (
-    <div
+    <Box
       className="flex justify-around"
       style={{
         backgroundColor: lightModeColor.commonBgColor,
@@ -51,8 +51,8 @@ export default function Home({ params }: Props) {
       }}
     >
       {/* Left Section: Post Category List */}
-      <div className="flex flex-col items-center h-[90vh] w-1/6 overflow-y-auto border-r border-r-gray-300">
-        <div className="h-12 w-3/4">
+      <Box className="flex flex-col items-center h-[90vh] w-1/6 overflow-y-auto border-r border-r-gray-300">
+        <Box className="h-12 w-3/4">
           {Object.entries(postCategories).map(([category, posts]) => (
             <Card
               key={category}
@@ -67,10 +67,10 @@ export default function Home({ params }: Props) {
               <h3 className={`${lfont.className}`}>{category}</h3>
             </Card>
           ))}
-        </div>
-      </div>
+        </Box>
+      </Box>
       {/* Right Section: List Posts */}
-      <div className="h-[90vh] w-5/6 overflow-y-auto flex flex-wrap justify-start content-start">
+      <Box className="h-[90vh] w-5/6 overflow-y-auto flex flex-wrap justify-start content-start">
         {selectCategory != null &&
           Object.values(selectCategory)
             .flat()
@@ -85,20 +85,21 @@ export default function Home({ params }: Props) {
                     borderRadius: "8px",
                   }}
                 >
-                  <div className={`${lfont.className}`}>
+                  <Box className={`${lfont.className}`}>
                     <Link href={`/posts/${post.id}`}>
                       <h1 className="text-2xl">{post.title}</h1>
                     </Link>
-                  </div>
+                  </Box>
                   <br />
-                  <div>
-                    <h3 className="text-sm">{post.subtitle}</h3>
-                  </div>
-                  <div>{post.id}</div>
+                  <Box>
+                    <h3 className="text-sm text-ellipsis w-64 line-clamp-3">
+                      {post.subtitle}
+                    </h3>
+                  </Box>
                 </Card>
               );
             })}
-      </div>
-    </div>
+      </Box>
+    </Box>
   );
 }

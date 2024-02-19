@@ -1,6 +1,7 @@
 export type ThemeColor = {
   commonBgColor: string;
   commonTextColor: string;
+  navbarBgColor: string;
   reverseColor: string;
   themeToggleBgColor: string;
   postCategoryCardBgColor: string;
@@ -25,6 +26,7 @@ export const darkModeColor: ThemeColor = {
   headlineTextColor: "#ffa900",
   tagTextColor: "#f380a0",
   codeLanguageTextColor: "#e67002",
+  navbarBgColor: "#dadada00",
 };
 
 export const lightModeColor: ThemeColor = {
@@ -38,4 +40,5 @@ export const lightModeColor: ThemeColor = {
   headlineTextColor: "#b36a01",
   tagTextColor: "#f380a0",
   codeLanguageTextColor: "#e67002",
+  navbarBgColor: "#dadada00",
 };

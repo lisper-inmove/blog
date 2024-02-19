@@ -22,6 +22,8 @@ import TableComponent, {
   TableCell,
   TableRow,
 } from "@/components/org-modes/TableComponent";
+import TableContentComponent from "@/components/TableContentComponent";
+import { Box } from "@mui/material";
 
 export default class OrgParser {
   private filePath: string;
@@ -49,11 +51,17 @@ export default class OrgParser {
       this.ast = orga.parse(content);
       this.readProperty();
       this.start();
-      return BodyComponent(<div>{this.components}</div>);
+      this.components.unshift(
+        <TableContentComponent
+          key={generateRandomKey("tableContentComponent")}
+          params={{ headlines: this.headlines }}
+        ></TableContentComponent>,
+      );
+      return <Box>{this.components}</Box>;
     } catch (error) {
       console.error("Error reading or parsing OrgMode file:", error);
     }
-    return <div>Error</div>;
+    return <Box>Error</Box>;
   }
 
   private start() {

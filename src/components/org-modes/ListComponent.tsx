@@ -1,3 +1,4 @@
+import { Box } from "@mui/material";
 import { LineContentProps, LineComponent } from "./LineContentComponents";
 import { lightModeColor } from "@/app/stores/ThemeColors";
 
@@ -13,7 +14,7 @@ interface ListComponentProps {
 
 export default function ListComponent({ params }: ListComponentProps) {
   return (
-    <div
+    <Box
       className="px-56 pt-4"
       style={{
         backgroundColor: lightModeColor.commonBgColor,
@@ -27,6 +28,6 @@ export default function ListComponent({ params }: ListComponentProps) {
         }
         return components;
       })}
-    </div>
+    </Box>
   );
 }

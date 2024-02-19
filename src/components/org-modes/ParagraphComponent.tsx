@@ -1,5 +1,6 @@
 import { lightModeColor } from "@/app/stores/ThemeColors";
 import { LineContentProps, LineComponent } from "./LineContentComponents";
+import { Box } from "@mui/material";
 
 interface ParagraphComponentProps {
   params: {
@@ -11,7 +12,7 @@ export default function ParagraphComponent({
   params,
 }: ParagraphComponentProps) {
   return (
-    <div
+    <Box
       className="px-56 pt-4"
       style={{
         backgroundColor: lightModeColor.commonBgColor,
@@ -21,6 +22,6 @@ export default function ParagraphComponent({
       {params.contents.map((content: LineContentProps) => {
         return LineComponent(content);
       })}
-    </div>
+    </Box>
   );
 }

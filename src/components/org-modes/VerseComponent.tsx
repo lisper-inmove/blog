@@ -1,5 +1,6 @@
 import { lightModeColor } from "@/app/stores/ThemeColors";
 import { LineContentProps, LineComponent } from "./LineContentComponents";
+import { Box } from "@mui/material";
 
 interface VerseComponentProps {
   params: {
@@ -9,7 +10,7 @@ interface VerseComponentProps {
 
 export default function VerseComponent({ params }: VerseComponentProps) {
   return (
-    <div
+    <Box
       className="px-56 pt-4"
       style={{
         backgroundColor: lightModeColor.commonBgColor,
@@ -19,6 +20,6 @@ export default function VerseComponent({ params }: VerseComponentProps) {
       {params.contents.map((content: LineContentProps) => {
         return LineComponent(content);
       })}
-    </div>
+    </Box>
   );
 }

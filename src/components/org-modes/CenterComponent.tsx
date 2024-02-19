@@ -1,3 +1,4 @@
+import { Box } from "@mui/material";
 import { LineContentProps, LineComponent } from "./LineContentComponents";
 import { lightModeColor } from "@/app/stores/ThemeColors";
 
@@ -9,7 +10,7 @@ interface CenterComponentProps {
 
 export default function CenterComponent({ params }: CenterComponentProps) {
   return (
-    <div
+    <Box
       className="px-56 pt-4 text-center"
       style={{
         backgroundColor: lightModeColor.commonBgColor,
@@ -19,6 +20,6 @@ export default function CenterComponent({ params }: CenterComponentProps) {
       {params.contents.map((content: LineContentProps) => {
         return LineComponent(content);
       })}
-    </div>
+    </Box>
   );
 }

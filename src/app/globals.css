@@ -2,11 +2,6 @@
 @tailwind components;
 @tailwind utilities;
 
-html,
-body {
-  height: 100%;
-}
-
 @keyframes fadeIn {
   from {
     opacity: 0;
@@ -32,7 +27,7 @@ body {
 }
 
 .slideInLeft2S {
-  animation: slideInLeft 2s ease-out;
+  animation: slideInLeft 1.5s ease-out;
 }
 
 ::-webkit-scrollbar {
