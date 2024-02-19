@@ -12,8 +12,8 @@ export default function ParagraphComponent({
   params,
 }: ParagraphComponentProps) {
   return (
-    <Box
-      className="px-56 pt-4"
+    <div
+      className="px-56 pt-4 text-xl"
       style={{
         backgroundColor: lightModeColor.commonBgColor,
         color: lightModeColor.commonTextColor,
@@ -22,6 +22,6 @@ export default function ParagraphComponent({
       {params.contents.map((content: LineContentProps) => {
         return LineComponent(content);
       })}
-    </Box>
+    </div>
   );
 }

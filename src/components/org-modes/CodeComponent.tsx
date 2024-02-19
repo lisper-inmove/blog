@@ -1,5 +1,5 @@
 import { Prism as SyntaxHighlighter } from "react-syntax-highlighter";
-import { oneDark } from "react-syntax-highlighter/dist/cjs/styles/prism";
+import { oneLight } from "react-syntax-highlighter/dist/cjs/styles/prism";
 import { lfont } from "@/utils/constants";
 import { lightModeColor } from "@/app/stores/ThemeColors";
 import { Box } from "@mui/material";
@@ -16,7 +16,7 @@ export default function CodeParser({ line, language }: Props) {
   }
   return (
     <Box
-      className="pt-4 px-56 relative"
+      className="pt-4 px-64 relative"
       style={{
         backgroundColor: lightModeColor.commonBgColor,
         color: lightModeColor.codeLanguageTextColor,
@@ -34,7 +34,7 @@ export default function CodeParser({ line, language }: Props) {
       </Box>
       <SyntaxHighlighter
         language={language}
-        style={oneDark}
+        style={oneLight}
         showLineNumbers={showLineNumbers}
         customStyle={{ margin: "0" }}
       >

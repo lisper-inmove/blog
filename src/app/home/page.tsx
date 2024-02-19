@@ -78,7 +78,7 @@ export default function Home({ params }: Props) {
               return (
                 <Card
                   key={post.id}
-                  className="m-8 h-36 w-80 flex flex-col items-start p-4 fadeIn2S"
+                  className="m-8 h-52 w-80 flex flex-col items-start p-4 fadeIn2S"
                   style={{
                     backgroundColor: lightModeColor.postCategoryCardBgColor,
                     boxShadow: `3px 3px 5px 1px ${lightModeColor.postCategoryCardShadowColor1}, -3px -3px 5px 1px ${lightModeColor.postCategoryCardShadowColor2}`,
@@ -92,7 +92,7 @@ export default function Home({ params }: Props) {
                   </Box>
                   <br />
                   <Box>
-                    <h3 className="text-sm text-ellipsis w-64 line-clamp-3">
+                    <h3 className="text-sm text-ellipsis w-64 line-clamp-6">
                       {post.subtitle}
                     </h3>
                   </Box>

@@ -1,4 +1,5 @@
 import { lightModeColor } from "@/app/stores/ThemeColors";
+import { lfont } from "@/utils/constants";
 import { Box, Typography } from "@mui/material";
 
 interface TitleComponentProps {
@@ -22,16 +23,11 @@ export default function TitleComponent({ params }: TitleComponentProps) {
       <Box className="flex justify-center">
         <h1 className="text-4xl">{params.title}</h1>
       </Box>
-      <Box className="flex flex-col">
-        <Box className="flex flex-col justify-start items-start">
-          <Typography>Created At: {params.date}</Typography>
-          <Typography>Keywords: {params.keywords}</Typography>
-        </Box>
-        <Box className="max-w-2xl">
-          <Typography className="text-red-600 indent-8">
-            {params.subtitle}
-          </Typography>
-        </Box>
+      <Box
+        className={`flex flex-col justify-start items-start ${lfont.className}`}
+      >
+        <h3>Last Update At: {params.date}</h3>
+        <h3 className="font-bold">Keywords: {params.keywords}</h3>
       </Box>
     </Box>
   );
