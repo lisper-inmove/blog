@@ -3,6 +3,7 @@ import "./globals.css";
 import NavBar from "@/components/NavBar";
 import { lightModeColor } from "./stores/ThemeColors";
 import { Box } from "@mui/material";
+import { lfont } from "@/utils/constants";
 
 export const metadata: Metadata = {
   title: "inmove's blog",
@@ -25,7 +26,9 @@ export default function RootLayout({
         <header className="text-white text-center">
           <NavBar></NavBar>
         </header>
-        <main className="overflow-y-auto h-screen">{children}</main>
+        <main className={`overflow-y-auto h-screen ${lfont.className}`}>
+          {children}
+        </main>
       </body>
     </html>
   );

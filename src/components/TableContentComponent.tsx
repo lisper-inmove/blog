@@ -16,14 +16,18 @@ export default function TableContentComponent({ params }: TableContentProps) {
   let tableContent = renderTablehead(params.headlines);
   const [isExpanded, setIsExpanded] = useState(false);
   return (
-    <Box
-      className={`z-50 hover:z-50 fixed top-32 left-5 p-2 bg-gray-300 rounded-md transition-all duration-300 ${isExpanded ? "w-96" : "w-10"}`}
+    <div
+      className={`z-50 hover:z-50 fixed top-20 left-5 p-2 rounded-md transition-all duration-300 ${isExpanded ? "w-96" : "w-8"}`}
       onMouseEnter={() => setIsExpanded(true)}
       onMouseLeave={() => setIsExpanded(false)}
+      style={{
+        backgroundColor: "#c9c9c9a6",
+        backdropFilter: "blur(10px)", // Standard syntax
+      }}
     >
       {isExpanded ? "" : <MdExpandMore />}
       {isExpanded ? tableContent : ""}
-    </Box>
+    </div>
   );
 }
 
@@ -42,9 +46,9 @@ const renderTablehead = (headlines: PostHeadline[]) => {
   return (
     <Box>
       {headlines.map((headline) => (
-        <Box
+        <div
           key={generateRandomKey("tableContent")}
-          className="ml-1 hover:text-red-500"
+          className="ml-1 hover:text-gray-700 text-gray-500"
           style={{
             marginLeft: `${(headline.level - 1) * 2}em`,
             scrollMarginTop: "200px",
@@ -59,7 +63,7 @@ const renderTablehead = (headlines: PostHeadline[]) => {
           >
             {headline.prefix} {headline.name}
           </Link>
-        </Box>
+        </div>
       ))}
     </Box>
   );
