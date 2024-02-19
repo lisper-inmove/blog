@@ -7,6 +7,7 @@ import { AppBar, Box, Toolbar } from "@mui/material";
 export default function NavBar() {
   return (
     <AppBar
+      className="border border-b border-b-gray-300"
       position="static"
       style={{
         backgroundColor: lightModeColor.navbarBgColor,
