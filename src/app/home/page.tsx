@@ -4,6 +4,7 @@ import { CategoryMap, PostMetadata } from "../models/post";
 import { Card } from "@mui/material";
 import { useThemeStore } from "../stores/ThemeStore";
 import { useEffect, useMemo, useRef, useState } from "react";
+import Link from "next/link";
 
 interface Props {
   params: {
@@ -86,12 +87,15 @@ export default function Home({ params }: Props) {
                   }}
                 >
                   <div className={`${lfont.className}`}>
-                    <h1 className="text-2xl">{post.title}</h1>
+                    <Link href={`/posts/${post.id}`}>
+                      <h1 className="text-2xl">{post.title}</h1>
+                    </Link>
                   </div>
                   <br />
                   <div>
                     <h3 className="text-sm">{post.subtitle}</h3>
                   </div>
+                  <div>{post.id}</div>
                 </Card>
               );
             })}

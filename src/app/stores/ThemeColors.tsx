@@ -6,10 +6,13 @@ export type ThemeColor = {
   postCategoryCardBgColor: string;
   postCategoryCardShadowColor1: string;
   postCategoryCardShadowColor2: string;
+  headlineTextColor: string;
+  tagTextColor: string;
+  codeLanguageTextColor: string;
 };
 
 const commonDarkColor = "#6f6a6a";
-const commonLightColor = "#dadadad9";
+const commonLightColor = "#dadada";
 
 export const darkModeColor: ThemeColor = {
   commonBgColor: commonDarkColor,
@@ -19,6 +22,9 @@ export const darkModeColor: ThemeColor = {
   postCategoryCardBgColor: "#b4bcc38c",
   postCategoryCardShadowColor1: "#313233fc",
   postCategoryCardShadowColor2: "#cad2d9",
+  headlineTextColor: "#ffa900",
+  tagTextColor: "#f380a0",
+  codeLanguageTextColor: "#e67002",
 };
 
 export const lightModeColor: ThemeColor = {
@@ -29,4 +35,7 @@ export const lightModeColor: ThemeColor = {
   postCategoryCardBgColor: "#dadadad9",
   postCategoryCardShadowColor1: "#8d8484d9",
   postCategoryCardShadowColor2: "#f1ececd9",
+  headlineTextColor: "#b36a01",
+  tagTextColor: "#f380a0",
+  codeLanguageTextColor: "#e67002",
 };

@@ -15,10 +15,10 @@ export default function RootLayout({
   return (
     <html lang="en">
       <body className="flex flex-col">
-        <div className="flex">
+        <div className="flex fixed">
           <NavBar></NavBar>
         </div>
-        <div>{children}</div>
+        <div className="mt-[10vh]">{children}</div>
       </body>
     </html>
   );

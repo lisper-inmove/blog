@@ -9,7 +9,7 @@ export default function NavBar() {
   const { isDarkMode, themeColor, toggleTheme } = useThemeStore();
   return (
     <nav
-      className="flex h-[10vh] w-[100vw] items-center justify-between border-b border-gray-300"
+      className="flex h-[10vh] w-[100vw] items-center justify-between border-b border-gray-300 absolute"
       style={{
         backgroundColor: themeColor.commonBgColor,
         color: themeColor.commonTextColor,

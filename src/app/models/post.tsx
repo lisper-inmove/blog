@@ -18,3 +18,19 @@ export type PostsMetadataByCategory = {
 export type CategoryMap = {
   [categoryName: string]: PostMetadata[];
 };
+
+export type PostProperty = {
+  title: string;
+  subtitle: string;
+  createDate: Date;
+  updateDate: Date;
+  category: string;
+  keywords: string;
+};
+
+export type PostHeadline = {
+  name: string;
+  level: number;
+  tags: string[];
+  prefix: string;
+};
