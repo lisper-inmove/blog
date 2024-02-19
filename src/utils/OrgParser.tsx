@@ -46,26 +46,24 @@ export default class OrgParser {
   public async parse() {
     try {
       // 读取 OrgMode 文件内容
-      // const content = await fs.readFile(this.filePath, "utf-8");
+      const content = await fs.readFile(this.filePath, "utf-8");
       // 使用 orga 解析内容
-      // this.ast = orga.parse(content);
-      // this.readProperty();
-      // this.start();
-      // this.components.unshift(
-      //   <TableContentComponent
-      //     key={generateRandomKey("tableContentComponent")}
-      //     params={{ headlines: this.headlines }}
-      //   ></TableContentComponent>,
-      // );
-
-      // return (
-      //   <div>
-      //     <BodyComponent
-      //       params={{ components: this.components }}
-      //     ></BodyComponent>
-      //   </div>
-      // );
-      return <div>Hello</div>;
+      this.ast = orga.parse(content);
+      this.readProperty();
+      this.start();
+      this.components.unshift(
+        <TableContentComponent
+          key={generateRandomKey("tableContentComponent")}
+          params={{ headlines: this.headlines }}
+        ></TableContentComponent>,
+      );
+      return (
+        <div>
+          <BodyComponent
+            params={{ components: this.components }}
+          ></BodyComponent>
+        </div>
+      );
     } catch (error) {
       console.error("Error reading or parsing OrgMode file:", error);
     }
@@ -88,32 +86,32 @@ export default class OrgParser {
       if (child.type === "headline") {
         this.parseHeadline(child);
       } else if (child.type === "paragraph") {
-        // this.parseParagraph(child);
+        this.parseParagraph(child);
       } else if (child.type === "section") {
-        // this.parseSection(child);
+        this.parseSection(child);
       } else if (child.type === "list") {
-        // this.parseList(child);
+        this.parseList(child);
       } else if (child.type == "emptyLine") {
         // this.components.push(EmptyLine());
       } else if (child.type === "block") {
         if (child.name == "verse") {
           // begin_verse
-          // this.parseVerse(child);
+          this.parseVerse(child);
         } else if (child.name == "example") {
           // begin_example
-          // this.parseExample(child);
+          this.parseExample(child);
         } else if (child.name == "center") {
           // begin_center
-          // this.parseCenter(child);
+          this.parseCenter(child);
         } else if (child.name == "src") {
           // begin_src
-          // this.parseCode(child);
+          this.parseCode(child);
         } else if (child.name == "quote") {
           // begin_quote
-          // this.parseQuote(child);
+          this.parseQuote(child);
         }
       } else if (child.type === "table") {
-        // this.parseTable(child);
+        this.parseTable(child);
       }
     }
   }

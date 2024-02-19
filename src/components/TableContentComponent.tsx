@@ -3,7 +3,7 @@ import React, { useState } from "react";
 import { PostHeadline } from "@/app/models/post";
 import { MdExpandMore } from "react-icons/md";
 import { generateRandomKey } from "./org-modes/LineContentComponents";
-import { Box, Typography } from "@mui/material";
+import { Box } from "@mui/material";
 import Link from "next/link";
 
 interface TableContentProps {
@@ -17,7 +17,7 @@ export default function TableContentComponent({ params }: TableContentProps) {
   const [isExpanded, setIsExpanded] = useState(false);
   return (
     <Box
-      className={`z-0 hover:z-50 fixed top-32 left-5 p-2 bg-gray-300 rounded-md transition-all duration-300 ${isExpanded ? "w-96" : "w-10"}`}
+      className={`z-50 hover:z-50 fixed top-32 left-5 p-2 bg-gray-300 rounded-md transition-all duration-300 ${isExpanded ? "w-96" : "w-10"}`}
       onMouseEnter={() => setIsExpanded(true)}
       onMouseLeave={() => setIsExpanded(false)}
     >
@@ -30,7 +30,13 @@ export default function TableContentComponent({ params }: TableContentProps) {
 const renderTablehead = (headlines: PostHeadline[]) => {
   const handleClick = (index: string) => {
     const element = document.getElementById(index);
-    if (element) element.scrollIntoView({ behavior: "smooth" });
+    if (element) {
+      element.scrollIntoView({
+        behavior: "smooth",
+        block: "nearest",
+        inline: "start",
+      });
+    }
   };
 
   return (
@@ -44,9 +50,15 @@ const renderTablehead = (headlines: PostHeadline[]) => {
             scrollMarginTop: "200px",
           }}
         >
-          <Typography>
+          <Link
+            href={`#${headline.prefix}`}
+            onClick={(e: any) => {
+              e.preventDefault();
+              handleClick(headline.prefix);
+            }}
+          >
             {headline.prefix} {headline.name}
-          </Typography>
+          </Link>
         </Box>
       ))}
     </Box>

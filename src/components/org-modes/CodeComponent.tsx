@@ -16,7 +16,7 @@ export default function CodeParser({ line, language }: Props) {
   }
   return (
     <Box
-      className="pt-4 px-56"
+      className="pt-4 px-56 relative"
       style={{
         backgroundColor: lightModeColor.commonBgColor,
         color: lightModeColor.codeLanguageTextColor,

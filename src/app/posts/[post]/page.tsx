@@ -10,6 +10,6 @@ interface PageProps {
 export default async function Post({ params: { post } }: PageProps) {
   const relPath = decodeBase64(post);
   const parser = new OrgParser(relPath);
-  const component = parser.parse();
+  const component = await parser.parse();
   return <div>{component}</div>;
 }
