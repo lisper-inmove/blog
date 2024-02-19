@@ -11,5 +11,5 @@ export default async function Post({ params: { post } }: PageProps) {
   const relPath = decodeBase64(post);
   const parser = new OrgParser(relPath);
   const component = parser.parse();
-  return component;
+  return <div>{component}</div>;
 }

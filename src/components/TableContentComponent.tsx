@@ -3,7 +3,7 @@ import React, { useState } from "react";
 import { PostHeadline } from "@/app/models/post";
 import { MdExpandMore } from "react-icons/md";
 import { generateRandomKey } from "./org-modes/LineContentComponents";
-import { Box } from "@mui/material";
+import { Box, Typography } from "@mui/material";
 import Link from "next/link";
 
 interface TableContentProps {
@@ -17,12 +17,9 @@ export default function TableContentComponent({ params }: TableContentProps) {
   const [isExpanded, setIsExpanded] = useState(false);
   return (
     <Box
-      className={`z-0 hover:z-50 fixed top-32 left-5 p-2 rounded-md transition-all duration-300 ${isExpanded ? "w-96" : "w-10"}`}
+      className={`z-0 hover:z-50 fixed top-32 left-5 p-2 bg-gray-300 rounded-md transition-all duration-300 ${isExpanded ? "w-96" : "w-10"}`}
       onMouseEnter={() => setIsExpanded(true)}
       onMouseLeave={() => setIsExpanded(false)}
-      style={{
-        backgroundColor: "#33bbcc11",
-      }}
     >
       {isExpanded ? "" : <MdExpandMore />}
       {isExpanded ? tableContent : ""}
@@ -47,15 +44,9 @@ const renderTablehead = (headlines: PostHeadline[]) => {
             scrollMarginTop: "200px",
           }}
         >
-          <Link
-            href={`#${headline.prefix}`}
-            onClick={(e: any) => {
-              e.preventDefault();
-              handleClick(headline.prefix);
-            }}
-          >
+          <Typography>
             {headline.prefix} {headline.name}
-          </Link>
+          </Typography>
         </Box>
       ))}
     </Box>

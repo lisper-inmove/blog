@@ -8,7 +8,6 @@ export default function NavBar() {
   return (
     <AppBar
       position="static"
-      className="flex flex-row flex-grow w-screen items-center justify-between"
       style={{
         backgroundColor: lightModeColor.navbarBgColor,
         color: lightModeColor.commonTextColor,
@@ -25,12 +24,14 @@ export default function NavBar() {
         <Link href="https://github.com/lisper-inmove" title="My GitHub">
           <FaGithub className="h-6 w-6" />
         </Link>
+        <Box
+          className={`flex-grow text-4xl brightness-90 rotate-0 ${lfont.className}`}
+        >
+          {siteTitle}
+        </Box>
       </Toolbar>
 
       {/* Title Section */}
-      <Box className={`flex-1 text-center text-4xl ${lfont.className}`}>
-        {siteTitle}
-      </Box>
     </AppBar>
   );
 }
