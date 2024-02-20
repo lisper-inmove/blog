@@ -7,7 +7,7 @@
         "date": "2023-09-30 23:27:40",
         "keywords": "CSS",
         "difficulty": "",
-        "subtitle": "一些记不住的东西",
+        "subtitle": "",
         "sort": 9999
     },
     {
@@ -63,6 +63,17 @@
         "keywords": "Binary Search Tree",
         "difficulty": "",
         "subtitle": "",
+        "sort": 9999
+    },
+    {
+        "path": "/home/inmove/blog/posts/Python/gRPC.org",
+        "id": "L2hvbWUvaW5tb3ZlL2Jsb2cvcG9zdHMvUHl0aG9uL2dSUEMub3Jn",
+        "title": "gRPC",
+        "categories": "Python",
+        "date": "2023-09-27 23:55:53",
+        "keywords": "Python gRPC",
+        "difficulty": "",
+        "subtitle": "gRPC (gRPC Remote Procedure Call) is an open-source framework developed by Google for enabling efficient and scalable communication between services. It is designed to work across different languages and platforms",
         "sort": 9999
     }
 ]

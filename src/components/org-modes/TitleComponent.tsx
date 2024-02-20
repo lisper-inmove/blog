@@ -1,6 +1,6 @@
 import { lightModeColor } from "@/app/stores/ThemeColors";
 import { lfont } from "@/utils/constants";
-import { Box, Typography } from "@mui/material";
+import { Box } from "@mui/material";
 
 interface TitleComponentProps {
   params: {
