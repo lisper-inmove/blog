@@ -2,55 +2,82 @@ export interface LineContentProps {
   type: string;
   style: string;
   value: string;
+  prefix: string;
 }
 export function generateRandomKey(prefix: string) {
   return `${prefix}-${Math.random()}-${Math.random()}`;
 }
 
 export function CommonText(content: LineContentProps) {
-  return <span key={generateRandomKey("commonText")}>{content.value}</span>;
+  return (
+    <>
+      <span>{content.prefix}</span>
+      <span key={generateRandomKey("commonText")}>{content.value}</span>
+    </>
+  );
 }
 
 export function VerbatimText(content: LineContentProps) {
   return (
-    <span key={generateRandomKey("verbatim")} className="text-red-500">
-      {content.value}
-    </span>
+    <>
+      <span>{content.prefix}</span>
+      <span key={generateRandomKey("verbatim")} className="text-red-500">
+        {content.value}
+      </span>
+    </>
   );
 }
 
 export function ItalicText(content: LineContentProps) {
   return (
-    <span key={generateRandomKey("italic")} className="text-orange-500 italic">
-      {content.value}
-    </span>
+    <>
+      <span>{content.prefix}</span>
+      <span
+        key={generateRandomKey("italic")}
+        className="text-orange-500 italic"
+      >
+        {content.value}
+      </span>
+    </>
   );
 }
 
 export function UnderlineText(content: LineContentProps) {
   return (
-    <span
-      key={generateRandomKey("underline")}
-      className="text-sky-500 underline"
-    >
-      {content.value}
-    </span>
+    <>
+      <span>{content.prefix}</span>
+      <span
+        key={generateRandomKey("underline")}
+        className="text-sky-500 underline"
+      >
+        {content.value}
+      </span>
+    </>
   );
 }
 
 export function InnercodeText(content: LineContentProps) {
   return (
-    <span key={generateRandomKey("code")} className="text-red-500">
-      {content.value}
-    </span>
+    <>
+      <span>{content.prefix}</span>
+      <span key={generateRandomKey("code")} className="text-red-500">
+        {content.value}
+      </span>
+    </>
   );
 }
 
 export function BoldText(content: LineContentProps) {
   return (
-    <span key={generateRandomKey("bold")} className="text-blue-300 font-bold">
-      {content.value}
-    </span>
+    <>
+      <span>{content.prefix}</span>
+      <span
+        key={generateRandomKey("bold")}
+        className="text-orange-900 font-bold"
+      >
+        {content.value}
+      </span>
+    </>
   );
 }
 

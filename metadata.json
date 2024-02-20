@@ -1,18 +1,29 @@
 [
     {
-        "path": "/home/inmove/blog/posts/CSS/css.org",
-        "id": "L2hvbWUvaW5tb3ZlL2Jsb2cvcG9zdHMvQ1NTL2Nzcy5vcmc",
+        "path": "./posts/CSS/flex.org",
+        "id": "Li9wb3N0cy9DU1MvZmxleC5vcmc",
+        "title": "Flexbox",
+        "categories": "CSS",
+        "date": "2024-02-20 08:30:35",
+        "keywords": "Flexible Box Layout Module",
+        "difficulty": "",
+        "subtitle": "Officially known as the CSS Flexible Box Layout Module, is a powerful, efficient layout model designed to distribute space along a single column or row within a container.",
+        "sort": 9999
+    },
+    {
+        "path": "./posts/CSS/css.org",
+        "id": "Li9wb3N0cy9DU1MvY3NzLm9yZw",
         "title": "CSS",
         "categories": "CSS",
         "date": "2023-09-30 23:27:40",
         "keywords": "CSS",
         "difficulty": "",
-        "subtitle": "",
+        "subtitle": "CSS (Cascading Style Sheets) is a stylesheet language used to describe the presentation of a document written in HTML or XML (including XML dialects such as SVG or XHTML)",
         "sort": 9999
     },
     {
-        "path": "/home/inmove/blog/posts/BinaryTree/AVLTree.org",
-        "id": "L2hvbWUvaW5tb3ZlL2Jsb2cvcG9zdHMvQmluYXJ5VHJlZS9BVkxUcmVlLm9yZw",
+        "path": "./posts/BinaryTree/AVLTree.org",
+        "id": "Li9wb3N0cy9CaW5hcnlUcmVlL0FWTFRyZWUub3Jn",
         "title": "AVL Tree",
         "categories": "DataStructure",
         "date": "2023-09-28 00:14:28",
@@ -22,8 +33,8 @@
         "sort": 9999
     },
     {
-        "path": "/home/inmove/blog/posts/BinaryTree/RedBlackTree.org",
-        "id": "L2hvbWUvaW5tb3ZlL2Jsb2cvcG9zdHMvQmluYXJ5VHJlZS9SZWRCbGFja1RyZWUub3Jn",
+        "path": "./posts/BinaryTree/RedBlackTree.org",
+        "id": "Li9wb3N0cy9CaW5hcnlUcmVlL1JlZEJsYWNrVHJlZS5vcmc",
         "title": "Red Black Tree",
         "categories": "DataStructure",
         "date": "2023-09-28 00:15:14",
@@ -33,8 +44,8 @@
         "sort": 9999
     },
     {
-        "path": "/home/inmove/blog/posts/BinaryTree/TraverseBinaryTree.org",
-        "id": "L2hvbWUvaW5tb3ZlL2Jsb2cvcG9zdHMvQmluYXJ5VHJlZS9UcmF2ZXJzZUJpbmFyeVRyZWUub3Jn",
+        "path": "./posts/BinaryTree/TraverseBinaryTree.org",
+        "id": "Li9wb3N0cy9CaW5hcnlUcmVlL1RyYXZlcnNlQmluYXJ5VHJlZS5vcmc",
         "title": "Traverse Binary Tree",
         "categories": "DataStructure",
         "date": "2023-10-04 00:51:41",
@@ -44,8 +55,8 @@
         "sort": 9999
     },
     {
-        "path": "/home/inmove/blog/posts/BinaryTree/PrintBinaryTree.org",
-        "id": "L2hvbWUvaW5tb3ZlL2Jsb2cvcG9zdHMvQmluYXJ5VHJlZS9QcmludEJpbmFyeVRyZWUub3Jn",
+        "path": "./posts/BinaryTree/PrintBinaryTree.org",
+        "id": "Li9wb3N0cy9CaW5hcnlUcmVlL1ByaW50QmluYXJ5VHJlZS5vcmc",
         "title": "Print Binary Tree",
         "categories": "DataStructure",
         "date": "2023-10-04 00:50:38",
@@ -55,8 +66,8 @@
         "sort": 9999
     },
     {
-        "path": "/home/inmove/blog/posts/BinaryTree/SearchBinaryTree.org",
-        "id": "L2hvbWUvaW5tb3ZlL2Jsb2cvcG9zdHMvQmluYXJ5VHJlZS9TZWFyY2hCaW5hcnlUcmVlLm9yZw",
+        "path": "./posts/BinaryTree/SearchBinaryTree.org",
+        "id": "Li9wb3N0cy9CaW5hcnlUcmVlL1NlYXJjaEJpbmFyeVRyZWUub3Jn",
         "title": "Binary Serach Tree",
         "categories": "DataStructure",
         "date": "2023-09-28 00:13:27",
@@ -66,8 +77,8 @@
         "sort": 9999
     },
     {
-        "path": "/home/inmove/blog/posts/Python/gRPC.org",
-        "id": "L2hvbWUvaW5tb3ZlL2Jsb2cvcG9zdHMvUHl0aG9uL2dSUEMub3Jn",
+        "path": "./posts/Python/gRPC.org",
+        "id": "Li9wb3N0cy9QeXRob24vZ1JQQy5vcmc",
         "title": "gRPC",
         "categories": "Python",
         "date": "2023-09-27 23:55:53",

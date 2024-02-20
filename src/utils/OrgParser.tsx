@@ -160,7 +160,12 @@ export default class OrgParser {
   }
 
   private createLineContentProps(p: any, prefix: string | null) {
-    let result: LineContentProps = { type: "", style: "", value: "" };
+    let result: LineContentProps = {
+      type: "",
+      style: "",
+      value: "",
+      prefix: prefix || "",
+    };
     if (p.type === "newline") {
       result.type = "newline";
       result.style = "newline";
@@ -168,11 +173,7 @@ export default class OrgParser {
     } else if (p.type === "text" && p.style == null) {
       result.type = "text";
       result.style = "text";
-      if (prefix == null) {
-        result.value = p.value;
-      } else {
-        result.value = `${prefix}${p.value}`;
-      }
+      result.value = p.value;
     } else {
       result.type = p.type;
       result.style = p.style || "";
@@ -315,7 +316,7 @@ export default class OrgParser {
                   contents.push(
                     this.createLineContentProps(p[1], `${index}. `),
                   );
-                  if (pp.type == "text" && pp.style == null) {
+                  if (pp.type == "text") {
                     addIndex = true;
                   }
                 }

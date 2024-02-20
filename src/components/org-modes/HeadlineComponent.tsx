@@ -20,21 +20,21 @@ export default function HeadlineComponent({ params }: HeadlineComponentProps) {
       }}
     >
       <Box className="pr-10">
-        <Typography
-          style={{
-            fontSize: levelToFontSize[params.headline.level - 1],
+        <Link
+          href={`#${params.headline.prefix}`}
+          id={params.headline.prefix}
+          onClick={(e: any) => {
+            e.preventDefault();
           }}
         >
-          <Link
-            href={`#${params.headline.prefix}`}
-            id={params.headline.prefix}
-            onClick={(e: any) => {
-              e.preventDefault();
+          <h3
+            style={{
+              fontSize: levelToFontSize[params.headline.level - 1],
             }}
           >
-            {params.headline.prefix} {params.headline.name}
-          </Link>
-        </Typography>
+            {params.headline.prefix}: {params.headline.name}
+          </h3>
+        </Link>
       </Box>
       <Box className="text-xl" style={{ color: lightModeColor.tagTextColor }}>
         {params.headline.tags.join("::")}
