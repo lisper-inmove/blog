@@ -10,7 +10,7 @@ posts_directory = os.environ.get("POSTS_DIRECTORY")
 if posts_directory:
     directory_path = posts_directory
 else:
-    directory_path = f'{home}/blog/posts'
+    directory_path = f'./posts'
 if (not os.path.exists(directory_path)):
     print(f"{directory_path} not exists");
     sys.exit(-1)
