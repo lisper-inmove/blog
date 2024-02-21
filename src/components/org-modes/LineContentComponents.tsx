@@ -25,6 +25,20 @@ export function CommonText(content: LineContentProps) {
   );
 }
 
+export function IFrame(content: LineContentProps) {
+  return (
+    <>
+      <iframe
+        src={content.link}
+        style={{
+          width: "500px",
+          height: "200px",
+        }}
+      ></iframe>
+    </>
+  );
+}
+
 export function LinkText(content: LineContentProps) {
   return (
     <>
@@ -145,6 +159,8 @@ export function LineComponent(content: LineContentProps) {
     return StrikeThroughText(content);
   } else if (content.type === "link") {
     return LinkText(content);
+  } else if (content.type == "iframe") {
+    return IFrame(content);
   } else if (content.type === "newline" || content.type == "emptyLine") {
     return EmptyLine();
   }

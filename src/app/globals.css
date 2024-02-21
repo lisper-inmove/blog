@@ -12,10 +12,6 @@
   }
 }
 
-.fadeIn2S {
-  animation: fadeIn 2s ease-out;
-}
-
 @keyframes slideInLeft {
   from {
     transform: translateX(-300px);
@@ -26,8 +22,34 @@
   }
 }
 
+@keyframes colorChange {
+  from {
+    background-color: red;
+  }
+
+  80% {
+    background-color: yellow;
+  }
+
+  to {
+    background-color: green;
+  }
+}
+
+.colorChange2S {
+  animation: colorChange 2s ease-out;
+  animation-fill-mode: both;
+  animation-direction: normal;
+  animation-iteration-count: 2;
+  animation-delay: 2s;
+}
+
 .slideInLeft2S {
   animation: slideInLeft 1.5s ease-out;
+}
+
+.fadeIn2S {
+  animation: fadeIn 2s ease-out;
 }
 
 ::-webkit-scrollbar {

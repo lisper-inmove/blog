@@ -6,7 +6,6 @@ import TitleComponent from "@/components/org-modes/TitleComponent";
 import HeadlineComponent from "@/components/org-modes/HeadlineComponent";
 import ParagraphComponent from "@/components/org-modes/ParagraphComponent";
 import {
-  LineComponent,
   LineContentProps,
   generateRandomKey,
 } from "@/components/org-modes/LineContentComponents";
@@ -27,6 +26,7 @@ import { Box } from "@mui/material";
 import BodyComponent from "@/components/org-modes/BodyComponent";
 import LinkComponent from "@/components/org-modes/LinkComponent";
 import ImageComponent from "@/components/org-modes/ImageComponent";
+import IframeComponent from "@/components/org-modes/IframeComponent";
 
 export default class OrgParser {
   private filePath: string;
@@ -130,6 +130,8 @@ export default class OrgParser {
         } else if (child.name == "quote") {
           // begin_quote
           this.parseQuote(child);
+        } else if (child.name == "iframe") {
+          this.parseIframe(child);
         }
       } else if (child.type === "table") {
         this.parseTable(child);
@@ -159,7 +161,6 @@ export default class OrgParser {
         rows.push({ cells: row });
       }
     }
-    console.log(obj);
     this.components.push(
       <TableComponent
         key={generateRandomKey("table")}
@@ -229,19 +230,27 @@ export default class OrgParser {
     } else if (p.type === "link") {
       result.type = "link";
       result.style = "link";
-      for (let c of p.children) {
-        if (c.type === "link.path") {
-          result.link = c.value;
-        } else if (c.type === "text") {
-          result.value = c.value;
-        }
-      }
+      this.fillLineContentPropsInsideChildren(p, result);
+    } else if (p.type == "block" && p.name == "iframe") {
+      result.type = "iframe";
+      result.style = "iframe";
+      this.fillLineContentPropsInsideChildren(p, result);
     } else {
       result.type = p.type;
       result.style = p.style || "";
       result.value = p.value || "";
     }
     return result;
+  }
+
+  private fillLineContentPropsInsideChildren(p: any, result: LineContentProps) {
+    for (let c of p.children) {
+      if (c.type === "link.path") {
+        result.link = c.value;
+      } else if (c.type === "text") {
+        result.value = c.value;
+      }
+    }
   }
 
   private parseVerse(obj: any) {
@@ -319,6 +328,21 @@ export default class OrgParser {
           }),
         }}
       ></CenterComponent>,
+    );
+  }
+
+  private parseIframe(obj: any) {
+    console.log(obj);
+    let content = this.createLineContentProps(obj, null);
+    content.type = "iframe";
+    this.components.push(
+      <IframeComponent
+        params={{
+          content: content,
+          attributes: obj.attributes,
+        }}
+        key={generateRandomKey("parseIframe")}
+      ></IframeComponent>,
     );
   }
 
