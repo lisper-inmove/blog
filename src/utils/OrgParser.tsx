@@ -6,6 +6,7 @@ import TitleComponent from "@/components/org-modes/TitleComponent";
 import HeadlineComponent from "@/components/org-modes/HeadlineComponent";
 import ParagraphComponent from "@/components/org-modes/ParagraphComponent";
 import {
+  LineComponent,
   LineContentProps,
   generateRandomKey,
 } from "@/components/org-modes/LineContentComponents";
@@ -24,6 +25,8 @@ import TableComponent, {
 import TableContentComponent from "@/components/TableContentComponent";
 import { Box } from "@mui/material";
 import BodyComponent from "@/components/org-modes/BodyComponent";
+import LinkComponent from "@/components/org-modes/LinkComponent";
+import ImageComponent from "@/components/org-modes/ImageComponent";
 
 export default class OrgParser {
   private filePath: string;
@@ -79,10 +82,22 @@ export default class OrgParser {
     }
   }
 
+  private isImage(obj: any): boolean {
+    if (obj.type != "link") {
+      return false;
+    }
+    if (
+      obj.attributes &&
+      obj.attributes.attr_html &&
+      obj.attributes.attr_html.image === "t"
+    ) {
+      return true;
+    }
+    return false;
+  }
+
   private parseSection(obj: any) {
-    let section: any[] = [];
     for (let child of obj.children) {
-      // console.log(">>>>>>>>", child);
       if (child.type === "headline") {
         this.parseHeadline(child);
       } else if (child.type === "paragraph") {
@@ -93,6 +108,12 @@ export default class OrgParser {
         this.parseList(child);
       } else if (child.type == "emptyLine") {
         // this.components.push(EmptyLine());
+      } else if (child.type == "link") {
+        if (this.isImage(child)) {
+          this.parseImage(child);
+        } else {
+          this.parseLink(child);
+        }
       } else if (child.type === "block") {
         if (child.name == "verse") {
           // begin_verse
@@ -138,6 +159,7 @@ export default class OrgParser {
         rows.push({ cells: row });
       }
     }
+    console.log(obj);
     this.components.push(
       <TableComponent
         key={generateRandomKey("table")}
@@ -150,12 +172,41 @@ export default class OrgParser {
 
   private parseCode(obj: any) {
     let language = obj.params[0];
+    let name = "";
+    if (obj.attributes && obj.attributes.name) {
+      name = obj.attributes.name;
+    }
     this.components.push(
       <CodeParser
         key={generateRandomKey("code-section")}
         line={obj.value}
         language={language}
+        name={name}
       ></CodeParser>,
+    );
+  }
+
+  private parseLink(obj: any) {
+    let lineContentProps = this.createLineContentProps(obj, null);
+    this.components.push(
+      <LinkComponent
+        {...lineContentProps}
+        key={generateRandomKey("linkComponent")}
+      ></LinkComponent>,
+    );
+  }
+
+  private parseImage(obj: any) {
+    let lineContentProps = this.createLineContentProps(obj, null);
+    this.components.push(
+      <ImageComponent
+        params={{
+          url: lineContentProps.link,
+          alt: lineContentProps.value,
+          attributes: obj.attributes,
+        }}
+        key={generateRandomKey("imageComponent")}
+      ></ImageComponent>,
     );
   }
 
@@ -165,6 +216,7 @@ export default class OrgParser {
       style: "",
       value: "",
       prefix: prefix || "",
+      link: "",
     };
     if (p.type === "newline") {
       result.type = "newline";
@@ -174,6 +226,16 @@ export default class OrgParser {
       result.type = "text";
       result.style = "text";
       result.value = p.value;
+    } else if (p.type === "link") {
+      result.type = "link";
+      result.style = "link";
+      for (let c of p.children) {
+        if (c.type === "link.path") {
+          result.link = c.value;
+        } else if (c.type === "text") {
+          result.value = c.value;
+        }
+      }
     } else {
       result.type = p.type;
       result.style = p.style || "";
@@ -290,6 +352,7 @@ export default class OrgParser {
 
   private parseList(obj: any) {
     let index = 1;
+    let childList: any[] = [];
     this.components.push(
       <ListComponent
         key={generateRandomKey("listComponent")}
@@ -305,16 +368,25 @@ export default class OrgParser {
               //   value: "newline",
               // });
               // items.push({ contents: contents });
+            } else if (oo.type === "list") {
+              childList.push(oo);
             } else {
               let contents: LineContentProps[] = [];
               let addIndex = false;
+              let indent = 0;
               Object.entries(oo.children).map((p: any) => {
                 let pp = p[1];
+                if (pp.type == "list.item.bullet") {
+                  indent = pp.indent;
+                }
                 if (addIndex) {
                   contents.push(this.createLineContentProps(p[1], null));
                 } else {
                   contents.push(
-                    this.createLineContentProps(p[1], `${index}. `),
+                    this.createLineContentProps(
+                      p[1],
+                      `${" ".repeat(indent)}${index}. `,
+                    ),
                   );
                   if (pp.type == "text") {
                     addIndex = true;
@@ -331,6 +403,9 @@ export default class OrgParser {
         }}
       ></ListComponent>,
     );
+    for (let cl of childList) {
+      this.parseList(cl);
+    }
   }
 
   private parseParagraph(obj: any) {

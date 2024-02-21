@@ -70,7 +70,7 @@ export default function Home({ params }: Props) {
         </Box>
       </Box>
       {/* Right Section: List Posts */}
-      <Box className="h-[90vh] w-5/6 overflow-y-auto flex flex-wrap justify-start content-start">
+      <div className="h-[90vh] w-5/6 overflow-y-auto flex flex-wrap justify-start content-start">
         {selectCategory != null &&
           Object.values(selectCategory)
             .flat()
@@ -78,28 +78,28 @@ export default function Home({ params }: Props) {
               return (
                 <Card
                   key={post.id}
-                  className="m-8 h-52 w-80 flex flex-col items-start p-4 fadeIn2S"
+                  className="m-8 w-96 flex-shrink flex-grow max-w-fit flex flex-col items-start p-4 fadeIn2S"
                   style={{
                     backgroundColor: lightModeColor.postCategoryCardBgColor,
                     boxShadow: `3px 3px 5px 1px ${lightModeColor.postCategoryCardShadowColor1}, -3px -3px 5px 1px ${lightModeColor.postCategoryCardShadowColor2}`,
                     borderRadius: "8px",
                   }}
                 >
-                  <Box className={`${lfont.className}`}>
+                  <Box className={`${lfont.className} text-gray-900`}>
                     <Link href={`/posts/${post.id}`}>
-                      <h1 className="text-2xl">{post.title}</h1>
+                      <h1 className="text-4xl">{post.title}</h1>
                     </Link>
                   </Box>
                   <br />
                   <Box>
-                    <h3 className="text-sm text-ellipsis w-64 line-clamp-6">
+                    <h3 className="text-lg text-ellipsis w-80 line-clamp-6">
                       {post.subtitle}
                     </h3>
                   </Box>
                 </Card>
               );
             })}
-      </Box>
+      </div>
     </Box>
   );
 }

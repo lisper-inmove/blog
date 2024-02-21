@@ -1,5 +1,16 @@
 [
     {
+        "path": "./posts/CSS/grid.org",
+        "id": "Li9wb3N0cy9DU1MvZ3JpZC5vcmc",
+        "title": "Grid Layout",
+        "categories": "CSS",
+        "date": "2024-02-21 09:20:26",
+        "keywords": "Grid Layout",
+        "difficulty": "",
+        "subtitle": "A powerful layout system available in CSS that allows for the two-dimensional arrangement of elements on a web page",
+        "sort": 9999
+    },
+    {
         "path": "./posts/CSS/flex.org",
         "id": "Li9wb3N0cy9DU1MvZmxleC5vcmc",
         "title": "Flexbox",
