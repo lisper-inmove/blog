@@ -18,7 +18,7 @@ if (not os.path.exists(directory_path)):
 metadata = []
 
 # 定义正则表达式模式
-pattern = re.compile(r'^#\+(TITLE|CATEGORIES|DATE|KEYWORDS|DIFFICULTY|SUBTITLE): (.+)$')
+pattern = re.compile(r'^#\+(TITLE|CATEGORIES|DATE|KEYWORDS|DIFFICULTY|SUBTITLE|DISPLAY): (.+)$')
 
 aLeetcode = None
 
@@ -42,7 +42,8 @@ for foldername, subfolders, filenames in os.walk(directory_path):
             'date': '',
             'keywords': '',
             'difficulty': '',
-            'subtitle': ''
+            'subtitle': '',
+            'display': '',
         }
 
         with open(file_path, 'r') as file:

@@ -1,0 +1,12 @@
+.hover-translate {
+  transition:
+    transform 1s ease,
+    box-shadow 1s ease-in-out;
+}
+
+.hover-translate:hover {
+  transform: translateZ(20px) translateY(-5px);
+  box-shadow:
+    4px 4px 5px 1px var(--shadow-color-1),
+    -4px -4px 5px 1px var(--shadow-color-2);
+}

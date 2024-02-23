@@ -17,6 +17,7 @@ export function loadPostsMetadata() {
       .filter((keyword: string) => keyword.trim() !== ""),
     difficulty: item.difficulty,
     subtitle: item.subtitle,
+    display: item.display,
   }));
   return postsMetadata;
 }

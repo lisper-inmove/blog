@@ -7,8 +7,6 @@ export default function GridDemoPage() {
   };
 
   let styles1 = {
-    width: "100px",
-    height: "100px",
     margin: "5px",
     border: "1px solid black",
     gridArea: "d",
@@ -36,57 +34,27 @@ export default function GridDemoPage() {
       >
         <div style={styles1} className="bg-green-800">
           <h2>Demo 1</h2>
-          <div>
-            <p>
-              1. Lorem ipsum dolor sit amet, qui minim labore adipisicing minim
-              sint cillum sint consectetur cupidatat.
-            </p>
-          </div>
+          <div></div>
         </div>
         <div style={styles2} className="bg-yellow-800">
           <h2>Demo 2</h2>
-          <div>
-            <p>
-              2. Lorem ipsum dolor sit amet, qui minim labore adipisicing minim
-              sint cillum sint consectetur cupidatat.
-            </p>
-          </div>
+          <div></div>
         </div>
         <div style={styles} className="bg-orange-800">
           <h2>Demo 3</h2>
-          <div>
-            <p>
-              3. Lorem ipsum dolor sit amet, qui minim labore adipisicing minim
-              sint cillum sint consectetur cupidatat.
-            </p>
-          </div>
+          <div></div>
         </div>
         <div style={styles} className="bg-blue-800">
           <h2>Demo 4</h2>
-          <div>
-            <p>
-              4. Lorem ipsum dolor sit amet, qui minim labore adipisicing minim
-              sint cillum sint consectetur cupidatat.
-            </p>
-          </div>
+          <div></div>
         </div>
         <div style={styles} className="bg-stone-800">
           <h2>Demo 5</h2>
-          <div>
-            <p>
-              5. Lorem ipsum dolor sit amet, qui minim labore adipisicing minim
-              sint cillum sint consectetur cupidatat.
-            </p>
-          </div>
+          <div></div>
         </div>
         <div style={styles} className="bg-pink-800">
           <h2>Demo 6</h2>
-          <div>
-            <p>
-              6. Lorem ipsum dolor sit amet, qui minim labore adipisicing minim
-              sint cillum sint consectetur cupidatat.
-            </p>
-          </div>
+          <div></div>
         </div>
       </div>
     </>

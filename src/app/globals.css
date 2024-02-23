@@ -2,6 +2,17 @@
 @tailwind components;
 @tailwind utilities;
 
+:root {
+  --shadow-color-1: #8d8484d9;
+  --shadow-color-2: #f1ececd9;
+}
+
+.neu-shadow {
+  box-shadow:
+    3px 3px 5px 1px var(--shadow-color-1),
+    -3px -3px 5px 1px var(--shadow-color-2);
+}
+
 @keyframes fadeIn {
   from {
     opacity: 0;
@@ -54,4 +65,13 @@
 
 ::-webkit-scrollbar {
   width: 0;
+}
+
+.transition-test {
+  background-color: #4caf50;
+  transition: background-color 5s ease;
+}
+
+.transition-test:hover {
+  background-color: maroon;
 }

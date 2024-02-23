@@ -16,7 +16,7 @@ export default function NavBar() {
     >
       {/* Some Links section */}
       <Toolbar>
-        <Link href="/" className="mr-4" title="Home Page">
+        <Link href="/site" className="mr-4" title="Home Page">
           <FaHome className="h-6 w-6" />
         </Link>
         <Link href="/" className="mr-4" title="My Works">

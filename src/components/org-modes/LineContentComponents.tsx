@@ -4,6 +4,7 @@ export interface LineContentProps {
   value: string;
   prefix: string;
   link: string;
+  textSize: string;
 }
 export function generateRandomKey(prefix: string) {
   return `${prefix}-${Math.random()}-${Math.random()}`;
@@ -18,23 +19,12 @@ export function CommonText(content: LineContentProps) {
       >
         {content.prefix}
       </span>
-      <span key={generateRandomKey("commonText")} className="text-lg">
+      <span
+        key={generateRandomKey("commonText")}
+        className={`${content.textSize}`}
+      >
         {content.value}
       </span>
-    </>
-  );
-}
-
-export function IFrame(content: LineContentProps) {
-  return (
-    <>
-      <iframe
-        src={content.link}
-        style={{
-          width: "500px",
-          height: "200px",
-        }}
-      ></iframe>
     </>
   );
 }
@@ -50,7 +40,7 @@ export function LinkText(content: LineContentProps) {
       </span>
       <span
         key={generateRandomKey("commonText")}
-        className="text-lg text-cyan-600"
+        className={`${content.textSize} text-green-500`}
       >
         <a href={content.link} key={generateRandomKey("for-link")}>
           {content.value}
@@ -66,7 +56,7 @@ export function VerbatimText(content: LineContentProps) {
       <span key={generateRandomKey("span-pre-wrap")}>{content.prefix}</span>
       <span
         key={generateRandomKey("verbatim")}
-        className="text-red-500 text-lg"
+        className={`${content.textSize} text-red-500`}
       >
         {content.value}
       </span>
@@ -80,7 +70,8 @@ export function ItalicText(content: LineContentProps) {
       <span key={generateRandomKey("span-pre-wrap")}>{content.prefix}</span>
       <span
         key={generateRandomKey("italic")}
-        className="text-orange-500 italic text-lg"
+        // className="text-orange-500 italic text-lg"
+        className={`italic ${content.textSize} text-purple-500`}
       >
         {content.value}
       </span>
@@ -94,7 +85,7 @@ export function UnderlineText(content: LineContentProps) {
       <span key={generateRandomKey("span-pre-wrap")}>{content.prefix}</span>
       <span
         key={generateRandomKey("underline")}
-        className="text-sky-500 underline text-lg"
+        className={`underline ${content.textSize} text-sky-500`}
       >
         {content.value}
       </span>
@@ -106,7 +97,10 @@ export function InnercodeText(content: LineContentProps) {
   return (
     <>
       <span key={generateRandomKey("span-pre-wrap")}>{content.prefix}</span>
-      <span key={generateRandomKey("code")} className="text-red-500 text-lg">
+      <span
+        key={generateRandomKey("code")}
+        className={`${content.textSize} text-red-500`}
+      >
         {content.value}
       </span>
     </>
@@ -119,7 +113,7 @@ export function BoldText(content: LineContentProps) {
       <span key={generateRandomKey("span-pre-wrap")}>{content.prefix}</span>
       <span
         key={generateRandomKey("bold")}
-        className="text-orange-900 font-bold text-lg"
+        className={`font-bold ${content.textSize} text-orange-800`}
       >
         {content.value}
       </span>
@@ -131,7 +125,7 @@ export function StrikeThroughText(content: LineContentProps) {
   return (
     <span
       key={generateRandomKey("strikeThrough")}
-      className="text-blue-300 line-through text-lg"
+      className={`line-through ${content.textSize} text-blue-300`}
     >
       {content.value}
     </span>
@@ -143,6 +137,9 @@ export function EmptyLine() {
 }
 
 export function LineComponent(content: LineContentProps) {
+  if (content.textSize == "") {
+    content.textSize = "text-lg";
+  }
   if (content.type === "text" && content.style === "text") {
     return CommonText(content);
   } else if (content.type === "text" && content.style === "verbatim") {
@@ -159,8 +156,6 @@ export function LineComponent(content: LineContentProps) {
     return StrikeThroughText(content);
   } else if (content.type === "link") {
     return LinkText(content);
-  } else if (content.type == "iframe") {
-    return IFrame(content);
   } else if (content.type === "newline" || content.type == "emptyLine") {
     return EmptyLine();
   }

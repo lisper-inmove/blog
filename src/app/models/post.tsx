@@ -8,6 +8,7 @@ export type PostMetadata = {
   categories: string[];
   difficulty: Difficulty;
   subtitle: string;
+  display: string;
 };
 
 export type PostsMetadataByCategory = {

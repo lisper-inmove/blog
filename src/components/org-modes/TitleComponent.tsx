@@ -1,6 +1,5 @@
 import { lightModeColor } from "@/app/stores/ThemeColors";
 import { lfont } from "@/utils/constants";
-import { div } from "@mui/material";
 
 interface TitleComponentProps {
   params: {

@@ -1,5 +1,4 @@
 import * as orga from "orga";
-import * as fs from "fs/promises";
 
 import { PostHeadline, PostProperty } from "@/app/models/post";
 import TitleComponent from "@/components/org-modes/TitleComponent";
@@ -22,14 +21,12 @@ import TableComponent, {
   TableRow,
 } from "@/components/org-modes/TableComponent";
 import TableContentComponent from "@/components/TableContentComponent";
-import { Box } from "@mui/material";
 import BodyComponent from "@/components/org-modes/BodyComponent";
 import LinkComponent from "@/components/org-modes/LinkComponent";
 import ImageComponent from "@/components/org-modes/ImageComponent";
 import IframeComponent from "@/components/org-modes/IframeComponent";
 
 export default class OrgParser {
-  private filePath: string;
   private ast: any;
   private headlines: PostHeadline[] = [];
   private property: PostProperty = {
@@ -42,15 +39,8 @@ export default class OrgParser {
   };
   private components: any[] = [];
 
-  public constructor(filePath: string) {
-    this.filePath = filePath;
-  }
-
-  public async parse() {
+  public async parse(content: string) {
     try {
-      // 读取 OrgMode 文件内容
-      const content = await fs.readFile(this.filePath, "utf-8");
-      // 使用 orga 解析内容
       this.ast = orga.parse(content);
       this.readProperty();
       this.start();
@@ -70,7 +60,7 @@ export default class OrgParser {
     } catch (error) {
       console.error("Error reading or parsing OrgMode file:", error);
     }
-    return <Box>Error</Box>;
+    return <div>Error</div>;
   }
 
   private start() {
@@ -218,6 +208,7 @@ export default class OrgParser {
       value: "",
       prefix: prefix || "",
       link: "",
+      textSize: "",
     };
     if (p.type === "newline") {
       result.type = "newline";
@@ -332,13 +323,12 @@ export default class OrgParser {
   }
 
   private parseIframe(obj: any) {
-    console.log(obj);
     let content = this.createLineContentProps(obj, null);
     content.type = "iframe";
     this.components.push(
       <IframeComponent
         params={{
-          content: content,
+          link: content.link,
           attributes: obj.attributes,
         }}
         key={generateRandomKey("parseIframe")}
