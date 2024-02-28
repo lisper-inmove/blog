@@ -67,7 +67,7 @@ export default class OrgParser {
     for (let children of this.ast.children) {
       // First Level
       if (children.type == "section") {
-        this.parseSection(children);
+        this.parseSection(children, "");
       }
     }
   }
@@ -86,14 +86,28 @@ export default class OrgParser {
     return false;
   }
 
-  private parseSection(obj: any) {
+  private isPrevResults(obj: any): boolean {
+    if (obj.type === "keyword" && obj.key && obj.key === "RESULTS") {
+      return true;
+    }
+    return false;
+  }
+
+  private setPrevType(obj: any): string {
+    if (this.isPrevResults(obj)) {
+      return "results";
+    }
+    return "";
+  }
+
+  private parseSection(obj: any, prevType: string) {
     for (let child of obj.children) {
       if (child.type === "headline") {
         this.parseHeadline(child);
       } else if (child.type === "paragraph") {
-        this.parseParagraph(child);
+        this.parseParagraph(child, prevType === "results");
       } else if (child.type === "section") {
-        this.parseSection(child);
+        this.parseSection(child, prevType);
       } else if (child.type === "list") {
         this.parseList(child);
       } else if (child.type == "emptyLine") {
@@ -126,6 +140,7 @@ export default class OrgParser {
       } else if (child.type === "table") {
         this.parseTable(child);
       }
+      prevType = this.setPrevType(child);
     }
   }
 
@@ -422,7 +437,7 @@ export default class OrgParser {
     }
   }
 
-  private parseParagraph(obj: any) {
+  private parseParagraph(obj: any, isResults: boolean) {
     this.components.push(
       <ParagraphComponent
         key={generateRandomKey("paragraphComponent")}
@@ -430,6 +445,7 @@ export default class OrgParser {
           contents: Object.entries(obj.children).map((p: any) => {
             return this.createLineContentProps(p[1], null);
           }),
+          isResults: isResults,
         }}
       ></ParagraphComponent>,
     );
