@@ -76,7 +76,7 @@ export default function Home() {
       </Box>
       {/* Right Section: List Posts */}
       <div
-        className="h-[90vh] w-5/6 overflow-y-auto flex flex-wrap justify-start content-start"
+        className="h-[100vh] w-5/6 overflow-y-auto flex flex-wrap justify-start content-start"
         style={{
           transformStyle: "preserve-3d",
           perspective: "1000px",
@@ -87,9 +87,8 @@ export default function Home() {
             .flat()
             .map((post, index) => {
               return (
-
                   <CardContainer key={post.id} containerClassName="items-start justify-start content-start py-0" className="items-start justify-start content-start">
-                    <CardBody className="m-8 w-96 h-60 flex-shrink flex-grow flex flex-col items-start neu-shadow relative rounded-xl p-4">
+                    <CardBody className="m-8 w-96 h-64 flex-shrink flex-grow flex flex-col items-start neu-shadow relative rounded-xl p-4">
                       <CardItem
                         translateZ={10}
                         translateX={10}

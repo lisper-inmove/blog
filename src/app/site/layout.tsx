@@ -24,7 +24,7 @@ export default function SiteRootLayout({
       <header className="text-white text-center">
         <NavBar></NavBar>
       </header>
-      <main className={`overflow-y-auto h-screen pb-32 ${lfont.className}`}>
+      <main className={`overflow-y-auto h-screen ${lfont.className}`}>
         {children}
       </main>
     </div>
