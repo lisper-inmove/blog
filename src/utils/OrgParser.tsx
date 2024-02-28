@@ -360,6 +360,9 @@ export default class OrgParser {
           contents: Object.entries(obj.children).flatMap((p: any) => {
             let pp = p[1];
             let results: LineContentProps[] = [];
+            pp.type = "quote";
+            console.log(pp);
+
             if (
               prePp != null &&
               prePp.position.end.line < pp.position.start.line

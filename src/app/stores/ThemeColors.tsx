@@ -11,6 +11,7 @@ export type ThemeColor = {
   tagTextColor: string;
   codeLanguageTextColor: string;
   resultsTextColor: string;
+  quoteTextColor: string;
 };
 
 const commonDarkColor = "#6f6a6a";
@@ -29,6 +30,7 @@ export const darkModeColor: ThemeColor = {
   codeLanguageTextColor: "#e67002",
   navbarBgColor: "#dadada00",
   resultsTextColor: "red",
+  quoteTextColor: "#7f6c10b5",
 };
 
 export const lightModeColor: ThemeColor = {
@@ -44,4 +46,5 @@ export const lightModeColor: ThemeColor = {
   codeLanguageTextColor: "#e67002",
   navbarBgColor: "#dadada00",
   resultsTextColor: "red",
+  quoteTextColor: "#7f6c10b5",
 };

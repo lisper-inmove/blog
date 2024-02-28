@@ -1,3 +1,5 @@
+import { lightModeColor } from "@/app/stores/ThemeColors";
+
 export interface LineContentProps {
   type: string;
   style: string;
@@ -27,6 +29,25 @@ export function CommonText(content: LineContentProps) {
       </span>
     </>
   );
+}
+
+export function QuoteText(content: LineContentProps) {
+  if (content.value != "") {
+    return (
+      <>
+        <span
+          key={generateRandomKey("commonText")}
+          className={`${content.textSize}`}
+        >
+      <h3 className="line-clamp-6 text-ellipsis w-1/2"
+          style={{
+            color: lightModeColor.quoteTextColor,
+          }}
+      >{content.value}</h3>
+        </span>
+      </>
+    );
+  }
 }
 
 export function LinkText(content: LineContentProps) {
@@ -144,6 +165,8 @@ export function LineComponent(content: LineContentProps) {
     return CommonText(content);
   } else if (content.type === "text" && content.style === "verbatim") {
     return VerbatimText(content);
+  } else if (content.type === "quote") {
+    return QuoteText(content);
   } else if (content.type === "text" && content.style === "italic") {
     return ItalicText(content);
   } else if (content.type === "text" && content.style === "underline") {
