@@ -6,6 +6,9 @@ import { useEffect, useMemo, useState } from "react";
 import Link from "next/link";
 import { lightModeColor } from "../stores/ThemeColors";
 import { loadPostsMetadataHttp } from "../api/post-category/loadPostsMetadataHttp";
+import { CardItem } from "@/components/ui/3d-card";
+import { CardBody } from "@/components/ui/3d-card";
+import { CardContainer } from "@/components/ui/3d-card";
 
 export default function Home() {
   const [selectCategory, setSelectCategory] = useState<CategoryMap | null>(
@@ -84,29 +87,26 @@ export default function Home() {
             .flat()
             .map((post, index) => {
               return (
-                <div
-                  onMouseOver={(e: React.MouseEvent<HTMLDivElement>) =>
-                    handleMouseOverCard(e)
-                  }
-                  key={post.id}
-                  className="m-8 w-96 flex-shrink flex-grow max-w-fit flex flex-col items-start p-4 hover-translate fadeIn2S neu-shadow"
-                  style={{
-                    backgroundColor: lightModeColor.postCategoryCardBgColor,
-                    borderRadius: "8px",
-                  }}
-                >
-                  <Box className={`${lfont.className} text-gray-900`}>
-                    <Link href={`/site/posts/${post.id}`}>
-                      <h1 className="text-4xl">{post.title}</h1>
-                    </Link>
-                  </Box>
-                  <br />
-                  <Box>
-                    <h3 className="text-lg text-ellipsis w-80 line-clamp-6">
-                      {post.subtitle}
-                    </h3>
-                  </Box>
-                </div>
+
+                  <CardContainer key={post.id} containerClassName="items-start justify-start content-start py-0" className="items-start justify-start content-start">
+                    <CardBody className="m-8 w-96 h-60 flex-shrink flex-grow flex flex-col items-start neu-shadow relative rounded-xl p-4">
+                      <CardItem
+                        translateZ={10}
+                        translateX={10}
+                        translateY={-5}
+                        className={`${lfont.className} text-gray-900`}
+                      >
+                        <Link href={`/site/posts/${post.id}`}>
+                          <h1 className="text-4xl">{post.title}</h1>
+                        </Link>
+                        <br />
+                        <h3 className="text-lg text-ellipsis w-80 line-clamp-6">
+                          {post.subtitle}
+                        </h3>
+                      </CardItem>
+                    </CardBody>
+                  </CardContainer>
+
               );
             })}
       </div>
