@@ -33,15 +33,13 @@ export default function ImageComponent({ params }: ImageComponentProps) {
       key={generateRandomKey("imageComponent")}
     >
       <div className="flex flex-col">
-        <img
+        <Image
           src={params.url}
           alt={params.alt}
           key={generateRandomKey("imageComponent")}
-          style={{
-            height: height,
-            width: width,
-          }}
-        ></img>
+          height={height}
+          width={width}
+        ></Image>
         <span className="text-2xl font-bold">{caption}</span>
       </div>
     </div>

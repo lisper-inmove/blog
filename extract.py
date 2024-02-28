@@ -7,12 +7,13 @@ import json
 # 定义要处理的目录路径
 home = os.environ["HOME"]
 posts_directory = os.environ.get("POSTS_DIRECTORY")
+metadata_directory = f"./posts"
 if posts_directory:
     directory_path = posts_directory
 else:
     directory_path = f'./posts'
 if (not os.path.exists(directory_path)):
-    print(f"{directory_path} not exists");
+    print(f"{directory_path} not exists")
     sys.exit(-1)
 # 初始化元数据字典
 metadata = []
@@ -80,7 +81,7 @@ metadata.sort(key=lambda x: (x.get("categories"), x.get("sort")))
 # metadata.insert(0, aLeetcode)
 
 # 将元数据保存到 metadata.json 文件中
-with open('metadata.json', 'w') as json_file:
+with open(f'{metadata_directory}/metadata.json', 'w') as json_file:
     json.dump(metadata, json_file, indent=4, ensure_ascii=False)
 
 print('Metadata has been saved to metadata.json')

@@ -9,6 +9,7 @@ export type PostMetadata = {
   difficulty: Difficulty;
   subtitle: string;
   display: string;
+  queryTime: string;
 };
 
 export type PostsMetadataByCategory = {
@@ -16,9 +17,9 @@ export type PostsMetadataByCategory = {
   posts: PostMetadata[];
 };
 
-export type CategoryMap = {
+export interface CategoryMap {
   [categoryName: string]: PostMetadata[];
-};
+}
 
 export type PostProperty = {
   title: string;

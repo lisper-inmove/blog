@@ -7,7 +7,7 @@ export async function POST(request: Request) {
   if (!name) {
     return Response.json({});
   }
-  let postsMetadatas: PostMetadata[] = loadPostsMetadata();
+  let postsMetadatas: PostMetadata[] = loadPostsMetadata(Date.now());
   for (let metadata of postsMetadatas) {
     if (metadata.path.endsWith(name)) {
       let content = await fs.readFile(metadata.path, "utf8");

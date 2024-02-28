@@ -42,10 +42,7 @@ export default function Resume() {
         Math.random() * (1000 - 500) + 500,
       );
     });
-  }, []);
 
-  // Automatically call handleClick 2 seconds after component mounts
-  useEffect(() => {
     const timer = setTimeout(() => {
       handleClick();
     }, 2000);
