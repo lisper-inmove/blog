@@ -28,6 +28,8 @@ for foldername, subfolders, filenames in os.walk(directory_path):
     for filename in filenames:
         if not filename.endswith("org"):
             continue
+        if filename.startswith(".#"):
+            continue
         file_path = os.path.join(foldername, filename)
         # print('Processing file:', file_path)
 

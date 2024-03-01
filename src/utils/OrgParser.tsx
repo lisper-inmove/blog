@@ -361,7 +361,6 @@ export default class OrgParser {
             let pp = p[1];
             let results: LineContentProps[] = [];
             pp.type = "quote";
-            console.log(pp);
 
             if (
               prePp != null &&

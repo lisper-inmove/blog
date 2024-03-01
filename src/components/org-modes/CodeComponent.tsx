@@ -24,7 +24,7 @@ export default function CodeParser({ line, language, name }: Props) {
   const [copied, setCopied] = useState(false);
 
   const handleClick = (e: SyntheticEvent) => {
-    // navigator.clipboard.writeText(line);
+    navigator.clipboard.writeText(line);
     setCopied(true);
     setTimeout(() => {
       setCopied(false);

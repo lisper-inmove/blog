@@ -1,6 +1,5 @@
 import { lightModeColor } from "@/app/stores/ThemeColors";
 import { LineContentProps, LineComponent } from "./LineContentComponents";
-import { Box } from "@mui/material";
 
 interface QuoteComponentProps {
   params: {
@@ -10,16 +9,18 @@ interface QuoteComponentProps {
 
 export default function QuoteComponent({ params }: QuoteComponentProps) {
   return (
-    <Box
-      className="px-56 pt-4"
+    <div
+      className="flex px-56 pt-4"
       style={{
         backgroundColor: lightModeColor.commonBgColor,
         color: lightModeColor.commonTextColor,
       }}
     >
-      {params.contents.map((content: LineContentProps) => {
-        return LineComponent(content);
-      })}
-    </Box>
+      <div className="border-l border-orange-300 ml-2 pl-4" aria-hidden="true">
+        {params.contents.map((content: LineContentProps) => {
+          return LineComponent(content);
+        })}
+      </div>
+    </div>
   );
 }
