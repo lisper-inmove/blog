@@ -26,6 +26,7 @@ export default function TableComponent({ params }: TableComponentProps) {
     for (let cell of row.cells) {
       let lines: any[] = [];
       for (let value of cell.value) {
+        value.value = value.value.replaceAll("v{}", "|");
         lines.push(LineComponent(value));
       }
       cells.push(lines);
