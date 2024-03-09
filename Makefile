@@ -1,7 +1,16 @@
 shell := /bin/bash
 e:
+	@if [ -d posts ]; then \
+		unlink posts; \
+	fi
+	ln -s $(HOME)/posts .
 	python extract.py
+
 build:
+	@if [ -d posts ]; then \
+		unlink posts; \
+	fi
+	ln -s $(HOME)/posts .
 	rm -rf .next
 	npm run build
 
@@ -11,6 +20,10 @@ start:
 	npm run start
 
 bd: e build # build docker
+	@if [ -d posts ]; then \
+		unlink posts; \
+	fi
+	ln -s $(HOME)/posts .
 	sudo docker build -t mh.com:8890/blog/blog:v2.0 .
 	sudo docker push mh.com:8890/blog/blog:v2.0
 

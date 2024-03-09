@@ -80,13 +80,7 @@ export default function Home() {
         </Box>
       </Box>
       {/* Right Section: List Posts */}
-      <div
-        className="h-[100vh] w-5/6 overflow-y-auto flex flex-wrap justify-start content-start"
-        style={{
-          transformStyle: "preserve-3d",
-          perspective: "1000px",
-        }}
-      >
+      <div className="h-[100vh] w-5/6 overflow-y-auto flex flex-wrap justify-start content-start">
         {selectCategory != null &&
           Object.values(selectCategory)
             .flat()
@@ -95,7 +89,7 @@ export default function Home() {
                 <CardContainer
                   key={post.id}
                   containerClassName="items-start justify-start content-start py-0"
-                  className="items-start justify-start content-start"
+                  className="items-start justify-start content-start fadeIn2S"
                 >
                   <CardBody className="m-8 w-96 h-64 flex-shrink flex-grow flex flex-col items-start neu-shadow relative rounded-xl p-4">
                     <CardItem
