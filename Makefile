@@ -1,28 +1,16 @@
 shell := /bin/bash
 e:
-	@if [ -d posts ]; then \
-		unlink posts; \
-	fi
-	ln -s $(HOME)/posts .
 	python extract.py
 build:
-	@if [ -d posts ]; then \
-		unlink posts; \
-	fi
-	ln -s $(HOME)/posts .
 	rm -rf .next
 	npm run build
 
 dev: e
-	npm run dev
+	NEXT_PUBLIC_HOST=http://192.168.3.124:3000 npm run dev
 start:
 	npm run start
 
 bd: e build # build docker
-	@if [ -d posts ]; then \
-		unlink posts; \
-	fi
-	ln -s $(HOME)/posts .
 	sudo docker build -t mh.com:8890/blog/blog:v2.0 .
 	sudo docker push mh.com:8890/blog/blog:v2.0
 

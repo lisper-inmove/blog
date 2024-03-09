@@ -1,4 +1,5 @@
 import { lightModeColor } from "@/app/stores/ThemeColors";
+import { cn } from "@/utils/cn";
 
 interface IframeComponentProps {
   params: {
@@ -12,22 +13,34 @@ export default function IframeComponent({ params }: IframeComponentProps) {
   let width = undefined;
   let align = "center";
   if (params.attributes && params.attributes.attr_html) {
-    height = params.attributes.attr_html.height;
-    width = params.attributes.attr_html.width;
-    align = params.attributes.attr_html.align;
+    if (params.attributes.attr_html.height) {
+      height = params.attributes.attr_html.height;
+    }
+    if (params.attributes.attr_html.width) {
+      width = params.attributes.attr_html.width;
+    }
+    if (params.attributes.attr_html.align) {
+      align = params.attributes.attr_html.align;
+    }
   }
+  const defaultHost = "https://inmove.top/learning_react";
+  let host = process.env.LEARNING_REACT_HOST || defaultHost;
+  let link = params.link.replace(defaultHost, host);
   return (
     <div
-      className="flex px-56 pt-4"
+      className={cn("flex px-56 mt-2 pt-4", {
+        "mr-auto": align === "left",
+        "ml-auto": align === "right",
+        "mx-auto": align === "center",
+      })}
       style={{
         backgroundColor: lightModeColor.commonBgColor,
         color: lightModeColor.commonTextColor,
         width: width,
         height: height,
-        justifyContent: align,
       }}
     >
-      <iframe src={params.link}></iframe>
+      <iframe src={link} className="w-full text-gray-400"></iframe>
     </div>
   );
 }

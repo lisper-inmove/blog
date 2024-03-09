@@ -1,3 +1,4 @@
+/*
 .hover-translate {
   transition:
     transform 1s ease,
@@ -9,4 +10,49 @@
   box-shadow:
     4px 4px 5px 1px var(--shadow-color-1),
     -4px -4px 5px 1px var(--shadow-color-2);
+}
+*/
+
+@keyframes textDisplay {
+  from {
+    clip-path: inset(0 100% 0 0);
+  }
+
+  to {
+    clip-path: inset(0 0 0 0);
+  }
+}
+
+@keyframes textDisappear {
+  from {
+    clip-path: inset(0 0 0 0);
+  }
+
+  to {
+    clip-path: inset(0 0 0 100%);
+  }
+}
+
+.category-card {
+  position: relative;
+}
+
+.category-text {
+  position: absolute;
+}
+
+.category-card:hover .category-text {
+  animation: textDisappear 1.5s ease-in-out forwards;
+  display: inline-block;
+}
+
+.category-text-hidden {
+  position: absolute;
+  color: transparent;
+}
+
+.category-card:hover .category-text-hidden {
+  animation: textDisplay 1.5s ease-in-out forwards;
+  display: inline-block;
+  color: #846b00;
 }
