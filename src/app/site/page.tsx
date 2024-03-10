@@ -98,7 +98,7 @@ export default function Home() {
                       translateY={-5}
                       className={`${lfont.className} text-gray-900`}
                     >
-                      <Link href={`/site/posts/${post.id}`}>
+                      <Link href={`/site/posts/${post.id}`} target="_blank">
                         <h1 className="text-4xl">{post.title}</h1>
                       </Link>
                       <br />

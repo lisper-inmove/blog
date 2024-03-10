@@ -17,8 +17,8 @@ export default function ImageComponent({ params }: ImageComponentProps) {
   let justifyContent = "";
   let caption = "";
   if (params.attributes.attr_html) {
-    width = params.attributes.attr_html.width;
-    height = params.attributes.attr_html.height;
+    width = params.attributes.attr_html.width ?? 300;
+    height = params.attributes.attr_html.height ?? 300;
     justifyContent = params.attributes.attr_html.justifyContent;
     caption = params.attributes.caption;
   }
@@ -32,13 +32,19 @@ export default function ImageComponent({ params }: ImageComponentProps) {
       }}
       key={generateRandomKey("imageComponent")}
     >
-      <div className="flex flex-col">
+      <div
+        className="flex flex-col"
+        style={{
+          width: width,
+          height: height,
+          position: "relative",
+        }}
+      >
         <Image
+          fill
           src={params.url}
           alt={params.alt}
           key={generateRandomKey("imageComponent")}
-          height={height}
-          width={width}
         ></Image>
         <span className="text-2xl font-bold">{caption}</span>
       </div>

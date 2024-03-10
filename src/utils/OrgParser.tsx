@@ -8,9 +8,6 @@ import {
   LineContentProps,
   generateRandomKey,
 } from "@/components/org-modes/LineContentComponents";
-import ListComponent, {
-  ListItemComponentProps,
-} from "@/components/org-modes/ListComponent";
 import QuoteComponent from "@/components/org-modes/QuoteComponent";
 import CenterComponent from "@/components/org-modes/CenterComponent";
 import ExampleComponent from "@/components/org-modes/ExampleComponent";
@@ -25,6 +22,7 @@ import BodyComponent from "@/components/org-modes/BodyComponent";
 import LinkComponent from "@/components/org-modes/LinkComponent";
 import ImageComponent from "@/components/org-modes/ImageComponent";
 import IframeComponent from "@/components/org-modes/IframeComponent";
+import ListComponent from "@/components/org-modes/ListComponent";
 
 export default class OrgParser {
   private ast: any;
