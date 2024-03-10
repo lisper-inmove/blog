@@ -109,7 +109,16 @@ export default class OrgParser {
       } else if (child.type === "section") {
         this.parseSection(child, prevType);
       } else if (child.type === "list") {
-        this.parseList(child);
+        let contents: LineContentProps[] = [];
+        this.parseList(child, contents);
+        this.components.push(
+          <ListComponent
+            key={generateRandomKey("listComponent")}
+            params={{
+              items: contents,
+            }}
+          />,
+        );
       } else if (child.type == "emptyLine") {
         // this.components.push(EmptyLine());
       } else if (child.type == "link") {
@@ -381,62 +390,34 @@ export default class OrgParser {
     );
   }
 
-  private parseList(obj: any) {
+  private parseList(obj: any, contents: LineContentProps[] = []) {
     let index = 1;
-    let childList: any[] = [];
-    this.components.push(
-      <ListComponent
-        key={generateRandomKey("listComponent")}
-        params={{
-          items: Object.entries(obj.children).flatMap((o: any) => {
-            let oo = o[1];
-            let items: ListItemComponentProps[] = [];
-            if (oo.type === "newline") {
-              // let contents: LineContentProps[] = [];
-              // contents.push({
-              //   type: "newline",
-              //   style: "newline",
-              //   value: "newline",
-              // });
-              // items.push({ contents: contents });
-            } else if (oo.type === "list") {
-              childList.push(oo);
-            } else {
-              let contents: LineContentProps[] = [];
-              let addIndex = false;
-              let indent = 0;
-              Object.entries(oo.children).map((p: any) => {
-                let pp = p[1];
-                if (pp.type == "list.item.bullet") {
-                  indent = pp.indent;
-                }
-                if (addIndex) {
-                  contents.push(this.createLineContentProps(p[1], null));
-                } else {
-                  contents.push(
-                    this.createLineContentProps(
-                      p[1],
-                      `${" ".repeat(indent)}${index}. `,
-                    ),
-                  );
-                  if (pp.type == "text") {
-                    addIndex = true;
-                  }
-                }
-              });
-              items.push({ contents: contents });
-              if (addIndex) {
-                index++;
-              }
+    Object.entries(obj.children).flatMap((o: any) => {
+      let item = o[1];
+      if (item.type === "list.item") {
+        let indent = 0;
+        let flag = false;
+        Object.entries(item.children).map(([_, subItem]: any) => {
+          if (subItem.type === "list.item.bullet") {
+            indent = subItem.indent;
+          } else if (subItem.type === "newline") {
+            contents.push(
+              this.createLineContentProps({ type: "newline" }, null),
+            );
+          } else if (subItem.type === "text") {
+            let prefix = `${" ".repeat(indent)}${index}. `;
+            if (flag) {
+              prefix = `${" ".repeat(indent)}`;
             }
-            return items;
-          }),
-        }}
-      ></ListComponent>,
-    );
-    for (let cl of childList) {
-      this.parseList(cl);
-    }
+            contents.push(this.createLineContentProps(subItem, prefix));
+            flag = true;
+          }
+        });
+        index++;
+      } else if (item.type === "list") {
+        this.parseList(item, contents);
+      }
+    });
   }
 
   private parseParagraph(obj: any, isResults: boolean) {

@@ -24,6 +24,7 @@ export function CommonText(content: LineContentProps) {
       <span
         key={generateRandomKey("commonText")}
         className={`${content.textSize}`}
+        style={{ whiteSpace: "pre-wrap" }}
       >
         {content.value}
       </span>
@@ -39,11 +40,14 @@ export function QuoteText(content: LineContentProps) {
           key={generateRandomKey("commonText")}
           className={`${content.textSize}`}
         >
-      <h3 className="line-clamp-6 text-ellipsis w-1/2"
-          style={{
-            color: lightModeColor.quoteTextColor,
-          }}
-      >{content.value}</h3>
+          <h3
+            className="line-clamp-6 text-ellipsis w-1/2"
+            style={{
+              color: lightModeColor.quoteTextColor,
+            }}
+          >
+            {content.value}
+          </h3>
         </span>
       </>
     );
