@@ -10,7 +10,3 @@
 # make bd: rebuild and push to local docker repo
 
 # make rd: restart from docker
-
-# TODO:
-
-    1. support display image
