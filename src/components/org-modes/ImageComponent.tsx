@@ -1,7 +1,6 @@
 import { lightModeColor } from "@/app/stores/ThemeColors";
 import Image from "next/image";
 import { generateRandomKey } from "./LineContentComponents";
-import { withDefault } from "orga/dist/options";
 
 interface ImageComponentProps {
   params: {

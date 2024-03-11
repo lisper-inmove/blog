@@ -162,9 +162,9 @@ export function EmptyLine() {
 }
 
 export function LineComponent(content: LineContentProps) {
-  if (content.textSize == "") {
-    content.textSize = "text-lg";
-  }
+  // if (content.textSize == "") {
+  //   content.textSize = "text-lg";
+  // }
   if (content.type === "text" && content.style === "text") {
     return CommonText(content);
   } else if (content.type === "text" && content.style === "verbatim") {

@@ -23,6 +23,7 @@ import LinkComponent from "@/components/org-modes/LinkComponent";
 import ImageComponent from "@/components/org-modes/ImageComponent";
 import IframeComponent from "@/components/org-modes/IframeComponent";
 import ListComponent from "@/components/org-modes/ListComponent";
+import MultiImageComponent from "@/components/org-modes/MultiImage";
 
 export default class OrgParser {
   private ast: any;
@@ -117,32 +118,34 @@ export default class OrgParser {
             }}
           />,
         );
-      } else if (child.type == "emptyLine") {
+      } else if (child.type === "emptyLine") {
         // this.components.push(EmptyLine());
-      } else if (child.type == "link") {
+      } else if (child.type === "link") {
         if (this.isImage(child)) {
           this.parseImage(child);
         } else {
           this.parseLink(child);
         }
       } else if (child.type === "block") {
-        if (child.name == "verse") {
+        if (child.name === "verse") {
           // begin_verse
           this.parseVerse(child);
-        } else if (child.name == "example") {
+        } else if (child.name === "example") {
           // begin_example
           this.parseExample(child);
-        } else if (child.name == "center") {
+        } else if (child.name === "center") {
           // begin_center
           this.parseCenter(child);
-        } else if (child.name == "src") {
+        } else if (child.name === "src") {
           // begin_src
           this.parseCode(child);
-        } else if (child.name == "quote") {
+        } else if (child.name === "quote") {
           // begin_quote
           this.parseQuote(child);
-        } else if (child.name == "iframe") {
+        } else if (child.name === "iframe") {
           this.parseIframe(child);
+        } else if (child.name === "image") {
+          this.parseMultiImage(child);
         }
       } else if (child.type === "table") {
         this.parseTable(child);
@@ -206,6 +209,21 @@ export default class OrgParser {
         {...lineContentProps}
         key={generateRandomKey("linkComponent")}
       ></LinkComponent>,
+    );
+  }
+
+  private parseMultiImage(obj: any) {
+    let imageUrls: string[] = [];
+    for (let item of obj.children) {
+      if (item.type === "link.path") {
+        imageUrls.push(item.value);
+      }
+    }
+    this.components.push(
+      <MultiImageComponent
+        attributes={obj.attributes}
+        urls={imageUrls}
+      ></MultiImageComponent>,
     );
   }
 
