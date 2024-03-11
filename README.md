@@ -5,8 +5,6 @@
     1. default directory is ./posts
     2. or set POSTS_DIRECTORY in environment
 
-# make dev: start dev
+# Commands
 
-# make bd: rebuild and push to local docker repo
-
-# make rd: restart from docker
+    See extract.py and Makefile
