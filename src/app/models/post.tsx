@@ -10,6 +10,7 @@ export type PostMetadata = {
   subtitle: string;
   display: string;
   queryTime: string;
+  transship: string;
 };
 
 export type PostsMetadataByCategory = {

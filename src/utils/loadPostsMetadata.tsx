@@ -19,6 +19,7 @@ export function loadPostsMetadata(time: number) {
     subtitle: item.subtitle,
     display: item.display,
     queryTime: time.toString(),
+    transship: item.transship,
   }));
   return postsMetadata;
 }
