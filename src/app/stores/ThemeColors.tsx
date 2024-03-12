@@ -5,6 +5,7 @@ export type ThemeColor = {
   reverseColor: string;
   themeToggleBgColor: string;
   postCategoryCardBgColor: string;
+  selectedPostCategoryCardBgColor: string;
   postCategoryCardShadowColor1: string;
   postCategoryCardShadowColor2: string;
   headlineTextColor: string;
@@ -23,6 +24,7 @@ export const darkModeColor: ThemeColor = {
   reverseColor: commonLightColor,
   themeToggleBgColor: "#00aabb82",
   postCategoryCardBgColor: "#b4bcc38c",
+  selectedPostCategoryCardBgColor: "#b4bcc38c",
   postCategoryCardShadowColor1: "#313233fc",
   postCategoryCardShadowColor2: "#cad2d9",
   headlineTextColor: "#ffa900",
@@ -39,6 +41,7 @@ export const lightModeColor: ThemeColor = {
   reverseColor: commonDarkColor,
   themeToggleBgColor: "#00aabb82",
   postCategoryCardBgColor: "#dadadad9",
+  selectedPostCategoryCardBgColor: "#e1dadad9",
   postCategoryCardShadowColor1: "#8d8484d9",
   postCategoryCardShadowColor2: "#f1ececd9",
   headlineTextColor: "#b36a01",

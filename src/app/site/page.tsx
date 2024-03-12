@@ -11,12 +11,24 @@ import { CardBody } from "@/components/ui/3d-card";
 import { CardContainer } from "@/components/ui/3d-card";
 import "./style.css";
 import { cn } from "@/utils/cn";
+import SideBarComponent from "@/components/SideBar";
 
-export default function Home() {
+type Param = string | undefined;
+
+interface Props {
+  searchParams: {
+    [key: string]: Param;
+  };
+}
+
+export default function Site({ searchParams }: Props) {
   const [selectCategory, setSelectCategory] = useState<CategoryMap | null>(
     null,
   );
   const [postCategories, setPostCategories] = useState<CategoryMap>({});
+  const [categoryName, setCategoryName] = useState<string>(
+    searchParams.c || "Projects",
+  );
 
   useEffect(() => {
     let data: CategoryMap = {};
@@ -34,16 +46,27 @@ export default function Home() {
         }
       }
       setPostCategories(data);
-      const entries = Object.entries(data);
-      if (entries.length > 0) {
-        const [category, posts] = entries[0];
-        setSelectCategory({
-          [category]: posts,
-        });
-      }
     };
     fetchMetadatas();
   }, []);
+
+  useEffect(() => {
+    const entries = Object.entries(postCategories);
+    if (entries.length > 0) {
+      let [category, posts] = entries[0];
+      if (categoryName) {
+        for (const entry of entries) {
+          if (entry[0] === categoryName) {
+            [category, posts] = entry;
+            break;
+          }
+        }
+      }
+      setSelectCategory({
+        [category]: posts,
+      });
+    }
+  }, [postCategories, categoryName]);
 
   return (
     <Box
@@ -55,31 +78,11 @@ export default function Home() {
         perspective: "1000px",
       }}
     >
-      {/* Left Section: Post Category List */}
-      <Box className="flex flex-col items-center h-[90vh] w-1/6 overflow-y-auto border-r border-r-gray-300">
-        <Box className="h-12 w-3/4">
-          {Object.entries(postCategories).map(([category, posts]) => (
-            <Card
-              key={category}
-              onClick={() => setSelectCategory({ [category]: posts })}
-              className="mt-8 h-12 flex items-center justify-center slideInLeft2S text-2xl hover:cursor-pointer transform transition-transform active:scale-105 hover-translate neu-shadow category-card"
-              style={{
-                backgroundColor: lightModeColor.postCategoryCardBgColor,
-                boxShadow: `3px 3px 5px 1px ${lightModeColor.postCategoryCardShadowColor1}, -3px -3px 5px 1px ${lightModeColor.postCategoryCardShadowColor2}`,
-                borderRadius: "8px",
-              }}
-            >
-              <h3
-                aria-hidden="true"
-                className={`${lfont.className} category-text-hidden`}
-              >
-                {category}
-              </h3>
-              <h3 className={`${lfont.className} category-text`}>{category}</h3>
-            </Card>
-          ))}
-        </Box>
-      </Box>
+      <SideBarComponent
+        postCategories={postCategories}
+        categoryName={categoryName}
+        handleClick={setSelectCategory}
+      ></SideBarComponent>
       {/* Right Section: List Posts */}
       <div className="h-[100vh] w-5/6 overflow-y-auto flex flex-wrap justify-start content-start">
         {selectCategory != null &&

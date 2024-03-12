@@ -89,7 +89,7 @@ export default function Resume() {
               </Link>
             </div>
             <div className="intro-icon">
-              <Link href="https://inmove.top/site">
+              <Link href="https://inmove.top/site?c=Projects">
                 <FaBlog></FaBlog>
               </Link>
             </div>
