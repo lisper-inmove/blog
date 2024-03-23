@@ -12,9 +12,11 @@ build:
 	fi
 	ln -s $(HOME)/posts .
 	rm -rf .next
+	cp .env.prod .env
 	npm run build
 
 dev: e
+	cp .env.dev .env
 	NEXT_PUBLIC_HOST=http://192.168.3.124:3000 npm run dev
 
 start:

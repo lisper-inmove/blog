@@ -89,6 +89,8 @@ export default function Site({ searchParams }: Props) {
           Object.values(selectCategory)
             .flat()
             .map((post, index) => {
+              console.log(post.subtitle);
+              const keywordsStr = post.keywords.join(" ");
               return (
                 <CardContainer
                   key={post.id}
@@ -115,14 +117,14 @@ export default function Site({ searchParams }: Props) {
                             <h1 className="text-4xl">{post.title}</h1>
                           </Link>
                           <br />
-                          <h3 className="text-lg text-ellipsis w-80 line-clamp-6 text-orange-800">
-                            {post.subtitle}
+                          <h3 className="text-lg w-80 text-ellipsis line-clamp-6 text-orange-800 whitespace-pre-wrap">
+                            {keywordsStr}
                           </h3>
                         </>
                       ) : (
                         <>
                           <Link href={`${post.transship}`} target="_blank">
-                            <h1 className="text-3xl">
+                            <h1 className="text-3xl whitespace-pre-wrap">
                               Transship: {post.title}
                             </h1>
                             <br />

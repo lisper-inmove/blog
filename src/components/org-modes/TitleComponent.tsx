@@ -29,7 +29,7 @@ export default function TitleComponent({ params }: TitleComponentProps) {
       >
         <h3 className="text-xl">Last Update At: {params.date}</h3>
         <h3 className="font-bold text-red-700 text-xl">
-          Keywords: {params.keywords}
+          Keywords: {params.subtitle}
         </h3>
       </div>
     </div>
