@@ -28,9 +28,11 @@ export default function TitleComponent({ params }: TitleComponentProps) {
         className={`flex flex-col justify-start items-start ${lfont.className}`}
       >
         <h3 className="text-xl">Last Update At: {params.date}</h3>
-        <h3 className="font-bold text-red-700 text-xl">
-          Keywords: {params.subtitle}
-        </h3>
+        {params.subtitle ? (
+          <h3 className="font-bold text-red-700 text-xl">
+            Subtitle: {params.subtitle}
+          </h3>
+        ) : null}
       </div>
     </div>
   );
