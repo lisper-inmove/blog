@@ -3,6 +3,7 @@ import sys
 import base64
 import re
 import json
+import random
 
 home = os.environ["HOME"]
 posts_directory = os.environ.get("POSTS_DIRECTORY")
@@ -16,7 +17,14 @@ if (not os.path.exists(directory_path)):
     sys.exit(-1)
 metadata = []
 
-pattern = re.compile(r'^#\+(TITLE|CATEGORIES|DATE|KEYWORDS|DIFFICULTY|SUBTITLE|DISPLAY|TRANSSHIP): (.+)$')
+pattern = re.compile(r'^#\+(TITLE|CATEGORIES|DATE|KEYWORDS|DIFFICULTY|SUBTITLE|DISPLAY|TRANSSHIP|CARDIMAGE): (.+)$')
+
+default_images = [
+    "https://inmove-blog.oss-cn-hangzhou.aliyuncs.com/images/blog-defalut.png",
+    "https://inmove-blog.oss-cn-hangzhou.aliyuncs.com/images/kobe-01.png",
+    "https://inmove-blog.oss-cn-hangzhou.aliyuncs.com/images/white-tiger.png"
+]
+
 
 for foldername, subfolders, filenames in os.walk(directory_path):
     for filename in filenames:
@@ -37,8 +45,8 @@ for foldername, subfolders, filenames in os.walk(directory_path):
             'subtitle': '',
             'display': '',
             'transship': '',
+            'cardimage': '',
         }
-
         with open(file_path, 'r') as file:
             while True:
                 line = file.readline()
@@ -49,6 +57,9 @@ for foldername, subfolders, filenames in os.walk(directory_path):
                     key = match.group(1)
                     value = match.group(2).strip()
                     file_metadata[key.lower()] = value
+
+        if (file_metadata.get("cardimage") == ""):
+            file_metadata["cardimage"] = default_images[random.randint(0, 10000) % len(default_images)]
 
         title = file_metadata.get("title")
         t = title.split(".")[0]

@@ -17,7 +17,7 @@ export default function TableContentComponent({ params }: TableContentProps) {
   const [isExpanded, setIsExpanded] = useState(false);
   return (
     <div
-      className={`z-50 hover:z-50 fixed top-20 left-5 p-2 rounded-md transition-all duration-300 ${isExpanded ? "w-96" : "w-8"}`}
+      className={`z-50 hover:z-50 fixed top-20 left-5 p-2 rounded-md transition-all duration-300 ${isExpanded ? "w-96" : ""}`}
       onMouseEnter={() => setIsExpanded(true)}
       onMouseLeave={() => setIsExpanded(false)}
       style={{

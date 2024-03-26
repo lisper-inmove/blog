@@ -481,6 +481,8 @@ export default class OrgParser {
     this.property.createDate = this.ast.properties.date;
     this.property.keywords = this.ast.properties.keywords;
 
+    console.log(this.ast.properties);
+
     this.components.push(
       <TitleComponent
         key={this.property.title}

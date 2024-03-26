@@ -11,6 +11,7 @@ export type PostMetadata = {
   display: string;
   queryTime: string;
   transship: string;
+  cardimage: string;
 };
 
 export type PostsMetadataByCategory = {

@@ -52,17 +52,14 @@ export const CardContainer = ({
           "py-20 flex items-center justify-center",
           containerClassName,
         )}
-        style={{
-          perspective: "1000px",
-        }}
       >
         <div
           ref={containerRef}
-          onMouseEnter={handleMouseEnter}
-          onMouseMove={handleMouseMove}
-          onMouseLeave={handleMouseLeave}
+          // onMouseEnter={handleMouseEnter}
+          // onMouseMove={handleMouseMove}
+          // onMouseLeave={handleMouseLeave}
           className={cn(
-            "flex items-center justify-center relative transition-all duration-200 ease-linear",
+            "flex items-center justify-center relative transition-all duration-200 ease-linear w-3/4",
             className,
           )}
           style={{

@@ -20,6 +20,7 @@ export function loadPostsMetadata(time: number) {
     display: item.display,
     queryTime: time.toString(),
     transship: item.transship,
+    cardimage: item.cardimage,
   }));
   return postsMetadata;
 }
