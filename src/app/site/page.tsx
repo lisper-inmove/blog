@@ -1,18 +1,12 @@
 "use client";
-import { lfont } from "@/utils/constants";
-import { CategoryMap } from "../models/post";
-import { Box, Card } from "@mui/material";
+import { PostMetadata } from "../models/post";
 import { useEffect, useState } from "react";
-import Link from "next/link";
 import { lightModeColor } from "../stores/ThemeColors";
 import { loadPostsMetadataHttp } from "../api/post-category/loadPostsMetadataHttp";
-import { CardItem } from "@/components/ui/3d-card";
-import { CardBody } from "@/components/ui/3d-card";
-import { CardContainer } from "@/components/ui/3d-card";
-import "./style.css";
-import { cn } from "@/utils/cn";
-import SideBarComponent from "@/components/SideBar";
-import Image from "next/image";
+import { MotionDiv } from "@/components/MotionDiv";
+import Link from "next/link";
+import { LoaderCircle } from "lucide-react";
+import { useInView } from "react-intersection-observer";
 
 type Param = string | undefined;
 
@@ -23,152 +17,106 @@ interface Props {
 }
 
 export default function Site({ searchParams }: Props) {
-  const [selectCategory, setSelectCategory] = useState<CategoryMap | null>(
-    null,
-  );
-  const [postCategories, setPostCategories] = useState<CategoryMap>({});
-  const [categoryName, setCategoryName] = useState<string>(
-    searchParams.c || "Projects",
-  );
+  const [posts, setPosts] = useState<PostMetadata[]>([]);
+  const [end, setEnd] = useState<boolean>(false);
+  const { ref, inView } = useInView();
+  const [page, setPage] = useState<number>(1);
 
   useEffect(() => {
-    let data: CategoryMap = {};
     const fetchMetadatas = async () => {
-      let metadatas = await loadPostsMetadataHttp(Date.now());
-      for (let metadata of metadatas) {
-        if (metadata.display != "t") {
-          continue;
-        }
-        for (let category of metadata.categories) {
-          if (!data[category]) {
-            data[category] = [];
-          }
-          data[category].push(metadata);
-        }
+      let metadatas = await loadPostsMetadataHttp(Date.now(), 1);
+      if (metadatas.length === 0) {
       }
-      setPostCategories(data);
+      setPosts(metadatas);
     };
     fetchMetadatas();
   }, []);
 
   useEffect(() => {
-    const entries = Object.entries(postCategories);
-    if (entries.length > 0) {
-      let [category, posts] = entries[0];
-      if (categoryName) {
-        for (const entry of entries) {
-          if (entry[0] === categoryName) {
-            [category, posts] = entry;
-            break;
-          }
+    if (inView && !end) {
+      loadPostsMetadataHttp(Date.now(), page + 1).then((newPosts) => {
+        if (newPosts.length === 0) {
+          setEnd(true);
+        } else {
+          setPosts((prevPosts) => [...prevPosts, ...newPosts]);
+          setPage(page + 1);
         }
-      }
-      setSelectCategory({
-        [category]: posts,
       });
     }
-  }, [postCategories, categoryName]);
+  }, [inView, end, page]);
+
+  const variants = {
+    hidden: { opacity: 0 },
+    visible: { opacity: 1 },
+  };
 
   return (
-    <Box
-      className="flex justify-around"
-      style={{
-        backgroundColor: lightModeColor.commonBgColor,
-        color: lightModeColor.commonTextColor,
-        transformStyle: "preserve-3d",
-        perspective: "1000px",
-      }}
-    >
-      <SideBarComponent
-        postCategories={postCategories}
-        categoryName={categoryName}
-        handleClick={setSelectCategory}
-      ></SideBarComponent>
+    <>
       {/* Right Section: List Posts */}
-      <div className="h-[100vh] w-5/6 overflow-y-auto flex flex-col gap-10 flex-nowrap justify-start content-start mt-10 ml-10 pl-10 pt-10">
-        {selectCategory != null &&
-          Object.values(selectCategory)
-            .flat()
-            .map((post, index) => {
-              console.log(post.subtitle);
-              const keywordsStr = post.keywords.join(" ");
+      <div className="flex flex-col h-full w-4/5 overflow-y-auto gap-10 mx-auto mt-20 mb-10">
+        <div className="flex flex-col items-center mb-10">
+          {posts != null &&
+            posts.map((post, index) => {
               return (
-                <div
+                <MotionDiv
                   key={post.id}
-                  className="flex flex-row flex-grow items-center justify-start gap-5 neu-shadow w-3/4 max-h-64 rounded-lg"
+                  className="flex items-center justify-around w-4/5 mx-auto h-full neu-shadow rounded mt-10"
+                  variants={variants}
+                  initial="hidden"
+                  animate="visible"
+                  transition={{
+                    delay: 0.1,
+                    ease: "easeInOut",
+                    duration: 0.5,
+                  }}
+                  viewport={{ amount: 0 }}
+                  style={{
+                    backgroundColor: lightModeColor.commonBgColor,
+                    color: lightModeColor.commonTextColor,
+                  }}
                 >
-                  <div className="p-10">
-                    <Image
-                      src={`${post.cardimage}`}
-                      height={200}
-                      width={200}
-                      alt={`${post.title}`}
-                      className="rounded-md"
-                    ></Image>
+                  <div className="flex flex-col p-8 w-full h-64 justify-between">
+                    {/* 标题 */}
+                    <div className="text-2xl text-black font-bold">
+                      <Link href={`/site/posts/${post.id}`} target="_blank">
+                        {post.title}
+                      </Link>
+                    </div>
+                    {/* 子标题 */}
+                    <div className="text-lg text-black/50 font-semibold indent-4">
+                      {post.subtitle}
+                    </div>
+                    <div className="flex flex-row justify-between">
+                      {/* 关键字 */}
+                      <div className="flex flex-row mb-3">
+                        <div className="text-black/70 text-lg mt-5 ml-3 px-3 py-1 bg-gray-300 rounded-lg font-semibold">
+                          #{post.categories}
+                        </div>
+                        {post.keywords.map((keyword, index) => {
+                          return (
+                            <div
+                              className="text-black/70 text-lg mt-5 ml-3 px-3 py-1 bg-gray-300 rounded-lg font-semibold"
+                              key={`${post.id}-keyword-${index}`}
+                            >
+                              #{keyword}
+                            </div>
+                          );
+                        })}
+                      </div>
+                      {/* 创建时间 */}
+                      <div className="self-end mb-3">{post.date}</div>
+                    </div>
                   </div>
-                  <div className="pl-5 pr-20 pb-20 pt-10">
-                    {post.transship === "" ? (
-                      <>
-                        <Link href={`/site/posts/${post.id}`} target="_blank">
-                          <h1 className="text-4xl">{post.title}</h1>
-                        </Link>
-                        <br />
-                        <h3 className="text-lg w-80 text-ellipsis line-clamp-6 text-orange-800 whitespace-pre-wrap">
-                          {keywordsStr}
-                        </h3>
-                      </>
-                    ) : (
-                      <>
-                        <Link href={`${post.transship}`} target="_blank">
-                          <h1 className="text-3xl whitespace-pre-wrap">
-                            Transship: {post.title}
-                          </h1>
-                          <br />
-                        </Link>
-                      </>
-                    )}
-                  </div>
-                </div>
-                // <CardContainer
-                //   key={post.id}
-                //   containerClassName="items-start justify-start content-start py-0 w-full"
-                //   className="items-start justify-start content-start fadeIn2S"
-                // >
-                //   <CardBody
-                //     className={cn(
-                //       "m-8 h-64 flex-shrink flex-grow flex flex-col items-start neu-shadow relative rounded-xl p-4 w-full",
-                //       {
-                //         "bg-gray-300": post.transship !== "",
-                //       },
-                //     )}
-                //   >
-                //     <CardItem className={`${lfont.className} text-gray-900`}>
-                //       {post.transship === "" ? (
-                //         <>
-                //           <Link href={`/site/posts/${post.id}`} target="_blank">
-                //             <h1 className="text-4xl">{post.title}</h1>
-                //           </Link>
-                //           <br />
-                //           <h3 className="text-lg w-80 text-ellipsis line-clamp-6 text-orange-800 whitespace-pre-wrap">
-                //             {keywordsStr}
-                //           </h3>
-                //         </>
-                //       ) : (
-                //         <>
-                //           <Link href={`${post.transship}`} target="_blank">
-                //             <h1 className="text-3xl whitespace-pre-wrap">
-                //               Transship: {post.title}
-                //             </h1>
-                //             <br />
-                //           </Link>
-                //         </>
-                //       )}
-                //     </CardItem>
-                //   </CardBody>
-                // </CardContainer>
+                </MotionDiv>
               );
             })}
+        </div>
+        {end ? null : (
+          <div className="text-center mx-auto mt-8 mb-8" ref={ref}>
+            <LoaderCircle className="animate-spin w-8 h-8 text-orange-300" />
+          </div>
+        )}
       </div>
-    </Box>
+    </>
   );
 }

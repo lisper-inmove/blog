@@ -17,7 +17,9 @@ if (not os.path.exists(directory_path)):
     sys.exit(-1)
 metadata = []
 
-pattern = re.compile(r'^#\+(TITLE|CATEGORIES|DATE|KEYWORDS|DIFFICULTY|SUBTITLE|DISPLAY|TRANSSHIP|CARDIMAGE): (.+)$')
+pattern = re.compile(
+    r'^#\+(TITLE|CATEGORIES|DATE|KEYWORDS|DIFFICULTY|SUBTITLE|DISPLAY|TRANSSHIP|CARDIMAGE|DATE): (.+)$'
+)
 
 default_images = [
     "https://inmove-blog.oss-cn-hangzhou.aliyuncs.com/images/blog-defalut.png",
@@ -46,6 +48,7 @@ for foldername, subfolders, filenames in os.walk(directory_path):
             'display': '',
             'transship': '',
             'cardimage': '',
+            'date': '',
         }
         with open(file_path, 'r') as file:
             while True:
@@ -69,7 +72,7 @@ for foldername, subfolders, filenames in os.walk(directory_path):
         file_metadata.update({"sort": sort})
         metadata.append(file_metadata)
 
-metadata.sort(key=lambda x: (x.get("categories"), x.get("sort")))
+metadata.sort(key=lambda x: x.get("date"))
 
 with open(f'{metadata_directory}/metadata.json', 'w') as json_file:
     json.dump(metadata, json_file, indent=4, ensure_ascii=False)

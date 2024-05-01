@@ -11,5 +11,5 @@ export default async function Post({ params: { post } }: PageProps) {
   const data = await getPostContent(post);
   let orgParser: OrgParser = new OrgParser();
   const component = await orgParser.parse(data.content);
-  return <div>{component}</div>;
+  return <div className="mt-20">{component}</div>;
 }

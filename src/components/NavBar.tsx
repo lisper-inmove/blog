@@ -6,33 +6,28 @@ import { AppBar, Box, Toolbar } from "@mui/material";
 
 export default function NavBar() {
   return (
-    <AppBar
-      className="border border-b border-b-gray-300"
-      position="static"
+    <div
+      className="border border-b border-b-gray-100 top-0 h-20 fixed w-full z-50"
       style={{
-        backgroundColor: lightModeColor.navbarBgColor,
+        backgroundColor: "#dadada",
         color: lightModeColor.commonTextColor,
       }}
     >
       {/* Some Links section */}
-      <Toolbar>
-        <Link href="/site" className="mr-4" title="Home Page">
-          <FaHome className="h-6 w-6" />
-        </Link>
-        <Link href="/" className="mr-4" title="My Works">
-          <FaBook className="h-6 w-6" />
-        </Link>
-        <Link href="https://github.com/lisper-inmove" title="My GitHub">
-          <FaGithub className="h-6 w-6" />
-        </Link>
-        <Box
+      <div className="flex flex-row h-full w-full text-center items-center">
+        <div className="pl-10">
+          <Link href="https://github.com/lisper-inmove" title="My GitHub">
+            <FaGithub className="h-6 w-6" />
+          </Link>
+        </div>
+        <div
           className={`flex-grow text-4xl brightness-90 rotate-0 ${lfont.className}`}
         >
           {siteTitle}
-        </Box>
-      </Toolbar>
+        </div>
+      </div>
 
       {/* Title Section */}
-    </AppBar>
+    </div>
   );
 }
