@@ -48,9 +48,9 @@ const renderTablehead = (headlines: PostHeadline[]) => {
       {headlines.map((headline) => (
         <div
           key={generateRandomKey("tableContent")}
-          className="ml-1 hover:text-gray-700 text-gray-500"
+          className="ml-1 hover:text-gray-700 text-gray-500 text-lg"
           style={{
-            marginLeft: `${(headline.level - 1) * 2}em`,
+            marginLeft: `${(headline.level - 1) * 0.5}em`,
             scrollMarginTop: "200px",
           }}
         >

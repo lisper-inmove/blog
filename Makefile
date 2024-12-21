@@ -17,7 +17,7 @@ build:
 
 dev: e
 	cp .env.dev .env
-	NEXT_PUBLIC_HOST=http://192.168.3.124:3000 npm run dev
+	NEXT_PUBLIC_HOST=http://192.168.200.124:3000 npm run dev
 
 start:
 	npm run start

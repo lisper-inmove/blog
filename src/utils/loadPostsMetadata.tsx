@@ -2,7 +2,12 @@ import path from "path";
 import fs from "fs";
 import { PostMetadata } from "@/app/models/post";
 
-export function loadPostsMetadata(time: number, page: number) {
+export function loadPostsMetadata(
+  time: number,
+  page: number = 1,
+  all: boolean = false,
+  onlyDisplay: boolean = true,
+) {
   const metadataPath = path.join(process.cwd(), "posts/metadata.json");
   const metadata = JSON.parse(fs.readFileSync(metadataPath, "utf8"));
   const size = 10;
@@ -26,6 +31,9 @@ export function loadPostsMetadata(time: number, page: number) {
       cardimage: item.cardimage,
       date: item.date,
     }))
-    .filter((post: PostMetadata) => post.display === "t");
+    .filter((post: PostMetadata) => !onlyDisplay || post.display === "t");
+  if (all) {
+    return postsMetadata;
+  }
   return postsMetadata.slice(skip, skip + size);
 }

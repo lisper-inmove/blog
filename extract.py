@@ -72,7 +72,7 @@ for foldername, subfolders, filenames in os.walk(directory_path):
         file_metadata.update({"sort": sort})
         metadata.append(file_metadata)
 
-metadata.sort(key=lambda x: x.get("date"))
+metadata.sort(key=lambda x: x.get("date"), reverse=True)
 
 with open(f'{metadata_directory}/metadata.json', 'w') as json_file:
     json.dump(metadata, json_file, indent=4, ensure_ascii=False)
