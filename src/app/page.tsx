@@ -2,14 +2,14 @@
 import { lfont } from "@/utils/constants";
 import "./style.css";
 
+import LoadingComponent from "@/components/LoadingComponent";
+import SelfIntro from "@/components/SelfIntro";
+import { cn } from "@/utils/cn";
 import Image from "next/image";
-import { BsGithub } from "react-icons/bs";
-import { FaBlog } from "react-icons/fa";
 import Link from "next/link";
 import { ReactElement, useEffect, useState } from "react";
-import SelfIntro from "@/components/SelfIntro";
-import LoadingComponent from "@/components/LoadingComponent";
-import { cn } from "@/utils/cn";
+import { BsGithub } from "react-icons/bs";
+import { FaBlog } from "react-icons/fa";
 
 export default function Resume() {
   let [opened, setOpened] = useState(true);
@@ -17,12 +17,9 @@ export default function Resume() {
   let [c, setc] = useState<ReactElement | null>(null);
   useEffect(() => {
     SelfIntro().then((value) => {
-      setTimeout(
-        () => {
-          setc(value);
-        },
-        Math.random() * (1000 - 500) + 500,
-      );
+      setTimeout(() => {
+        setc(value);
+      }, Math.random() * (1000 - 500) + 500);
     });
   }, []);
 
@@ -31,7 +28,7 @@ export default function Resume() {
   ) : (
     <div
       id="resume-div"
-      className="w-[100vw] h-[100vh] flex justify-center items-center"
+      className="w-[100vw] h-[100vh] flex flex-col justify-center items-center"
     >
       <div className="w-[100vw] h-[100vh] flex justify-center items-center bg-zinc-500/30">
         {/* self intro */}
@@ -39,7 +36,7 @@ export default function Resume() {
           id="self-intro"
           className={cn(
             "flex flex-col self-intro absolute w-96 h-1/2 backdrop-blur-xl border rounded-3xl border-transparent justify-center items-center p-10 transition-all opacity-0",
-            { "translate-x-1/2 opacity-100": opened },
+            { "translate-x-1/2 opacity-100": opened }
           )}
         >
           {c}
@@ -49,7 +46,7 @@ export default function Resume() {
         <div
           className={cn(
             "grid grid-cols-1 resume backdrop-blur-xl border rounded-3xl border-transparent w-96 h-1/2 justify-center absolute",
-            { "-translate-x-1/2": opened },
+            { "-translate-x-1/2": opened }
           )}
           onClick={() => setOpened(!opened)}
           id="resume"
@@ -67,7 +64,7 @@ export default function Resume() {
             className={`avatar-title ${lfont.className} text-orange-800 text-3xl text-center mt-20`}
           >
             <h3>Hello I&apos;m inmove</h3>
-            <h3>Full Stack Programmer</h3>
+            <h3>A Full Stack Programmer</h3>
           </div>
           <div className="intro-icons grid-cols-4 text-3xl text-center items-center">
             <div className="intro-icon">
@@ -92,6 +89,14 @@ export default function Resume() {
             </div>
           </div>
         </div>
+      </div>
+      <div className="flex w-[100vw] bg-zinc-500/30">
+        <p className="ml-auto">
+          <a href="https://beian.miit.gov.cn/" target="_blank" style={{
+            color: 'white',
+            fontSize: '14px'
+          }}>粤ICP备2023000078号</a>
+        </p>
       </div>
     </div>
   );

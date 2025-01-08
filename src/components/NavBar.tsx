@@ -15,9 +15,12 @@ export default function NavBar() {
     >
       {/* Some Links section */}
       <div className="flex flex-row h-full w-full text-center items-center">
-        <div className="pl-10">
+        <div className="flex flex-row pl-10">
           <Link href="https://github.com/lisper-inmove" title="My GitHub">
-            <FaGithub className="h-6 w-6" />
+            <FaGithub className="h-6 w-6 mr-3" />
+          </Link>
+          <Link href="https://www.inmove.com.cn" title="My GitHub">
+            <FaHome className="h-6 w-6" />
           </Link>
         </div>
         <div
