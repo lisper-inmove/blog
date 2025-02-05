@@ -1,103 +1,126 @@
 "use client";
-import { lfont } from "@/utils/constants";
-import "./style.css";
-
-import LoadingComponent from "@/components/LoadingComponent";
-import SelfIntro from "@/components/SelfIntro";
-import { cn } from "@/utils/cn";
-import Image from "next/image";
+import { PostMetadata } from "./models/post";
+import { useEffect, useState } from "react";
+import NavBar from "@/components/NavBar";
+import { lightModeColor } from "./stores/ThemeColors";
+import { loadPostsMetadataHttp } from "./api/post-category/loadPostsMetadataHttp";
+import { MotionDiv } from "@/components/MotionDiv";
 import Link from "next/link";
-import { ReactElement, useEffect, useState } from "react";
-import { BsGithub } from "react-icons/bs";
-import { FaBlog } from "react-icons/fa";
+import { LoaderCircle } from "lucide-react";
+import { useInView } from "react-intersection-observer";
 
-export default function Resume() {
-  let [opened, setOpened] = useState(true);
+type Param = string | undefined;
 
-  let [c, setc] = useState<ReactElement | null>(null);
+interface Props {
+  searchParams: {
+    [key: string]: Param;
+  };
+}
+
+export default function Site({ searchParams }: Props) {
+  const [posts, setPosts] = useState<PostMetadata[]>([]);
+  const [end, setEnd] = useState<boolean>(false);
+  const { ref, inView } = useInView();
+  const [page, setPage] = useState<number>(1);
+
   useEffect(() => {
-    SelfIntro().then((value) => {
-      setTimeout(() => {
-        setc(value);
-      }, Math.random() * (1000 - 500) + 500);
-    });
+    const fetchMetadatas = async () => {
+      let metadatas = await loadPostsMetadataHttp(Date.now(), 1);
+      if (metadatas.length === 0) {
+      }
+      setPosts(metadatas);
+    };
+    fetchMetadatas();
   }, []);
 
-  return c == null ? (
-    <LoadingComponent></LoadingComponent>
-  ) : (
-    <div
-      id="resume-div"
-      className="w-[100vw] h-[100vh] flex flex-col justify-center items-center"
-    >
-      <div className="w-[100vw] h-[100vh] flex justify-center items-center bg-zinc-500/30">
-        {/* self intro */}
-        <div
-          id="self-intro"
-          className={cn(
-            "flex flex-col self-intro absolute w-96 h-1/2 backdrop-blur-xl border rounded-3xl border-transparent justify-center items-center p-10 transition-all opacity-0",
-            { "translate-x-1/2 opacity-100": opened }
-          )}
-        >
-          {c}
-        </div>
+  useEffect(() => {
+    if (inView && !end) {
+      loadPostsMetadataHttp(Date.now(), page + 1).then((newPosts) => {
+        if (newPosts.length === 0) {
+          setEnd(true);
+        } else {
+          setPosts((prevPosts) => [...prevPosts, ...newPosts]);
+          setPage(page + 1);
+        }
+      });
+    }
+  }, [inView, end, page]);
 
-        {/* avatar */}
-        <div
-          className={cn(
-            "grid grid-cols-1 resume backdrop-blur-xl border rounded-3xl border-transparent w-96 h-1/2 justify-center absolute",
-            { "-translate-x-1/2": opened }
-          )}
-          onClick={() => setOpened(!opened)}
-          id="resume"
-        >
-          <div className="avatar-image m-auto mt-12">
-            <Image
-              src="https://inmove-blog.oss-cn-hangzhou.aliyuncs.com/images/avatar.jpg"
-              alt="avatar"
-              width={150}
-              height={150}
-              className="rounded-full"
-            ></Image>
-          </div>
-          <div
-            className={`avatar-title ${lfont.className} text-orange-800 text-3xl text-center mt-20`}
-          >
-            <h3>Hello I&apos;m inmove</h3>
-            <h3>A Full Stack Programmer</h3>
-          </div>
-          <div className="intro-icons grid-cols-4 text-3xl text-center items-center">
-            <div className="intro-icon">
-              <Link
-                href="https://github.com/lisper-inmove"
-                onClick={(e) => {
-                  e.stopPropagation();
-                }}
-              >
-                <BsGithub></BsGithub>
-              </Link>
-            </div>
-            <div className="intro-icon">
-              <Link
-                href={`${process.env.NEXT_PUBLIC_HOST}/site?c=Projects`}
-                onClick={(e) => {
-                  e.stopPropagation();
-                }}
-              >
-                <FaBlog></FaBlog>
-              </Link>
-            </div>
-          </div>
+  const variants = {
+    hidden: { opacity: 0 },
+    visible: { opacity: 1 },
+  };
+
+  return (
+    <>
+      <header className="text-white text-center">
+        <NavBar></NavBar>
+      </header>
+      {/* Right Section: List Posts */}
+      <div className="flex flex-col h-full w-4/5 overflow-y-auto gap-10 mx-auto mt-20 mb-10">
+        <div className="flex flex-col items-center mb-10">
+          {posts != null &&
+            posts.map((post, index) => {
+              return (
+                <MotionDiv
+                  key={post.id}
+                  className="flex items-center justify-around w-4/5 mx-auto h-full neu-shadow rounded mt-10"
+                  variants={variants}
+                  initial="hidden"
+                  animate="visible"
+                  transition={{
+                    delay: 0.1,
+                    ease: "easeInOut",
+                    duration: 0.5,
+                  }}
+                  viewport={{ amount: 0 }}
+                  style={{
+                    backgroundColor: lightModeColor.commonBgColor,
+                    color: lightModeColor.commonTextColor,
+                  }}
+                >
+                  <div className="flex flex-col p-8 w-full h-64 justify-between">
+                    {/* 标题 */}
+                    <div className="text-2xl text-black font-bold">
+                      <Link href={`/site/posts/${post.id}`} target="_blank">
+                        {post.title}
+                      </Link>
+                    </div>
+                    {/* 子标题 */}
+                    <div className="text-lg text-black/50 font-semibold indent-4">
+                      {post.subtitle}
+                    </div>
+                    <div className="flex flex-row justify-between">
+                      {/* 关键字 */}
+                      <div className="flex flex-row mb-3">
+                        <div className="text-black/70 text-lg mt-5 ml-3 px-3 py-1 bg-gray-300 rounded-lg font-semibold">
+                          #{post.categories}
+                        </div>
+                        {post.keywords.map((keyword, index) => {
+                          return (
+                            <div
+                              className="text-black/70 text-lg mt-5 ml-3 px-3 py-1 bg-gray-300 rounded-lg font-semibold"
+                              key={`${post.id}-keyword-${index}`}
+                            >
+                              #{keyword}
+                            </div>
+                          );
+                        })}
+                      </div>
+                      {/* 创建时间 */}
+                      <div className="self-end mb-3">{post.date}</div>
+                    </div>
+                  </div>
+                </MotionDiv>
+              );
+            })}
         </div>
+        {end ? null : (
+          <div className="text-center mx-auto mt-8 mb-8" ref={ref}>
+            <LoaderCircle className="animate-spin w-8 h-8 text-orange-300" />
+          </div>
+        )}
       </div>
-      <div className="flex w-[100vw] bg-zinc-500/30">
-        <p className="ml-auto">
-          <a href="https://beian.miit.gov.cn/" target="_blank" style={{
-            color: 'white',
-            fontSize: '14px'
-          }}>粤ICP备2023000078号</a>
-        </p>
-      </div>
-    </div>
+    </>
   );
 }

@@ -7,6 +7,10 @@
   --shadow-color-2: #f1ececd9;
 }
 
+body {
+  background-color: #d2d2d2;
+}
+
 .neu-shadow {
   box-shadow:
     3px 3px 5px 1px var(--shadow-color-1),
