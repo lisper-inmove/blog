@@ -19,7 +19,7 @@ export default function HeadlineComponent({ params }: HeadlineComponentProps) {
         color: lightModeColor.headlineTextColor,
       }}
     >
-      <Box className="pr-10">
+      <Box className="pr-10 pt-5">
         <Link
           href={`#${params.headline.prefix}`}
           id={params.headline.prefix}
