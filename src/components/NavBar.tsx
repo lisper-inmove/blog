@@ -19,7 +19,7 @@ export default function NavBar() {
           <Link href="https://github.com/lisper-inmove" title="My GitHub">
             <FaGithub className="h-6 w-6 mr-3" />
           </Link>
-          <Link href="https://www.inmove.com.cn" title="My GitHub">
+          <Link href="https://www.inmove.top" title="My GitHub">
             <FaHome className="h-6 w-6" />
           </Link>
         </div>
