@@ -7,12 +7,13 @@ export function loadPostsMetadata(
   page: number = 1,
   all: boolean = false,
   onlyDisplay: boolean = true,
+  category: string | null = null,
 ) {
   const metadataPath = path.join(process.cwd(), "posts/metadata.json");
   const metadata = JSON.parse(fs.readFileSync(metadataPath, "utf8"));
   const size = 10;
   const skip = (page - 1) * size;
-  const postsMetadata: PostMetadata[] = metadata
+  let postsMetadata: PostMetadata[] = metadata
     .map((item: any) => ({
       id: item.id,
       path: item.path,
@@ -32,6 +33,11 @@ export function loadPostsMetadata(
       date: item.date,
     }))
     .filter((post: PostMetadata) => !onlyDisplay || post.display === "t");
+
+  if (category) {
+    postsMetadata = postsMetadata.filter(post => post.categories.includes(category));
+  }
+
   if (all) {
     return postsMetadata;
   }

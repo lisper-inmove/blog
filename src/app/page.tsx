@@ -1,7 +1,9 @@
 "use client";
 import { PostMetadata } from "./models/post";
 import { useEffect, useState } from "react";
+import { useSearchParams } from "next/navigation";
 import NavBar from "@/components/NavBar";
+import Foot from "@/components/Foot";
 import { lightModeColor } from "./stores/ThemeColors";
 import { loadPostsMetadataHttp } from "./api/post-category/loadPostsMetadataHttp";
 import { MotionDiv } from "@/components/MotionDiv";
@@ -9,23 +11,17 @@ import Link from "next/link";
 import { LoaderCircle } from "lucide-react";
 import { useInView } from "react-intersection-observer";
 
-type Param = string | undefined;
-
-interface Props {
-  searchParams: {
-    [key: string]: Param;
-  };
-}
-
-export default function Site({ searchParams }: Props) {
+export default function Site() {
   const [posts, setPosts] = useState<PostMetadata[]>([]);
   const [end, setEnd] = useState<boolean>(false);
   const { ref, inView } = useInView();
   const [page, setPage] = useState<number>(1);
+  const searchParams = useSearchParams();
+  const category = searchParams.get("category")
 
   useEffect(() => {
     const fetchMetadatas = async () => {
-      let metadatas = await loadPostsMetadataHttp(Date.now(), 1);
+      let metadatas = await loadPostsMetadataHttp(Date.now(), 1, category);
       if (metadatas.length === 0) {
       }
       setPosts(metadatas);
@@ -35,7 +31,7 @@ export default function Site({ searchParams }: Props) {
 
   useEffect(() => {
     if (inView && !end) {
-      loadPostsMetadataHttp(Date.now(), page + 1).then((newPosts) => {
+      loadPostsMetadataHttp(Date.now(), page + 1, category).then((newPosts) => {
         if (newPosts.length === 0) {
           setEnd(true);
         } else {
@@ -121,6 +117,9 @@ export default function Site({ searchParams }: Props) {
           </div>
         )}
       </div>
+      <header className="text-white text-center">
+        <Foot></Foot>
+      </header>
     </>
   );
 }
