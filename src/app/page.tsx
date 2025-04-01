@@ -1,7 +1,6 @@
 "use client";
 import { PostMetadata } from "./models/post";
 import { useEffect, useState } from "react";
-import { useSearchParams } from "next/navigation";
 import NavBar from "@/components/NavBar";
 import Foot from "@/components/Foot";
 import { lightModeColor } from "./stores/ThemeColors";
@@ -16,12 +15,10 @@ export default function Site() {
   const [end, setEnd] = useState<boolean>(false);
   const { ref, inView } = useInView();
   const [page, setPage] = useState<number>(1);
-  const searchParams = useSearchParams();
-  const category = searchParams.get("category")
 
   useEffect(() => {
     const fetchMetadatas = async () => {
-      let metadatas = await loadPostsMetadataHttp(Date.now(), 1, category);
+      let metadatas = await loadPostsMetadataHttp(Date.now(), 1);
       if (metadatas.length === 0) {
       }
       setPosts(metadatas);
@@ -31,7 +28,7 @@ export default function Site() {
 
   useEffect(() => {
     if (inView && !end) {
-      loadPostsMetadataHttp(Date.now(), page + 1, category).then((newPosts) => {
+      loadPostsMetadataHttp(Date.now(), page + 1).then((newPosts) => {
         if (newPosts.length === 0) {
           setEnd(true);
         } else {

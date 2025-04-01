@@ -1,8 +1,7 @@
-import { FaBook, FaGithub, FaHome } from "react-icons/fa";
+import { FaGithub, FaHome } from "react-icons/fa";
 import { siteTitle, lfont } from "@/utils/constants";
 import Link from "next/link";
 import { lightModeColor } from "@/app/stores/ThemeColors";
-import { AppBar, Box, Toolbar } from "@mui/material";
 
 export default function NavBar() {
   return (

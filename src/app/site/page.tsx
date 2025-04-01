@@ -8,15 +8,7 @@ import Link from "next/link";
 import { LoaderCircle } from "lucide-react";
 import { useInView } from "react-intersection-observer";
 
-type Param = string | undefined;
-
-interface Props {
-  searchParams: {
-    [key: string]: Param;
-  };
-}
-
-export default function Site({ searchParams }: Props) {
+export default function Site() {
   const [posts, setPosts] = useState<PostMetadata[]>([]);
   const [end, setEnd] = useState<boolean>(false);
   const { ref, inView } = useInView();
