@@ -15,27 +15,33 @@ export default function Site() {
   const [end, setEnd] = useState<boolean>(false);
   const { ref, inView } = useInView();
   const [page, setPage] = useState<number>(1);
+  const [searchTerm, setSearchTerm] = useState<string>("");
 
   useEffect(() => {
     const fetchMetadatas = async () => {
-      let metadatas = await loadPostsMetadataHttp(Date.now(), 1);
+      let metadatas = await loadPostsMetadataHttp(Date.now(), 1, searchTerm);
       if (metadatas.length === 0) {
       }
       setPosts(metadatas);
+      setPage(1);
+      setEnd(false);
     };
     fetchMetadatas();
-  }, []);
+  }, [searchTerm]);
 
   useEffect(() => {
+    console.log(searchTerm, inView);
     if (inView && !end) {
-      loadPostsMetadataHttp(Date.now(), page + 1).then((newPosts) => {
-        if (newPosts.length === 0) {
-          setEnd(true);
-        } else {
-          setPosts((prevPosts) => [...prevPosts, ...newPosts]);
-          setPage(page + 1);
-        }
-      });
+      loadPostsMetadataHttp(Date.now(), page + 1, searchTerm).then(
+        (newPosts) => {
+          if (newPosts.length === 0) {
+            setEnd(true);
+          } else {
+            setPosts((prevPosts) => [...prevPosts, ...newPosts]);
+            setPage(page + 1);
+          }
+        },
+      );
     }
   }, [inView, end, page]);
 
@@ -47,9 +53,11 @@ export default function Site() {
   return (
     <>
       <header className="text-white text-center">
-        <NavBar></NavBar>
+        <NavBar
+          showSearch
+          onSearchChange={(value) => setSearchTerm(value)}
+        ></NavBar>
       </header>
-      {/* Right Section: List Posts */}
       <div className="flex flex-col h-full w-4/5 overflow-y-auto gap-10 mx-auto mt-20 mb-10">
         <div className="flex flex-col items-center mb-10">
           {posts != null &&
