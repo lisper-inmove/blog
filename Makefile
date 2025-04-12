@@ -27,8 +27,10 @@ bd: e build # build docker
 		unlink posts; \
 	fi
 	ln -s $(HOME)/posts .
-	sudo docker build -t mh.com:8890/blog/blog:v2.0 .
-	sudo docker push mh.com:8890/blog/blog:v2.0
+	sudo docker nerdctl -t blog:v2.0 .
+	sudo nerdctl save -o blog.tar blog:v2.0
+	scp blog.tar inmove@mini:/home/inmove/volumn1/code/blog
+	sudo rm blog.tar
 
 rd: # restart docker
 	sudo docker stop blog_v2
