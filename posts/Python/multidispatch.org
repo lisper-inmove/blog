@@ -1,0 +1,91 @@
+#+TITLE: multipledispatch
+#+DATE: 2025-03-18 23:46:10
+#+DISPLAY: t
+#+STARTUP: indent
+#+OPTIONS: toc:10
+#+AUTHOR: inmove
+#+SUBTITLE: Function and Method overload
+#+KEYWORDS: Overload
+#+CATEGORIES: Python
+
+* function
+#+CAPTION: function
+#+begin_src python :results silent :noweb yes
+  from multipledispatch import dispatch
+
+  @dispatch(int, int)
+  def func(a, b):
+      return f"两个整数：{a} + {b} = {a + b}"
+
+  @dispatch(str, str)
+  def func(a, b):
+      return f"两个字符串：{a} + {b} = {a + b}"
+
+  @dispatch(int, str)
+  def func(a, b):
+      return f"整数与字符串：{a} 和 {b}"
+
+  # 测试调用
+  print(func(3, 4))             # 两个整数：3 + 4 = 7
+  print(func("abc", "def"))     # 两个字符串：abc + def = abcdef
+  print(func(42, "answer"))     # 整数与字符串：42 和 answer
+
+#+end_src
+
+
+* method
+#+CAPTION: method
+#+begin_src python :results silent :noweb yes
+  from multipledispatch import Dispatcher
+  import types
+
+  def method_dispatch(func):
+      dispatcher = Dispatcher(func.__name__)
+
+      def wrapper(self, *args):
+          return dispatcher(self, *args)
+
+      wrapper.register = dispatcher.register
+      return wrapper
+
+  class A:
+      pass
+
+  class B:
+      pass
+
+  class MyClass:
+      @method_dispatch
+      def method(self, a, b):
+          raise NotImplementedError("未实现")
+
+      @method.register(object, int, int)
+      def method_int(self, a, b):
+          return f"两个整数: {a + b}"
+
+      @method.register(object, str, str)
+      def method_str(self, a, b):
+          return f"两个字符串: {a + b}"
+
+      @method.register(object, int, str)
+      def method_int_str(self, a, b):
+          return f"整数和字符串: {a}, {b}"
+
+      @method.register(object, int, A)
+      def method_int_a(self, a, b):
+          return f"整数和A: {a}, {b}"
+
+      @method.register(object, int, B)
+      def method_int_b(self, a, b):
+          return f"整数和B: {a}, {b}"
+
+
+  # 测试
+  obj = MyClass()
+  print(obj.method(10, 20))      # 两个整数: 30
+  print(obj.method("foo", "bar"))# 两个字符串: foobar
+  print(obj.method(100, "元"))   # 整数和字符串: 100, 元
+  print(obj.method(100, A()))
+  print(obj.method(100, B()))
+
+#+end_src

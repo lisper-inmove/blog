@@ -1,0 +1,60 @@
+#+TITLE: Radix Sort
+#+DATE: 2023-09-27 21:51:02
+#+DISPLAY: t
+#+STARTUP: indent
+#+OPTIONS: toc:10
+#+AUTHOR: inmove
+#+KEYWORDS: Radix Sort
+#+CATEGORIES: Sort
+
+* RadixSort
+
+Sort by ones
+Sort by tens
+Sort by hundreds
+...
+
+This is sort can take advantage of counting sort.
+Time complexit is O(nk), k is the highest bit.
+
+#+begin_src python
+  def radixSort(arr):
+      def countingSortForRadix(arr, position):
+          n = len(arr)
+          output = [0] * n
+          # number is from 0 ~ 9
+          count = [0] * 10
+
+          # count every number apear times
+          for i in range(n):
+              index = (arr[i] // position) % 10
+              count[index] += 1
+
+          # count smaller or equal current numebr
+          for i in range(1, 10):
+              count[i] += count[i - 1]
+
+          # build output
+          i = n - 1
+          while i >= 0:
+              index = (arr[i] // position) % 10
+              output[count[index] - 1] = arr[i]
+              count[index] -= 1
+              i -= 1
+
+          # return the sorted array
+          for i in range(n):
+              arr[i] = output[i]
+
+      # Find the biggest to ensure sort time
+      max_val = max(arr)
+      # Start from ones
+      position = 1
+
+      # Sort by bit
+      while max_val // position > 0:
+          countingSortForRadix(arr, position)
+          position *= 10
+
+      return arr
+#+end_src

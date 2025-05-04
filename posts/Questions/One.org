@@ -1,0 +1,34 @@
+#+TITLE: Quetions Version 1
+#+DATE: 2024-02-29 20:32:24
+#+DISPLAY: nil
+#+STARTUP: indent
+#+OPTIONS: toc:10
+#+AUTHOR: inmove
+#+SUBTITLE: Questions in Coding
+#+KEYWORDS: Questions
+#+CATEGORIES: Questions
+
+* ERESOLVE                                                   :reactjs:nextjs:
+
+** Question Display
+npm ERR! code ERESOLVE
+npm ERR! ERESOLVE unable to resolve dependency tree
+npm ERR!
+npm ERR! While resolving: rcd_drone@0.1.0
+npm ERR! Found: @sanity/client@3.4.1
+npm ERR! node_modules/@sanity/client
+npm ERR!   @sanity/client@"^3.2.0" from the root project
+npm ERR!
+npm ERR! Could not resolve dependency:
+npm ERR! peer @sanity/client@"^2.11.0" from next-sanity-image@3.2.1
+npm ERR! node_modules/next-sanity-image
+npm ERR!   next-sanity-image@"^3.2.1" from the root project
+npm ERR!
+npm ERR! Fix the upstream dependency conflict, or retry
+npm ERR! this command with --force, or --legacy-peer-deps
+npm ERR! to accept an incorrect (and potentially broken) dependency resolution.
+
+** Solution
+#+begin_src shell
+  npm install --legacy-peer-deps
+#+end_src

@@ -1,0 +1,29 @@
+#+TITLE: 模式匹配
+#+DATE: 2024-05-02 20:44:02
+#+DISPLAY: t
+#+STARTUP: indent
+#+OPTIONS: toc:10
+#+AUTHOR: inmove
+#+SUBTITLE: MatchPattern
+#+KEYWORDS: Match
+#+CATEGORIES: Python
+
+* Match Pattern                                                        :3:10:
+Python >= 3.10
+#+begin_src python :results output
+  def describe(list):
+      match list:
+          case []:
+              return "an empty list"
+          case [single_item]:
+              return f"a single-element list with {single_item}"
+          case [first, second, *rest]:
+              return f"a list with at least two elements: {first} and {second} and {rest}"
+          case _:
+              return "Default"
+
+  print(describe([]))
+  print(describe([1]))
+  print(describe([1, 2, 3, 4, 5]))
+  print(describe(3))
+#+end_src

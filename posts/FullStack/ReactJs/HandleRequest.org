@@ -1,0 +1,94 @@
+#+TITLE: Handle Request
+#+DATE: 2024-03-12 12:05:29
+#+DISPLAY: t
+#+STARTUP: indent
+#+OPTIONS: toc:10
+#+AUTHOR: inmove
+#+SUBTITLE: An elegant way to handle your request in typescript.
+#+KEYWORDS: Request
+#+CATEGORIES: FullStack Typescript
+
+* request handler
+
+requestHandler is a function that return a promised function.
+
+#+NAME: requestNandler.ts
+#+begin_src typescript
+  import { AxiosError, AxiosResponse } from "axios";
+
+  type BaseRequest<T, V> = (params?: T) => Promise<AxiosResponse<V>>;
+
+  type SuccessResponse<V> = {
+    code: "success";
+    data: V;
+  };
+
+  type ErrorResponse<E = AxiosError> = {
+    code: "error";
+    error: E;
+  };
+
+  type BaseResponse<V, E> = Promise<SuccessResponse<V> | ErrorResponse<E>>;
+
+  export const requestHandler =
+    <T, V, E = AxiosError>(request: BaseRequest<T, V>) =>
+    async (params?: T): BaseResponse<V, E> => {
+      try {
+        const response = await request(params);
+        return { code: "success", data: response.data };
+      } catch (e) {
+        return { code: "error", error: e as E };
+      }
+    };
+#+end_src
+
+* do a request
+#+NAME: todo.ts
+#+begin_src typescript
+  import axios from "axios";
+  import { requestHandler } from "./requestHandler";
+
+  interface Todo {
+    id: number;
+    userId: number;
+    title: string;
+    completed: boolean;
+  }
+
+  interface GetTodoParams {
+    limit?: number;
+    page?: number;
+  }
+
+  export const getTodo = requestHandler<GetTodoParams, Todo[]>((params) =>
+    axios.get("https://jsonplaceholder.typicode.com/todos", { params }),
+  );
+
+#+end_src
+
+#+NAME: page.tsx
+#+begin_src typescript
+  import { getTodo } from "./todo";
+
+  export default async function DoRequestDemo() {
+    const todos = await getTodo({ limit: 10, page: 1 });
+    if (todos.code === "error") {
+      return <div>Error</div>;
+    } else {
+      return (
+        <>
+          <div>
+            <ul>
+              {todos.data.map((todo) => (
+                <li key={todo.id}>
+                  {todo.id}
+                  {todo.completed}: {todo.title}
+                </li>
+              ))}
+            </ul>
+          </div>
+        </>
+      );
+    }
+  }
+#+end_src

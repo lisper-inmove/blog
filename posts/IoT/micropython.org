@@ -1,0 +1,25 @@
+#+TITLE: MicroPython
+#+DATE: 2025-01-22 00:11:41
+#+DISPLAY: t
+#+STARTUP: indent
+#+OPTIONS: toc:10
+#+AUTHOR: inmove
+#+SUBTITLE: MicroPython for ESP32
+#+KEYWORDS: MicroPython
+#+CATEGORIES: IoT
+
+* 擦除esp32中的内容将MicroPython环境烧录到esp32中
+[[https://micropython.org/download/ESP32_GENERIC/][esp32 generic bin file download]]
+#+begin_src shell
+  esptool.py --chip esp32 --port /dev/ttyUSB0 erase_flash
+  esptool.py --chip esp32 --port /dev/ttyUSB0 write_flash -z 0x1000 esp32-xxxx.bin
+#+end_src
+
+#+begin_src shell
+  pip install adafruit-ampy
+#+end_src
+
+将程序烧录到esp32. boot.py 会自动执行。可能需要重新插拔一下开发板
+#+begin_src shell
+  ampy --port /dev/ttyUSB0 put boot.py
+#+end_src

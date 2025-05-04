@@ -1,0 +1,43 @@
+#+TITLE: Transition
+#+DATE: 2024-02-19 06:05:18
+#+DISPLAY: t
+#+STARTUP: indent
+#+OPTIONS: toc:10
+#+AUTHOR: inmove
+#+SUBTITLE: CSS transitions allow you to change property values smoothly (over a given duration) from one state to another
+#+KEYWORDS: Simple Animation
+#+CATEGORIES: CSS
+#+CARDIMAGE: https://inmove-blog.oss-cn-hangzhou.aliyuncs.com/images/css-transition.png
+
+* Key Concepts
+
+*If you just need a simple animation, use transition. Else use the Animation*
+
+1. Transitions are easy to use: They can be applied with just a few lines of CSS.
+2. Enhance user experience: Smooth transitions make the interface feel more responsive and interactive.
+3. Control: You can precisely control the timing, duration, and easing of the transitions.
+4. Limitations: Transitions are limited to changes between two states. For more complex animations, you may need to use CSS animations or JavaScript.
+5. Not all CSS properties are transitionable. Commonly used transitionable properties include /opacity/, /color/, /background-color/, /transform/, and many more. Properties like /display/ cannot be transitioned.
+
+* Properties
+The transition property is a shorthand property for the four transition properties:
+
+1. *transition-property*: Specifies the name of the CSS property the transition effect is for.
+2. *transition-duration*: Specifies how long the transition effect takes to complete.
+3. *transition-timing-function*: Specifies the speed curve of the transition effect.
+4e *transition-delay*: Specifies when the transition effect will start.
+
+* An Example
+#+begin_src css
+  .transition-test {
+    background-color: #4CAF50;
+    transition: background-color 0.5s ease;
+  }
+
+  .transition-test:hover {
+    background-color: #45a049;
+  }
+#+end_src
+#+begin_iframe
+[[https://inmove.top/demonstration/transition][Transition Change BackgroundColor]]
+#+end_iframe

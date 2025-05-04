@@ -1,0 +1,167 @@
+#+TITLE: 异常处理
+#+DATE: 2024-05-02 20:44:50
+#+DISPLAY: t
+#+STARTUP: indent
+#+OPTIONS: toc:10
+#+AUTHOR: inmove
+#+SUBTITLE: 异常处理
+#+KEYWORDS: Exception ExceptionGroup
+#+CATEGORIES: Python
+
+* try-except
+
+#+begin_src python :results output
+  import random
+
+  def test():
+      try:
+          a = 10 / random.randint(-1, 2)
+          print(f"value of a: {a}")
+          return a
+      except Exception as ex:
+          print(ex)
+          return -3
+
+  if __name__ == '__main__':
+      print(test())
+#+end_src
+
+#+RESULTS:
+: division by zero
+: -3
+
+* try-except-finally
+
+这里 =return a= 和 =return -3= 将不起作用，总是由finally 返回 -1
+
+#+begin_src python :results output
+  import random
+
+  def test():
+      try:
+          a = 10 / random.randint(-1, 2)
+          print(f"value of a: {a}")
+          return a
+      except Exception as ex:
+          print(ex)
+          return -3
+      finally:
+          return -1
+
+  if __name__ == '__main__':
+      print(test())
+
+#+end_src
+
+#+RESULTS:
+: division by zero
+: -1
+
+* try-except-else-finally
+
+else 只有在 try 中没有异常才会执行
+
+#+begin_src python :results output
+  import random
+
+  def test():
+      try:
+          a = 10 / random.randint(-1, 2)
+          print(f"value of a: {a}")
+      except Exception as ex:
+          print(ex)
+          return -3
+      else:
+          print("This is else block")
+          return -1
+      finally:
+          print("This is finally block")
+          return -9
+
+  if __name__ == '__main__':
+      print(test())
+
+
+#+end_src
+
+#+RESULTS:
+: value of a: -10.0
+: This is else block
+: This is finally block
+: -9
+
+* try-finally
+
+这里异常会被忽略
+
+#+begin_src python :results output
+  import random
+
+  def test():
+      try:
+          a = 10 / random.randint(-1, 2)
+          print(f"value of a: {a}")
+          return a
+      finally:
+          return -1
+
+  if __name__ == '__main__':
+      print(test())
+#+end_src
+
+#+RESULTS:
+: -1
+
+* try-except*                                                      :3-11:
+
+Python >= 3.11
+对于多个异常需要使用同样的处理方式的时候特别适用
+我们也可以抛出多个异常，然后可以分别处理。
+
+#+begin_src python :results output
+  def test():
+      try:
+          raise ExceptionGroup('Example ExceptionGroup', (
+              TypeError('Exception TypeError'),
+              ValueError("Example ValueError"),
+              KeyError("Exception KeyError"),
+              AttributeError("Example of AttributeError")
+          ))
+      except* TypeError:
+          print("Detect TypeError")
+      except* ValueError as e:
+          print(f"Detect ValueError: {e}")
+      except* (KeyError, AttributeError) as e:
+          print(f"Detect KeyError Or AttributeError: {e}")
+
+  test()
+#+end_src
+
+#+RESULTS:
+: Detect TypeError
+: Detect ValueError: Example ExceptionGroup (1 sub-exception)
+: Detect KeyError Or AttributeError: Example ExceptionGroup (2 sub-exceptions)
+
+* 自定义异常
+
+只要继承Exception便可自定义异常了。
+
+#+begin_src python :results output
+  class MyException(Exception):
+
+      def __init__(self, msg):
+          super().__init__(msg)
+
+
+  def test():
+      try:
+          raise MyException("Hello")
+      except Exception as ex:
+          print(ex, type(ex))
+
+  if __name__ == '__main__':
+      test()
+#+end_src
+
+#+RESULTS:
+: Hello <class '__main__.MyException'>

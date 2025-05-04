@@ -1,0 +1,75 @@
+#+TITLE: Stack
+#+DATE: 2023-09-28 00:32:35
+#+DISPLAY: t
+#+STARTUP: indent
+#+OPTIONS: toc:10
+#+AUTHOR: inmove
+#+SUBTITLE: Actor as "Last In, First Out" (LIFO) array, which means that the last element added to the stack is the first one to be removed
+#+KEYWORDS: Stack
+#+CATEGORIES: DataStructure
+
+* Description
+
+Stack is a fundamental data structure. It operates on the principle of LIFO. It has ast as follows:
+1. /push/: add an element to top
+2. /pop/: remove and return the topest value
+3. /peek/: get the topest value but not remove
+4. /isEmpty/: check if stack empty
+5. /isFull/: check if stack full
+
+* Monotonous Stack
+
+Stack always remain ordered. The rules for pushing onto the stack(from smallest to lagrest) are as follows:
+1. Stack is empty, directly push onto the stack.
+2. Stack is not empty, peek the value, if the value is smaller than the new value, pop it, then repeat step 2 until stack is empty or find a bigger value.
+
+This is primarily used to solve for finding numbers that are smaller/larger on both sides.
+
+For example: I have an array [9, 4, 3, 5]
+1. value = 9, stack is empty, push 9.
+2. value = 4, 4 is smaller than 9, push 4
+3. value = 3, 3 is smaller that 4, push 3
+4. value = 5, 5 is bigger than 5, pop 3, 4 is also smaller than 5, pop 4 too. 9 is bigger than 5, push 5.
+   until now, we get two results:
+   1. for 3, bigger value on its left side is 4, bigger value on its right side is 5
+   2. for 4, bigger value on its left side is 9, bigger value on its right side is 5
+5. because stack is not empty, pop all elements, we get rest results
+   1. for 5, bigger value on its left side is 9, bigger value on its right is None
+   2. for 9, both side is None
+
+#+begin_src python
+  import random
+
+  def findBothSideBigger(numbers):
+      stack = []
+      results = []
+      for number in numbers:
+          if (len(stack) == 0):
+              stack.append(number)
+          else:
+              while stack:
+                  top = stack.pop()
+                  if (top < number):
+                      if (len(stack) == 0):
+                          results.append((None, top, number))
+                      else:
+                          results.append((stack[-1], top, number))
+                      continue
+                  stack.append(top)
+                  break
+              stack.append(number)
+
+      if len(stack) > 0:
+          smallest = stack.pop()
+          while stack:
+              results.append((stack[-1], smallest, None))
+              smallest = stack.pop()
+          results.append((None, smallest, None))
+      return results
+
+
+  if __name__ == '__main__':
+      numbers = list((random.randint(10, 30) for _ in range(0, 10)))
+      print(numbers)
+      print(findBothSideBigger(numbers))
+#+end_src

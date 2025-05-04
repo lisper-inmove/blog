@@ -1,0 +1,23 @@
+#+TITLE: Bubble Sort
+#+DATE: 2023-09-27 21:51:29
+#+DISPLAY: t
+#+STARTUP: indent
+#+OPTIONS: toc:10
+#+AUTHOR: inmove
+#+KEYWORDS: BubleSort
+#+CATEGORIES: Sort
+
+* Bubble Sort
+#+begin_src python
+  def bubbleSort(arr):
+      n = len(arr)
+      for i in range(n):
+          swapped = False
+          for j in range(0, n-i-1):
+              if arr[j] > arr[j+1]:
+                  arr[j], arr[j+1] = arr[j+1], arr[j]
+                  swapped = True
+          if not swapped:
+              break
+      return arr
+#+end_src

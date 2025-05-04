@@ -1,0 +1,26 @@
+#+TITLE: Route Group
+#+DATE: 2025-04-15 22:42:26
+#+DISPLAY: t
+#+STARTUP: indent
+#+OPTIONS: toc:10
+#+AUTHOR: inmove
+#+SUBTITLE: Mark a folder as a Route Group to prevent the folder from being included in the route's URL path.
+#+KEYWORDS: Route
+#+CATEGORIES: NextJs
+
+* Official Document
+https://nextjs.org/docs/app/building-your-application/routing/route-groups
+
+src
+└── app
+    ├── favicon.ico
+    ├── globals.css
+    ├── (home)
+    │   ├── login
+    │   │   └── page.tsx
+    │   └── signup
+    │       └── page.tsx
+    ├── layout.tsx
+    └── page.tsx
+
+We can visit login or signup page using http://127.0.0.1:3000/login or http://127.0.0.1:3000/signup. (home) just for organize our files.

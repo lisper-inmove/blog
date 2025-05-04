@@ -1,0 +1,13 @@
+#+TITLE: Self Introduction
+#+DATE: 2024-02-23 03:29:22
+#+DISPLAY: nil
+#+STARTUP: indent
+#+OPTIONS: toc:10
+#+AUTHOR: inmove
+#+SUBTITLE: Self Introduction
+#+KEYWORDS: introduction
+#+CATEGORIES: Resume
+
+* Self Intro
+
+我从2013年开始从事软件开发工作，擅长使用 *Python* 进行后端开发，并熟练掌握Flask和FastAPI等Web开发框架。我也熟悉前端开发技术，特别是TypeScript和Next.js。此外，我还精通C、Rust和Common Lisp等编程语言。对 *Linux* 操作系统、Socket网络编程以及像 *Docker* 和 *Kubernetes* 这样的容器技术也有较强的掌握。我还熟练使用 *NeoVim* 和 *Emacs* 等编辑器。

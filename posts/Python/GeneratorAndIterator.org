@@ -1,0 +1,84 @@
+#+TITLE: 生成器与迭代器
+#+DATE: 2024-05-02 01:16:40
+#+DISPLAY: t
+#+STARTUP: indent
+#+OPTIONS: toc:10
+#+AUTHOR: inmove
+#+SUBTITLE: 生成器与迭代器的一般用法与其原理
+#+KEYWORDS: Generator Iterator
+#+CATEGORIES: Python
+
+* 迭代器
+
+__iter__ 与 __next__
+
+#+begin_src python :results output
+  class Fib:
+
+      a = 0
+      b = 1
+
+      def __iter__(self):
+          return self
+
+      def __next__(self):
+          self.a, self.b = self.b, self.a + self.b
+          if (self.b >= 100):
+              raise StopIteration()
+          return self.b
+
+
+  if __name__ == '__main__':
+      obj = Fib()
+      for value in obj:
+          print(value, end=",")
+#+end_src
+
+#+RESULTS:
+: 1,2,3,5,8,13,21,34,55,89,
+
+* 生成器
+
+有 yield 关键字的函数就是生成器
+生成器是一种更现代的迭代器实现方式。
+
+#+begin_src python :results output
+  def fib_func():
+      a, b = 0, 1
+      while True:
+          a, b = b, a + b
+          if (b >= 100):
+              break
+          yield b
+
+
+  g = fib_func()
+  for value in g:
+      print(value, end=",")
+#+end_src
+
+#+RESULTS:
+: 1,2,3,5,8,13,21,34,55,89,
+
+* 判断是否可迭代
+#+begin_src python :results output
+  from collections.abc import Iterable
+
+  def fib_func():
+      yield 1
+
+  class Fib:
+      def __iter__(self):
+          return self
+
+      def __next__(self):
+          return 10
+
+  a1 = fib_func()
+  a2 = Fib()
+
+  print(f"{a1} -> {isinstance(a1, Iterable)} --- {a2} -> {isinstance(a2, Iterable)}")
+#+end_src
+
+#+RESULTS:
+: <generator object fib_func at 0x7faeca7a09e0> -> True --- <__main__.Fib object at 0x7faeca685510> -> True

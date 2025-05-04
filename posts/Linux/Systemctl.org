@@ -1,0 +1,144 @@
+#+TITLE: Some Systemctl Examples
+#+DATE: 2025-02-05 23:45:16
+#+DISPLAY: t
+#+STARTUP: indent
+#+OPTIONS: toc:10
+#+AUTHOR: inmove
+#+SUBTITLE: Systemctl
+#+KEYWORDS: Systemctl
+#+CATEGORIES: Linux
+
+* Nginx
+#+CAPTION: Nginx Config
+#+begin_src ini :results silent :noweb yes
+  # Stop dance for nginx
+  # =======================
+  #
+  # ExecStop sends SIGSTOP (graceful stop) to the nginx process.
+  # If, after 5s (--retry QUIT/5) nginx is still running, systemd takes control
+  # and sends SIGTERM (fast shutdown) to the main process.
+  # After another 5s (TimeoutStopSec=5), and if nginx is alive, systemd sends
+  # SIGKILL to all the remaining processes in the process group (KillMode=mixed).
+  #
+  # nginx signals reference doc:
+  # http://nginx.org/en/docs/control.html
+  #
+  [Unit]
+  Description=A high performance web server and a reverse proxy server
+  Documentation=man:nginx(8)
+  After=network.target nss-lookup.target
+
+  [Service]
+  Type=forking
+  PIDFile=/tmp/nginx.pid
+  ExecStartPre=/usr/local/nginx/sbin/nginx -t -q -g 'daemon on; master_process on;'
+  ExecStart=/usr/local/nginx/sbin/nginx -g 'daemon on; master_process on;'
+  ExecReload=/usr/local/nginx/sbin/nginx -g 'daemon on; master_process on;' -s reload
+  ExecStop=-/sbin/start-stop-daemon --quiet --stop --retry QUIT/5 --pidfile /tmp/nginx.pid
+  TimeoutStopSec=5
+  KillMode=mixed
+
+  [Install]
+  WantedBy=multi-user.target
+#+end_src
+
+* Frps
+#+CAPTION: frps Config
+#+begin_src ini :results silent :noweb yes
+  [Unit]
+  Description=Frp Server Service
+  After=network.target
+
+  [Service]
+  Type=simple
+  User=root
+  Restart=on-failure
+  RestartSec=5s
+  ExecStart=/usr/local/bin/frps -c /etc/frp/frps.ini
+
+  [Install]
+  WantedBy=multi-user.target
+#+end_src
+
+#+CAPTION: frpc Config
+#+begin_src ini :results silent :noweb yes
+  [Unit]
+  Description=Frp Client Service
+  After=network.target
+
+  [Service]
+  Type=simple
+  User=nobody
+  Restart=on-failure
+  RestartSec=5s
+  ExecStart=/usr/local/bin/frpc -c /etc/frp/frpc.ini
+  ExecReload=/usr/local/bin/frpc reload -c /etc/frp/frpc.ini
+
+  [Install]
+  WantedBy=multi-user.target
+#+end_src
+
+* Redis
+#+CAPTION: Redis Config
+#+begin_src ini :results silent :noweb yes
+  # example systemd service unit file for redis-server
+  #
+  # In order to use this as a template for providing a redis service in your
+  # environment, _at the very least_ make sure to adapt the redis configuration
+  # file you intend to use as needed (make sure to set "supervised systemd"), and
+  # to set sane TimeoutStartSec and TimeoutStopSec property values in the unit's
+  # "[Service]" section to fit your needs.
+  #
+  # Some properties, such as User= and Group=, are highly desirable for virtually
+  # all deployments of redis, but cannot be provided in a manner that fits all
+  # expectable environments. Some of these properties have been commented out in
+  # this example service unit file, but you are highly encouraged to set them to
+  # fit your needs.
+  #
+  # Please refer to systemd.unit(5), systemd.service(5), and systemd.exec(5) for
+  # more information.
+
+  [Unit]
+  Description=Redis data structure server
+  Documentation=https://redis.io/documentation
+  #Before=your_application.service another_example_application.service
+  #AssertPathExists=/var/lib/redis
+  Wants=network-online.target
+  After=network-online.target
+
+  [Service]
+  User=inmove
+  Group=inmove
+  ExecStart=/home/inmove/.bin/redis-server /home/inmove/.opt/redis/redis.conf
+  LimitNOFILE=10032
+  NoNewPrivileges=yes
+  #OOMScoreAdjust=-900
+  #PrivateTmp=yes
+  Type=notify
+  TimeoutStartSec=infinity
+  TimeoutStopSec=infinity
+  UMask=0077
+  #User=redis
+  #Group=redis
+  #WorkingDirectory=/var/lib/redis
+
+  [Install]
+  WantedBy=multi-user.target
+#+end_src
+
+* Clash Verge
+#+CAPTION: Clash Verge Config
+#+begin_src ini :results silent :noweb yes
+  [Unit]
+  Description=Clash Verge Service helps to launch Clash Core.
+  After=network-online.target nftables.service iptables.service
+
+  [Service]
+  Type=simple
+  ExecStart=/usr/bin/clash-verge-service
+  Restart=always
+  RestartSec=5
+
+  [Install]
+  WantedBy=multi-user.target
+#+end_src

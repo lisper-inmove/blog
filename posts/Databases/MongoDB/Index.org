@@ -1,0 +1,197 @@
+#+TITLE: Index Optimize
+#+DATE: 2024-03-31 01:12:09
+#+DISPLAY: t
+#+STARTUP: indent
+#+OPTIONS: toc:10
+#+AUTHOR: inmove
+#+SUBTITLE: How to use index in MongoDB.
+#+KEYWORDS: Index
+#+CATEGORIES: MongoDB
+#+CARDIMAGE: https://inmove-blog.oss-cn-hangzhou.aliyuncs.com/images/database-02.png
+
+
+* Type of index
+** Single field index
+#+begin_src javascript
+  db.table_name.createIndex({'id': 1})
+#+end_src
+
+** Compound index
+Here you can think there three indexes.
+1. id, user_id, store_id
+2. id, user_id,
+3. id: query with /id/ or /id and store_id/
+Query with user_id and store_id can't take advantage of this index.
+#+begin_src javascript
+  db.table_name.createIndex({'id': 1, 'user_id': 1, 'store_id': 1})
+#+end_src
+
+** Multikey index
+When create an index on an array field, a multikey index is created.
+MongoDB will index each element of the array individually.
+
+** Geo index
+
+* Order of index
+We can set -1 or 1 for our field when create an index.
+-1 specify the /desc/ order.
+1 specify the /asc/ order.
+If we sort our query, the order is important.
+For example
+#+begin_src javascript
+  db.test.createIndex({"field1": 1, "field2": -1})
+
+  db.test.find({}).sort({"field1": -1, "field2": -1}).explain()
+#+end_src
+The query =field1:-1, field2:-1= did not use an index.
+But when we sort =field1: -1, field2: 1= or =field1: 1, field2: -1=, this index is used.
+
+* Index attribute
+1. unique: Ensure the value is unique
+2. partial: Only create index when the document satisfy some condition. This can reduce the index size. Improve write performance.
+   #+begin_src javascript
+     db.table_name.createIndex({
+         {"id": 1, "user_id": 1},
+         {"partialFilterExpression": { age: {"$gt": 20} }}
+     })
+   #+end_src
+
+* Optimize
+** Field Order
+The field can filter more documents should be put more front.
+** Covered Queries
+If we have a index composed with three fields. When we only need this fields as return data, the query will return data from the index directly without visit the document.
+If example() show that /totalDocsExamined/ is 0, our Covered Queries is working.
+Here is a trap, because _id is always returned, if _id is not in the index, the Covered Queries is not worked.
+
+* Explain
+** Verbosity levels
+*** queryPlanner(default)
+Summary of query plan. Show what's the index MongoDB will use to execute this query. And how the index optimize the query
+*** executionStats
+This level information include informations in the queryPlanner level.
+This will do a query and statistics the information for query time, number of scanned docs etc.
+*** allPlansExecution
+This is the most detailed level.
+It displayed all the information above two levels. Also it will show why a plan is selected.
+
+** An example
+#+begin_src json
+  {
+    explainVersion: '1',
+    queryPlanner: {
+      namespace: 'digitalhipp.test',
+      indexFilterSet: false,
+      parsedQuery: {},
+      maxIndexedOrSolutionsReached: false,
+      maxIndexedAndSolutionsReached: false,
+      maxScansToExplodeReached: false,
+      winningPlan: {
+        stage: 'FETCH',
+        inputStage: {
+          stage: 'IXSCAN',
+          keyPattern: { field1: 1, field2: -1 },
+          indexName: 'field1_1_field2_-1',
+          isMultiKey: false,
+          multiKeyPaths: { field1: [], field2: [] },
+          isUnique: false,
+          isSparse: false,
+          isPartial: false,
+          indexVersion: 2,
+          direction: 'backward',
+          indexBounds: {
+            field1: [ '[MaxKey, MinKey]' ],
+            field2: [ '[MinKey, MaxKey]' ]
+          }
+        }
+      },
+      rejectedPlans: []
+    },
+    executionStats: {
+      executionSuccess: true,
+      nReturned: 1,
+      executionTimeMillis: 0,
+      totalKeysExamined: 1,
+      totalDocsExamined: 1,
+      executionStages: {
+        stage: 'FETCH',
+        nReturned: 1,
+        executionTimeMillisEstimate: 0,
+        works: 2,
+        advanced: 1,
+        needTime: 0,
+        needYield: 0,
+        saveState: 0,
+        restoreState: 0,
+        isEOF: 1,
+        docsExamined: 1,
+        alreadyHasObj: 0,
+        inputStage: {
+          stage: 'IXSCAN',
+          nReturned: 1,
+          executionTimeMillisEstimate: 0,
+          works: 2,
+          advanced: 1,
+          needTime: 0,
+          needYield: 0,
+          saveState: 0,
+          restoreState: 0,
+          isEOF: 1,
+          keyPattern: { field1: 1, field2: -1 },
+          indexName: 'field1_1_field2_-1',
+          isMultiKey: false,
+          multiKeyPaths: { field1: [], field2: [] },
+          isUnique: false,
+          isSparse: false,
+          isPartial: false,
+          indexVersion: 2,
+          direction: 'backward',
+          indexBounds: {
+            field1: [ '[MaxKey, MinKey]' ],
+            field2: [ '[MinKey, MaxKey]' ]
+          },
+          keysExamined: 1,
+          seeks: 1,
+          dupsTested: 0,
+          dupsDropped: 0
+        }
+      },
+      allPlansExecution: []
+    },
+    command: {
+      find: 'test',
+      filter: {},
+      sort: { field1: -1, field2: 1 },
+      '$db': 'digitalhipp'
+    },
+    serverInfo: {
+      host: 'a2a131c16898',
+      port: 27017,
+      version: '5.0.5',
+      gitVersion: 'd65fd89df3fc039b5c55933c0f71d647a54510ae'
+    },
+    serverParameters: {
+      internalQueryFacetBufferSizeBytes: 104857600,
+      internalQueryFacetMaxOutputDocSizeBytes: 104857600,
+      internalLookupStageIntermediateDocumentMaxSizeBytes: 104857600,
+      internalDocumentSourceGroupMaxMemoryBytes: 104857600,
+      internalQueryMaxBlockingSortMemoryUsageBytes: 104857600,
+      internalQueryProhibitBlockingMergeOnMongoS: 0,
+      internalQueryMaxAddToSetBytes: 104857600,
+      internalDocumentSourceSetWindowFieldsMaxMemoryBytes: 104857600
+    },
+    ok: 1
+  }
+#+end_src
+1. stage:
+   1. FETCH: Get the document after the index scan.
+   2. COLLSCAN: Collection scanned.
+   3. IXSCAN: Index scan.
+   4. SHARD_MERGE: In the shard cluster, MongoDB must have to get data from multi shards then merge results.
+   5. SORT: If query needs sort.
+   6. SORT_MERGE: Sort query in shard cluster.
+   7. LIMIT: If limit is required.
+   8. SKIP:
+   9. COUNT:
+2. totalDocsExamined: If totalDocsExamind is zero, that Covered Queries is performed.
+3. totalKeysExamined: How many index key are examined. When nReturned and totalKeysExamined are more approached, the index is more efficient.

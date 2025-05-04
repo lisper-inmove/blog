@@ -1,0 +1,21 @@
+#+TITLE: Linux Command - rsync
+#+DATE: 2025-01-20 13:38:07
+#+DISPLAY: t
+#+STARTUP: indent
+#+OPTIONS: toc:10
+#+AUTHOR: inmove
+#+SUBTITLE: 增量复制到远程服务器
+#+KEYWORDS: rsync
+#+CATEGORIES: Linux
+
+* Command
+#+begin_src shell
+  rsync -avz --progress /source/directory/ user@remote:/destination/directory/
+#+end_src
+
+#+begin_verse
+-a：归档模式，保持符号链接、权限、时间戳等。
+-v：显示详细的输出。
+-z：启用压缩，节省带宽。
+--progress：显示复制进度。
+#+end_verse

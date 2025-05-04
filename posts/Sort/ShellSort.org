@@ -1,0 +1,76 @@
+#+TITLE: Shell Sort
+#+DATE: 2023-09-27 21:49:08
+#+DISPLAY: t
+#+STARTUP: indent
+#+OPTIONS: toc:10
+#+AUTHOR: inmove
+#+KEYWORDS: Shell Sort
+#+CATEGORIES: Sort
+
+* Shell Sort
+
+Shell Sort is optimized for insertion sort.
+
+For insertion sort, more elements is sorted, its time complexity is more great. Its time complexity is more approached to O(n).
+So when gap = 1, it's very fast.
+
+#+CAPTION: Shell Sort
+#+ATTR_HTML: :justifyContent start :image t :width 50%
+[[https://inmove-blog.oss-cn-hangzhou.aliyuncs.com/images/shell-sort.png][Shell Sort]]
+
+
+#+begin_src python
+  def shellSort(arr):
+      """
+      Array: [3, 9, 8, 4, 5, 6, 7, 11, 12] (gap = 4)
+
+
+                                           0  1  2  3   4  5  6  7    8
+                                          [3, 9, 8, 4] [5, 6, 7, 11] [12] (gap = 4)
+         1. (0, 4) -> (3, 5)               3  9  8  4   5  6  7  11   12
+         2. (1, 5) -> (9, 6) -> (6, 9)     3  6  8  4   5  9  7  11   12
+         3. (2, 6) -> (8, 7) -> (7, 8)     3  6  7  4   5  9  8  11   12
+         4. (3, 7) -> (4, 11)              3  6  7  4   5  9  8  11   12
+         5. (4, 8) -> (5, 12)              3  6  7  4   5  9  8  11   12
+         6. Array becomes [3, 6, 7, 4, 5, 9, 8, 11, 12]
+
+                                           0  1   2  3   4  5   6  7    8
+                                          [3, 6] [7, 4] [5, 9] [8, 11] [12] (gap = 2)
+         1. (0, 2) -> (3, 7)               3  6   7  4   5  9   8  11   12
+         2. (1, 3) -> (6, 4) -> (4, 6)     3  4   7  6   5  9   8  11   12
+         3. (2, 4) -> (7, 5) -> (5, 7)     3  4   5  6   7  9   8  11   12
+         4. (3, 5) -> (6, 9)               3  4   5  6   7  9   8  11   12
+         5. (4, 6) -> (5, 8)               3  4   5  6   7  9   8  11   12
+         6. (5, 7) -> (9, 11)              3  4   5  6   7  9   8  11   12
+         7. (6, 8) -> (8, 12)              3  4   5  6   7  9   8  11   12
+         8. Array becomes [3, 4, 5, 6, 7, 9, 8, 11, 12]
+
+                                           0   1   2   3   4   5   6   7    8
+                                          [3] [4] [5] [6] [7] [9] [8] [11] [12] (gap = 1)
+         1. (0, 1) -> (3, 4)               3   4   5   6   7   9   8   11   12
+         2. (1, 2) -> (4, 5)               3   4   5   6   7   9   8   11   12
+         3. (2, 3) -> (5, 6)               3   4   5   6   7   9   8   11   12
+         4. (3, 4) -> (6, 7)               3   4   5   6   7   9   8   11   12
+         5. (4, 5) -> (7, 9)               3   4   5   6   7   9   8   11   12
+         6. (5, 6) -> (9, 8) -> (8, 9)     3   4   5   6   7   8   9   11   12
+         7. (6, 7) -> (9, 11)              3   4   5   6   7   8   9   11   12
+         8. (7, 8) -> (11, 12)             3   4   5   6   7   8   9   11   12
+         9. Sort complete
+
+      """
+      n = len(arr)
+      gap = n // 2
+
+      while gap > 0:
+          for i in range(gap, n):
+              temp = arr[i]
+              j = i
+              while j >= gap and arr[j - gap] > temp:
+                  arr[j] = arr[j - gap]
+                  j -= gap
+              arr[j] = temp
+          gap //= 2
+
+      return arr
+
+#+end_src

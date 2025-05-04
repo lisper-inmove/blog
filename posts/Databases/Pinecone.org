@@ -1,0 +1,12 @@
+#+TITLE: Pinecone Database
+#+DATE: 2025-04-19 12:15:46
+#+DISPLAY: nil
+#+STARTUP: indent
+#+OPTIONS: toc:10
+#+AUTHOR: inmove
+#+SUBTITLE: Usage of Pinecone Database
+#+KEYWORDS: Embedding Vector
+#+CATEGORIES: VectorDatabase
+
+* Official Document
+https://docs.pinecone.io/guides/get-started/overview

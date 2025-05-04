@@ -1,0 +1,168 @@
+#+TITLE: CSS
+#+SUBTITLE: CSS (Cascading Style Sheets) is a stylesheet language used to describe the presentation of a document written in HTML or XML (including XML dialects such as SVG or XHTML)
+#+DATE: 2023-09-30 23:27:40
+#+DISPLAY: t
+#+STARTUP: indent
+#+OPTIONS: toc:10
+#+AUTHOR: inmove
+#+KEYWORDS: css basic properties
+#+CATEGORIES: CSS
+
+* box-shadow
+=box-shadow: -10px 0px 13px -7px #ffffff, other shadow, other other shaow;=
+1. horizontal offset: negative to left, positive to right
+2. vertical offset: negative to bottom, positive to top
+4. blur radius: shadow blur level, lager the value, blurrier the shadow edges.
+5. spread radius: The larger the value, the larger the shadow range.
+6. color: shadow color
+
+* border
+=border: border-width border-style border-color;=
+=border-top/bottom/left/right: border-width border-style border-color;=
+Pay attention, the border width will occupy the width and height of parent container.
+
+* object-fit
+The `object-fit` property specifies how the content of a replaced element should be resized to fit its container.
+It can be thought of as a way of specifying how you want an image or video to fit into a box of a certain size.
+The property can take following values:
+1. /fill/: This is the default value. The content is sized to fill the lement's content box. If necessary, the object will be stretched to squished to fit.
+2. /contain/: The content is scaled to maintain its aspect ratio. For example, if container height = 100, width = 200, video width:height = 3:1, so the video in the container, height = 200 / 3, width = 200.
+3. /cover/: The content's aspect ratio will be maintained, and it will be cropped to cover the container.
+4. /none/: The content is not resized at all.
+5. /scale-down/: The content will scale down to fit the container if necessary but will not scale up.
+
+* object-position
+This property specifies the position of the replaced element's content within the element's box. It works in tandem with the object-fit.
+1. Take two keywords representing the horizontal and vertical position. Keywords can be top, right, bottom, left and center.
+2. Length values for x and y coordinates.
+3. Percentage values like 50% to position the content relative to the container's dimensions.
+
+* inset
+=inset: top right bottom left=
+inset property is a shorthand that combines the four individual properties top,right,bottom and left.
+1. If you specify one value, it applies to all four sides.
+2. If you specify two values, the first applies to the top and bottom, the second to the left and right.
+3. If you specify three values, the first applies to the top, the second to the left and right, and the third to the bottom.
+
+* accent-color
+=accent-color: red=
+This property is a CSS feature that enables web developers to define a custom color for the built-in UI controls provided by the browser. These controls include form elements like checkboxes, radio buttons, and sliders, which traditionally display in the default style of the user's browser. By setting an accent color, you ensure these elements align with your site's design language, creating a more integrated and harmonious look.
+#+begin_src typescript
+  export default function AccentColorDemo() {
+    return (
+      <>
+        <div className="flex gap-5">
+          <input
+            type="checkbox"
+            id="berries_1"
+            value="strawberries"
+            className="accent-cyan-500"
+          />
+          <input type="radio" className="accent-red-400" />
+          <progress max="100" value="50" className="accent-zinc-600">
+            50%
+          </progress>
+          <label>
+            Range Slider
+            <input type="range" className="accent-sky-600" />
+          </label>
+          <div className="w-10 h-10 hover:text-accent accent-cyan-500">Hello</div>
+        </div>
+      </>
+    );
+  }
+#+end_src
+
+#+ATTR_HTML: :width 80% :height 100 :align left
+#+begin_iframe
+[[https://inmove.top/learning_react/css/accent-color][accent-color]]
+#+end_iframe
+
+* isolation
+
+The =isolation: isolate= will create a new z-index stack for the element and its children.
+
+In the example, without the =isolation: isolate=, the /open-quote/ will be sheltered by the /isolation-section/ div.
+With the =isolation= the /.isolation-content/ will be always higher than the /isolation-section/.
+So that the /open-quote/ will not be sheltered by the /isolation-section/.
+
+#+NAME: style.css
+#+begin_src css
+  .isolation-section {
+    display: flex;
+    flex-flow: column;
+    justify-content: space-around;
+    color: white;
+    background: linear-gradient(135deg, #0f2027 0%, #203a43 50%, #2c5364 100%);
+    height: 200px;
+  }
+
+  code {
+    display: inline-block;
+    padding-left: 5px;
+    padding-right: 5px;
+  }
+
+  .isolation-paragraph {
+    display: inline-block;
+    position: relative;
+    isolation: isolate;
+    left: 5rem;
+  }
+
+  .isolation-paragraph::before {
+    content: open-quote;
+    font-family: serif;
+    color: red;
+    z-index: -1;
+    font-size: 15rem;
+    left: 1rem;
+    top: -7.5rem;
+    position: absolute;
+  }
+
+  .isolation-paragraph::after {
+    content: close-quote;
+    font-family: serif;
+    color: red;
+    z-index: -1;
+    left: -1rem;
+  }
+#+end_src
+
+#+NAME: page.tsx
+#+begin_src typescript
+  import "./style.css";
+
+  export default function IsolationDemo() {
+    return (
+      <>
+        <section className="isolation-section">
+          <div className="wrapper">
+            <h2 className="section-title"></h2>
+            <div className="isolation-content">
+              <p>
+                The <code className="bg-gray-800 text-xl">isolation</code>{" "}
+                property is used to create a new stacking context without any
+                other side affects.
+              </p>
+            </div>
+
+            <div className="isolation-content">
+              <p>
+                The <code className="bg-gray-800 text-xl">isolation</code>{" "}
+                property is used to create a new stacking context without any
+                other side affects.
+              </p>
+            </div>
+          </div>
+        </section>
+      </>
+    );
+  }
+#+end_src
+
+#+ATTR_HTML: :width 80% :height 100 :align left
+#+begin_iframe
+[[https://inmove.top/learning_react/css/isolation][isolation]]
+#+end_iframe

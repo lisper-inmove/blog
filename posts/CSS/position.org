@@ -1,0 +1,316 @@
+#+TITLE: Position
+#+DATE: 2024-02-28 00:54:08
+#+DISPLAY: t
+#+STARTUP: indent
+#+OPTIONS: toc:10
+#+AUTHOR: inmove
+#+SUBTITLE: The position property is used to specify where an element is displayed on the page. When paired with the top,right,bottom,and left properties, the position determines the final location of the element.
+#+KEYWORDS: Static, Relative, Absolute, Fixed, Sticky
+#+CATEGORIES: CSS
+
+
+* default value: static
+
+Default value for position is static. The divs follow the *flow of the document* rule. The first level divs are arranged one by one.
+The biggest feature is left,right,bottom,top can't influence the div.
+
+* Relative
+
+It behaves like static, and can work with left,right,bottom,top.
+
+* Absolute
+
+If a div has a relative ancestor, its absolute is relative to this ancestor, else it is relative to the viewpoint.
+
+* Fixed
+
+A fixed position relative to the viewpoint, never change
+
+* Sticky
+
+This value must set with one of left/right/bottom/top. For example =top: 0=.
+When the div don't reach the top of the viewpoint, it behaves like relative.
+Else it behaves like fixed.
+It is wired when sticky with overflow, so try your best to avoid use sticky with overflow.
+
+* An Example
+
+Here is an [[https://inmove.top/learning_react/position][Example]] for every position values.
+
+** page.tsx
+#+NAME: page.tsx
+#+begin_src typescript
+  import "./style.css"
+  import "./static.css";
+  import "./relative.css";
+  import "./fixed.css";
+  import "./absolute.css";
+  import "./sticky.css";
+
+  const PositionExample = () => {
+    return <>
+      <div className="flex justify-between h-[200vh]">
+
+        <div className="section">
+          position = static
+          <div className="static-div-1">div-1</div>
+          <div className="static-div-2">div-2</div>
+          <div className="static-div-3">div-3
+            <div className="static-div-3-3">div-3-3</div>
+          </div>
+          <div className="static-div-4">div-4</div>
+        </div>
+
+        <div className="section">
+          position = relative
+          <div className="relative-div-1">div-1</div>
+          <div className="relative-div-2">div-2</div>
+          <div className="relative-div-3">div-3
+            <div className="relative-div-3-3">relative: div-3-3</div>
+          </div>
+          <div className="relative-div-4">div-4</div>
+        </div>
+
+        <div className="section">
+          position = sticky
+          top = 0
+          when the div don&apos;t reach the top of its parent, it behaves like relative.
+          else it behaves like fixed.
+          weird behavior with overflow, so avoid set sticky with overflow on it&apos;s ancestor
+          <div className="sticky-div-1">div-1</div>
+          <div className="sticky-div-2">div-2</div>
+          <div className="sticky-div-3">sticky: div-3
+            <div className="sticky-div-3-3">div-3-3</div>
+          </div>
+          <div className="sticky-div-4">div-4</div>
+        </div>
+
+        <div className="section">
+          position = absolute
+          Div position is relative to the brower by default
+          An absolute child div with a relative father div is for break the default rule.
+          <div className="absolute-div-1">div-1</div>
+          <div className="absolute-div-2">div-2</div>
+          <div className="absolute-div-3">relative: div-3
+            <div className="absolute-div-3-3">absolute: div-3-3</div>
+          </div>
+          <div className="absolute-div-4">div-4</div>
+        </div>
+
+        <div className="section">
+          position = fixed
+          Roll the scroll bar, fixed div&apos;s relative position to the browser will not change
+          <div className="fixed-div-1">div-1</div>
+          <div className="fixed-div-2">div-2</div>
+          <div className="fixed-div-3">div-3
+            <div className="fixed-div-3-3">fixed: div-3-3</div>
+          </div>
+          <div className="fixed-div-4">div-4</div>
+        </div>
+
+      </div>
+    </>;
+  }
+
+  export default PositionExample;
+#+end_src
+
+** style.css
+#+NAME: style.css
+#+begin_src css
+  .section {
+    border: 1px solid red;
+    width: 200px;
+  }
+#+end_src
+
+** static.css
+#+NAME: static.css
+#+begin_src css
+  .static-div-1 {
+    background-color: darkgreen;
+    width: 100px;
+    height: 100px;
+  }
+
+  .static-div-2 {
+    background-color: darkcyan;
+    width: 100px;
+    height: 100px;
+    /* if position is static left will not work */
+    left: 100px;
+  }
+
+  .static-div-3 {
+    background-color: darkkhaki;
+    width: 100px;
+    height: 100px;
+  }
+
+  .static-div-3-3 {
+    background-color: darksalmon;
+    width: 100px;
+    height: 100px;
+  }
+
+  .static-div-4 {
+    background-color: darkorange;
+    width: 100px;
+    height: 100px;
+  }
+#+end_src
+
+** relative.css
+#+NAME: relative.css
+#+begin_src css
+  .relative-div-1 {
+    background-color: darkgreen;
+    width: 100px;
+    height: 100px;
+  }
+
+  .relative-div-2 {
+    background-color: darkcyan;
+    width: 100px;
+    height: 100px;
+    /* if position is static left will not work */
+    left: 100px;
+  }
+
+  .relative-div-3 {
+    background-color: darkkhaki;
+    width: 100px;
+    height: 100px;
+  }
+
+  .relative-div-3-3 {
+    background-color: darksalmon;
+    width: 100px;
+    height: 100px;
+    position: relative;
+    left: 10px;
+  }
+
+  .relative-div-4 {
+    background-color: darkorange;
+    width: 100px;
+    height: 100px;
+  }
+#+end_src
+
+** fixed.css
+#+NAME: fixed.css
+#+begin_src css
+  .fixed-div-1 {
+    background-color: darkgreen;
+    width: 100px;
+    height: 100px;
+  }
+
+  .fixed-div-2 {
+    background-color: darkcyan;
+    width: 100px;
+    height: 100px;
+    /* if position is static left will not work */
+    left: 100px;
+  }
+
+  .fixed-div-3 {
+    background-color: darkkhaki;
+    width: 100px;
+    height: 100px;
+  }
+
+  .fixed-div-3-3 {
+    background-color: darksalmon;
+    width: 100px;
+    height: 100px;
+    position: fixed;
+    right: 10px;
+  }
+
+  .fixed-div-4 {
+    background-color: darkorange;
+    width: 100px;
+    height: 100px;
+  }
+#+end_src
+
+** absolute.css
+#+NAME: absolute.css
+#+begin_src css
+  .absolute-div-1 {
+    background-color: darkgreen;
+    width: 100px;
+    height: 100px;
+  }
+
+  .absolute-div-2 {
+    background-color: darkcyan;
+    width: 100px;
+    height: 100px;
+    /* if position is static left will not work */
+    left: 100px;
+  }
+
+  .absolute-div-3 {
+    background-color: darkkhaki;
+    width: 100px;
+    height: 100px;
+    position: relative;
+  }
+
+  .absolute-div-3-3 {
+    background-color: darksalmon;
+    width: 100px;
+    height: 100px;
+    position: absolute;
+    right: 10px;
+  }
+
+  .absolute-div-4 {
+    background-color: darkorange;
+    width: 100px;
+    height: 100px;
+  }
+#+end_src
+
+** sticky.css
+#+NAME: sticky.css
+#+begin_src css
+  .sticky-div-1 {
+    background-color: darkgreen;
+    width: 100px;
+    height: 100px;
+    position: sticky;
+    top: 0;
+  }
+
+  .sticky-div-2 {
+    background-color: darkcyan;
+    width: 100px;
+    height: 100px;
+    /* if position is static left will not work */
+    left: 100px;
+  }
+
+  .sticky-div-3 {
+    background-color: darkkhaki;
+    width: 100px;
+    height: 100px;
+    position: sticky;
+    top: 0;
+  }
+
+  .sticky-div-3-3 {
+    background-color: darksalmon;
+    width: 100px;
+    height: 100px;
+  }
+
+  .sticky-div-4 {
+    background-color: darkorange;
+    width: 100px;
+    height: 100px;
+  }
+#+end_src

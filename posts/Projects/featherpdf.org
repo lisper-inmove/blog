@@ -1,0 +1,13 @@
+#+TITLE: featherpdf
+#+DATE: 2024-03-24 12:46:52
+#+DISPLAY: nil
+#+STARTUP: indent
+#+OPTIONS: toc:10
+#+AUTHOR: inmove
+#+SUBTITLE: Talk to your pdf
+#+KEYWORDS: NextJs ReactJs Python Websocket
+#+CATEGORIES: Projects
+
+* Experience
+
+[[https://featherpdf.inmove.top/][featherpdf]]

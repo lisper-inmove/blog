@@ -1,0 +1,98 @@
+#+TITLE: Quick Sort
+#+DATE: 2023-09-27 21:46:07
+#+DISPLAY: t
+#+STARTUP: indent
+#+OPTIONS: toc:10
+#+AUTHOR: inmove
+#+KEYWORDS: Quick Sort
+#+CATEGORIES: Sort
+
+* QuickSort
+Select a number as basement X.
+Split array to three partions, A B C
+Numbers in A, every number is bigger than X.
+Numbers in B, every number is equal to X.
+Numbers in C, every number is smaller than X.
+
+Best case, every time X is the middle one. Time complexity is O(n log n)
+Worst case, every time X is the smallest or biggest one. Time complexity is O(n ^ 2)
+#+begin_src python
+  def quickSort(arr):
+      if len(arr) <= 1:
+          return arr
+      pivot = arr[len(arr) // 2]
+      left = [x for x in arr if x < pivot]
+      middle = [x for x in arr if x == pivot]
+      right = [x for x in arr if x > pivot]
+      return quickSort(left) + middle + quickSort(right)
+#+end_src
+
+** lomuto partition
+Select a number X as basement. Two points i, j. i is used to preserve next index of number that is smaller or equal to pivot. j is for traverse.
+When arr[j] <= pivot, swap arr[j] and arr[i + 1]
+
+#+begin_src python
+  def lomutoPartition(arr, low, high):
+      pivot = arr[high]
+      i = low - 1
+      # from left to right, put number to front if it is smaller than pivot
+      for j in range(low, high):
+          if arr[j] <= pivot:
+              i += 1
+              arr[i], arr[j] = arr[j], arr[i]
+      # Now i point to the last index which value is smaller than pivot
+      arr[i + 1], arr[high] = arr[high], arr[i + 1]
+      return i + 1
+
+  def quickSort2(arr):
+
+      if not arr:
+          return []
+      stack = []
+      n = len(arr)
+      stack.append((0, n - 1))
+      while stack:
+          low, high = stack.pop()
+          if low < high:
+              pivot_index = lomutoPartition(arr, low, high)
+              stack.append((low, pivot_index - 1))
+              stack.append((pivot_index + 1, high))
+      return arr
+#+end_src
+
+** hoare partition
+
+Starting from low to find a number that is bigger than pivot X.
+Starting from high to find a number that is smaller than pivot Y.
+Swap X and Y.
+
+#+begin_src python
+  def hoarePartition(arr, low, high):
+      pivot = arr[low]
+      left = low
+      right = high
+      while True:
+          # Find X
+          while left < high and arr[left] < pivot:
+              left += 1
+
+          # Find Y
+          while right > low and arr[right] > pivot:
+              right -= 1
+          # Left is bigger than right. Can't find such two elements.
+          if left >= right:
+              return right
+          arr[left], arr[right] = arr[right], arr[left]
+          left += 1
+          right -= 1
+
+  def quickSort3(arr, low=None, high=None):
+      if low is None and high is None:
+          low, high = 0, len(arr) - 1
+      if low < high:
+          pivot_index = hoarePartition(arr, low, high)
+          quickSort3(arr, low, pivot_index)
+          quickSort3(arr, pivot_index + 1, high)
+      return arr
+
+#+end_src

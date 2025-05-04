@@ -1,0 +1,33 @@
+#+TITLE: Counting Sort
+#+DATE: 2023-09-27 21:49:46
+#+DISPLAY: t
+#+STARTUP: indent
+#+OPTIONS: toc:10
+#+AUTHOR: inmove
+#+KEYWORDS: Counting Sort
+#+CATEGORIES: Sort
+
+* CountingSort
+
+Suitable for sorting a sequence of integers with a relatively small maximum value.
+Create an array A, the size of which is determined by max(arr).
+Then, iterate through arr, and for each arr[i], increment A[arr[i]].
+Finally, iterate through A to obtain the sorted array.
+This method is generally used as a subroutine in Radix Sort. The time complexity is O(n).
+
+#+begin_src python
+  def countingSort(arr):
+      max_val = max(arr)
+      min_val = min(arr)
+
+      count = [0] * (max_val - min_val + 1)
+
+      for num in arr:
+          count[num - min_val] += 1
+
+      sorted_arr = []
+      for i, cnt in enumerate(count):
+          sorted_arr.extend([i + min_val] * cnt)
+
+      return sorted_arr
+#+end_src

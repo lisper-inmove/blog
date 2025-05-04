@@ -1,0 +1,579 @@
+#+TITLE: Source code in OrgMode
+#+DATE: 2024-03-29 21:19:33
+#+DISPLAY: t
+#+STARTUP: indent
+#+OPTIONS: toc:10
+#+AUTHOR: inmove
+#+SUBTITLE: Source code in OrgMode. Code block, run code and import code to file.
+#+KEYWORDS: Source Code, Code block, import code
+#+CATEGORIES: OrgMode
+
+* Header Arguments
+#+begin_verse
+1. 全局的HeaderArguments被定义在 *org-babel-default-header-args* 中.默认值为
+:session => none
+:results => replace
+:exports => code
+:cache => no
+:noweb => no
+变量 *org-babel-default-header-args:<LANG>* 保存语言相关的HeaderArguments的设置
+
+2. 在属性中设置HeaderArguments
+#+end_verse
+#+begin_src org
+  ,#+PROPERTY: header-args:R :session *R*
+  ,#+PROPERTY: header-args :results silent
+#+end_src
+#+begin_verse
+3. 为某个大纲设置HeaderArguments,这个大纲以及它的所有子大纲都使用这个设置
+#+end_verse
+#+begin_src org
+  ,* test
+    :PROPERTIES:
+    :header-args: :cache yes
+    :header-args:R: :session *R*
+    :END:
+#+end_src
+#+begin_verse
+4. 为CodeBlock设置HeaderArguments
+#+end_verse
+#+begin_src org
+  ,#+NAME: factorial
+  ,#+begin_src haskell :results silent :exports code :var n=0
+    fac 0 = 1
+    fac n = n * fac (n - 1)
+  ,#+end_src
+#+end_src
+#+begin_verse
+5. 内联的HeaderArguments
+#+end_verse
+#+begin_src org
+  src_haskell[:exports both]{fac 5}
+#+end_src
+#+begin_verse
+6. HEADER 定义的 HeaderArguments
+#+end_verse
+#+begin_src org
+  ,#+HEADER: :var a=1
+  ,#+HEADER: :var b=2
+  ,#+begin_src emacs-lisp :var c=3
+    (message "a: %s, b: %s, c: %s" a b c)
+  ,#+end_src
+#+end_src
+#+begin_verse
+7. 用 CALL 传递HeaderArguments
+#+end_verse
+#+begin_src org
+  ,#+NAME: test
+  ,#+HEADER: :var a=10
+  ,#+begin_src python :results output
+    print(a)
+  ,#+end_src
+
+  ,#+CALL: test(a=10) :exports results
+  ,#+CALL: test[:cache yes](a=10)
+#+end_src
+** sessions
+#+begin_verse
+为不同的代码块设置相同的session,那么这些代码块就处于同一个session中
+设置方式为 =:session name= 如果name不传,那么所有有未命名的相同语言的代码都块处于同一session中
+#+end_verse
+** dir
+#+begin_verse
+=:dir DIRECTORY= 用于设置代码块的工作目录,设置 *mkdirp* 为 non-nil 表示当 DIRECTORY 不存在时创建这个目录
+dir也可以指向一个远程目录
+#+end_verse
+#+begin_src shell :dir /ssh:inmove@inmove.com.cn:
+  pwd
+#+end_src
+
+#+RESULTS:
+: /home/inmove
+* 代码块传参
+#+begin_verse
+1. 使用 =header-args :var= 来向代码块传参.比如
+#+end_verse
+#+begin_src org
+  ,#+NAME: var0
+  1
+  ,#+NAME: var1
+  2
+
+  ,#+begin_src python :var v0=var0 v1=var1 :results output
+  print("v0={}v1={}typeOf-v0={} typeOf-v1={}".format(v0, v1, type(v0), type(v1)))
+  ,#+end_src
+
+  ,#+RESULTS:
+  : v0=1
+  : v1=2
+  : typeOf-v0=<class 'str'> typeOf-v1=<class 'str'>
+
+#+end_src
+
+#+begin_verse
+2. 可以用 =#+NAME= 来定义不同类型的变量.
+字符串,数字,表格,列表,文字常量(用 BEGIN_EXAMPLE,END_EXAMPLE 包裹),另一个代码块,或者另一个代码块的返回值
+#+end_verse
+
+#+begin_verse
+3. *colnames* HeaderArguments.它有三种值
+    1. nil
+       默认值.当第一行下面有水平线的时候,会被当作头.当用表格作参数时,头会被去掉,调用完代码块之后再把头加回到表格头中返回
+    2. yes
+       同nil,即使没有水平线,第一行都会被当作头
+    3. no
+       不做处理,头也被当作普通行
+#+end_verse
+
+#+begin_src org
+  ,#+NAME: table0
+  | a |
+  |---|
+  | b |
+
+  ,#+begin_src python :var tab=table0 :colnames yes
+    return [[val + '*' for val in row] for row in tab]
+  ,#+end_src
+
+  ,#+RESULTS:
+  | a  |
+  |----|
+  | b* |
+
+  ,#+begin_src python :var tab=table0 :colnames no
+    return [[val + '*' for val in row] for row in tab]
+  ,#+end_src
+
+  ,#+RESULTS:
+  | a* |
+  | b* |
+#+end_src
+
+#+begin_verse
+4. *rownames* 和 colnames 一样,作用于第一列
+    1. no: 默认值
+    2. yes: 意义同 colnames 的nil
+#+end_verse
+
+#+begin_verse
+5. 列表参数
+#+end_verse
+#+begin_src org
+  ,#+NAME: example-list
+  - simple
+    - not
+    - nested
+  - list
+
+  ,#+begin_src emacs-lisp :var x=example-list
+    (print x)
+  ,#+end_src
+
+  ,#+RESULTS:
+  | simple | (unordered (not) (nested)) |
+  | list   |                            |
+#+end_src
+
+#+begin_verse
+6. 索引表格参数.表格参数可以看作以0为基数的数组.当索引为负数时则表示从最后一个元素开始处算起
+表格索引优先与所有其它 HeaderArguments
+[0,-1] 等同于 python 的 array[0][-1]
+[0:2] 等同于 python的 array[0:3] (元素 0,1,2)
+[*] 表示整个表格
+#+end_verse
+#+begin_src org
+  ,#+NAME: example-table
+  | 1 | a |
+  | 2 | b |
+  | 3 | c |
+  | 4 | d |
+
+  ,#+begin_src emacs-lisp :var data=example-table[0,-1]
+   data
+  ,#+end_src
+
+  ,#+RESULTS:
+  : a
+
+  ,#+begin_src emacs-lisp :var data=example-table[1:3]
+   data
+  ,#+end_src
+
+  ,#+RESULTS:
+  | 2 | b |
+  | 3 | c |
+  | 4 | d |
+
+  ,#+begin_src emacs-lisp :var data=example-table[*]
+   data
+  ,#+end_src
+
+  ,#+RESULTS:
+  | 1 | a |
+  | 2 | b |
+  | 3 | c |
+  | 4 | d |
+#+end_src
+* 代码块执行
+1. C-c C-c
+2. CALL: =#+CALL: <name>(<argument>)= 或者 =#+CALL: <name>[<header arguments>](<args>)[<header arguments>]=
+3. call: =call_<name>(<argument>)= 或者 =call_<name>[<header arguments>](args)[<header arguments>]=
+
+#+begin_verse
+name是本文件的代码块的名字,如果代码块在另一个文件,则
+=#+CALL: file.org:name()=
+#+end_verse
+** eval header arguments                                         :important:
+#+begin_verse
+*eval* 用于控制代码块的行为.如果不设置 *eval* 那么是否执行代码由 *org-confirm-babel-evaluate* 的设置决定
+1. never 或者 no: 从不执行
+2. query: 需要获取授权才执行
+3. never-export 或者 no-export: 导出时不执行此代码
+4. query-export: 导出时询问是否执行
+#+end_verse
+** cache 执行结果
+#+begin_verse
+当代码块的参数和代码内容无变化时,使用 cache HeaderArgument 来缓存代码块的执行结果
+#+end_verse
+* 代码块的执行结果 - results HeaderArgument
+#+begin_verse
+*results* 一共有4种类型的选项
+1. Collection: 代码块执行结果以何种方式被收集
+2. Type: 代码块的何种类型返回值会被收集
+3. Format: 返回格式
+4. Handling: 如何把执行结果写入到文件中
+#+end_verse
+
+** Collection
+1. value: 默认值.org会把代码块放在一个函数中执行,然后把return的内容作为代码块的执行返回值
+2. output: org会把代码送入到一个解释器中.标准输出的内容作为代码块的执行返回值
+** Type
+1. table 或者 vector: 代码块的返回值以表格或数组的形式呈现
+  #+begin_src org
+    ,#+NAME: many-cols
+    | a | b | c |
+    |---+---+---|
+    | d | e | f |
+    |---+---+---|
+    | g | h | i |
+
+    ,#+NAME: no-hline
+    ,#+begin_src python :var tab=many-cols :hlines no
+      return tab
+    ,#+end_src
+
+    ,#+RESULTS: no-hline
+    | a | b | c |
+    | d | e | f |
+    | g | h | i |
+
+    ,#+NAME: yes-hline
+    ,#+begin_src python :var tab=many-cols :hlines yes
+      return tab
+    ,#+end_src
+
+    ,#+RESULTS: yes-hline
+    | a | b | c |
+    |---+---+---|
+    | d | e | f |
+    |---+---+---|
+    | g | h | i |
+
+  #+end_src
+1. list: 以列表形式返回
+   #+begin_src org
+     ,#+begin_src python :results list
+       return 123, 456
+     ,#+end_src
+
+     ,#+RESULTS:
+     - 123
+     - 456
+   #+end_src
+2. scalar 或者 verbatim
+   #+begin_src org
+     ,#+begin_src python :results verbatim
+       return "Hello World", 3
+     ,#+end_src
+
+     ,#+RESULTS:
+     : ('Hello World', 3)
+   #+end_src
+3. file: 执行结果被存入文件.在org文件中插入指向文件的链接
+   1. output-dir: 指明文件存放的路径,默认值为当前目录
+   2. file: 指明文件名
+   3. file-ext: 当不指明file HeaderArgument时,此 HeaderArgument为必须.以代码块的name作为文件名,以file-ext为后缀
+   4. file-desc: 链接的说明语句
+   5. sep: 当插入 table 时,以sep指定的值作为分割符.默认以TAB作为分割符.
+
+   #+begin_src org
+     ,#+NAME: test-file
+     ,#+begin_src asymptote :results value file :file circule.pdf :output-dir img/
+       size(2cm);
+       draw(unitcircle);
+     ,#+end_src
+   #+end_src
+** Format
+1. code: 执行结果被 =#+begin_src,#+end_src= 包裹
+   #+begin_src org
+     ,#+begin_src python :results value code
+       return 123
+     ,#+end_src
+
+     ,#+RESULTS:
+     ,#+begin_src python
+     123
+     ,#+end_src
+   #+end_src
+2. drawer: 执行结果被放在RESULTS中
+   #+begin_src org
+     ,#+begin_src python :results value drawer
+       return 111
+     ,#+end_src
+
+     ,#+RESULTS:
+     :RESULTS:
+     111
+     :END:
+   #+end_src
+3. html: 被 =BEGIN_EXPORT html= 包裹
+   #+begin_src org
+     ,#+begin_src python :results value html
+       return 333
+     ,#+end_src
+
+     ,#+RESULTS:
+     ,#+BEGIN_EXPORT html
+     333
+     ,#+END_EXPORT
+   #+end_src
+4. latex: 包裹在 =BEGIN_EXPORT latex= 中
+5. link 或者 graphics: 执行结果为一个link.
+   #+begin_src org
+     ,#+begin_src python :results link :file download.tar.gz
+       return 123
+     ,#+end_src
+
+     ,#+RESULTS:
+     [[file:download.tar.gz]]
+   #+end_src
+6. org: 包裹在 =begin_src org= 中
+   #+begin_src org
+     ,#+begin_src python :results value org
+       return 333
+     ,#+end_src
+
+     ,#+RESULTS:
+     ,#+begin_src org
+     333
+     ,#+end_src
+   #+end_src
+7. pp: 执行结果被转换成 pretty-print 源码
+   #+begin_src org
+     ,#+begin_src python :results value pp
+       return {"name": "inmove", "others": {"job": ["a", "b"]}}
+     ,#+end_src
+
+     ,#+RESULTS:
+     : {'name': 'inmove', 'others': {'job': ['a', 'b']}}
+   #+end_src
+8. raw: 执行结果原样写入到org文件中
+   #+begin_src org
+     ,#+begin_src python :results value raw
+       return {"inmove": "aa"}
+     ,#+end_src
+
+     ,#+RESULTS:
+     {'inmove': 'aa'}
+   #+end_src
+*** 关于 wrap HeaderArgument
+#+begin_verse
+格式为 =:wrap string=
+代码块的执行结果会被放在 =#+BEGIN_string ... #+END_string= 中
+默认值为 =#+BEGIN_results #+END_results=
+#+end_verse
+
+#+begin_src org
+  ,#+begin_src emacs-lisp :results html :wrap EXPORT markdown
+  "<blink>Welcome back to the 90's</blink>"
+  ,#+end_src
+
+  ,#+RESULTS:
+  ,#+BEGIN_EXPORT markdown
+  <blink>Welcome back to the 90's</blink>
+  ,#+END_EXPORT
+#+end_src
+*** 用 post HeaderArgument 传参数
+#+begin_verse
+如下例所示, post的作用是把当前代码块的执行结果绑定在 =*this*= 上面,可以更方便去调用另一个代码块
+post 也可以为被调用的代码块指定 HeaderArguments
+如 =:post name-test[:results output](*this*)=
+#+end_verse
+#+begin_src org
+  ,#+NAME: name-test
+  ,#+begin_src python :var name="inmove" :var age=30
+    return name
+  ,#+end_src
+
+  ,#+RESULTS: name-test
+  : inmove
+
+  ,#+NAME: post-test
+  ,#+begin_src python :post name-test[:results output](name=*this*, age=30)
+    return "mei"
+  ,#+end_src
+
+  ,#+RESULTS: post-test
+  : nil
+#+end_src
+* 代码块的导出 - exports HeaderArgument                           :important:
+#+begin_verse
+用 :exports HeaderArgument 来为Org文件导出时的动作
+1. code: 默认值. 代码块原样被导出到文件中
+2. results: 代码执行结果被导出到文件中
+3. both: code + results
+4. none: 什么都不导出
+#+end_verse
+* 代码块的提取 - tangle HeaderArgument                            :important:
+#+begin_verse
+*tangle* 用于控制是否把代码块提取到指定的文件
+1. no: 默认值,不提取
+2. yes: 提取.文件名根据当前buffer的名字,后缀根据语言类型来确定
+3. FILENAME: 指定的文件名
+#+end_verse
+
+#+begin_src org
+  ,#+begin_src python :tangle ~/test.py :comments link
+    return 123
+  ,#+end_src
+
+  ,#+RESULTS:
+  : 123
+#+end_src
+** 提取代码的快捷键
+1. C-c C-v t(org-babel-tangle): tangle 当前文件
+2. C-u C-c C-v t: tangle 当前代码块
+3. C-c C-v f(org-babel-tangle-file): 选择一个文件来tangle
+** hook
+#+begin_verse
+*org-babel-post-tangle-hook* 用于设置 *org-babel-tangle* 函数执行前的勾子
+#+end_verse
+** 提取的代码的注释 - comments HeaderArgument
+#+begin_verse
+1. no: 不插入任何注解
+2. link: 在提取的代码中插入当前buffer的相关信息
+3. yes: 和link相同,为向后兼容
+4. org: 把最近的一个标题的内容插入到源代码中当作注释,包括所有的空行
+5. both: link + org
+6. noweb: 在link的操作基础上,展开 noweb 的引用
+#+end_verse
+** 提取多份代码时的格式 - padline HeaderArgument
+#+begin_verse
+1. yes: 每份代码块之间都插入一个换行符
+2. no: 不插入换行符
+#+end_verse
+
+** shebang - shebang HeaderArgument
+#+begin_verse
+=:shebang #!/bin/bash=
+把shebang指定的字符中插入到文件中,并把文件的 x 权限打开
+#+end_verse
+
+** 提取的代码的权限位 - tangle-mode HeaderArgument
+#+begin_verse
+=:tangle-mode (identity #o0444)=
+这个设置会覆盖 shebang 设置的写权限
+#+end_verse
+
+** 举个例子
+#+begin_src org
+  ,#+begin_src python :tangle ~/test.py :comments org :shebang "# -*- coding: utf-8 -*-" :padline no
+  ,#+end_src
+  ,#+begin_src python :tangle ~/test.py :padline no :comments org :tangle-mode (identity #o444)
+    def test0():
+        return "test0"
+  ,#+end_src
+  ,#+begin_src python :tangle ~/test.py :padlin no :comments org
+    def test1():
+        return "test1"
+  ,#+end_src
+#+end_src
+* 引用语法 - noweb HeaderArgument                                 :important:
+#+begin_verse
+一个代码块可以用 =<<name>>= 的方式来引用其它代码块.
+同时也可以 =<<name(arguments)>>= 来引用其它代码块的返回值
+被引用的代码会原样搬移在当前代码块中
+1. no: 默认值.不解引用
+2. yes: 执行,提取,导出 解引用
+3. tangle: 只有 *提取* 时解引用
+4. no-export: *导出* 时不解引用
+5. strip-export: *执行*,*提取* 时解引用 *导出* 时把引用的内容(=<<name>>=)删除
+6. eval: 只有在 *执行* 代码时解引用
+#+end_verse
+** 引用代码时,代码块的拼接 - noweb-ref HeadeArgument
+#+begin_verse
+一个代码块引用了 另一个代码A. 而A是由多个代码块组合而成.如下例所示
+=noweb-sep= 用于控制多个子代码块之间是否有换行分开
+#+end_verse
+#+begin_src org
+  ,#+begin_src sh :tangle ~/test.sh :noweb yes :shebang #!/bin/sh
+  <<fullest-disk>>
+  ,#+end_src
+  ,*** the mount point of the fullest disk
+  :PROPERTIES:
+  :header-args: :noweb-ref fullest-disk
+  :END:
+  ,**** query all mounted disks
+  ,#+begin_src sh
+  df \
+  ,#+end_src
+  ,**** strip the header row
+  ,#+begin_src sh
+  |sed '1d' \
+  ,#+end_src
+  ,**** output mount point of fullest disk
+  ,#+begin_src sh
+  |awk '{if (u < +$5) {u = +$5; m = $6}} END {print m}'
+  ,#+end_src
+#+end_src
+** 举些例子
+#+begin_src org
+  ,#+NAME: test0
+  ,#+begin_src python
+    def test0():
+        return "test0"
+  ,#+end_src
+
+  ,#+begin_src python :noweb yes
+    <<test0>>
+  ,#+end_src
+
+  ,#+RESULTS:
+  : None
+#+end_src
+
+#+begin_src org
+  ,#+NAME: if-true
+  ,#+begin_src python :exports none
+    print("this is true")
+  ,#+end_src
+  ,#+NAME: if-false
+  ,#+begin_src python :exports none
+    print("this is false")
+  ,#+end_src
+
+  ,#+begin_src python :noweb yes :results silent
+    if True:
+        <<if-true>>
+    else:
+        <<if-false>>
+  ,#+end_src
+
+  被解引用之后形如:
+  ,#+begin_src python
+    if True:
+        print("this is true")
+    else:
+        print("this is false")
+  ,#+end_src
+#+end_src

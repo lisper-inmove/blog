@@ -1,0 +1,25 @@
+#+TITLE: cp and mv with progress bar
+#+DATE: 2024-03-24 02:25:26
+#+DISPLAY: t
+#+STARTUP: indent
+#+OPTIONS: toc:10
+#+AUTHOR: inmove
+#+SUBTITLE: It's better to display a progress bar when we copy or move a big file.
+#+KEYWORDS: cp mv
+#+CATEGORIES: Linux
+
+* Github
+https://github.com/jarun/advcpmv
+
+* install
+#+begin_src shell
+  curl https://raw.githubusercontent.com/jarun/advcpmv/master/install.sh --create-dirs -o ./advcpmv/install.sh && (cd advcpmv && sh install.sh)
+
+  cp advcpmv && cp advcp ~/.bin && cp advmv ~/.bin
+#+end_src
+
+* set shortcut
+#+begin_src shell
+  echo alias cp '$HOME/.bin/advcp -g' >> ~/.zshrc
+  echo alias mv '$HOME/.bin/advmv -g' >> ~/.zshrc
+#+end_src

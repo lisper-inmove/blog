@@ -1,0 +1,186 @@
+#+TITLE: Git Hooks - pre-commit
+#+DATE: 2024-03-01 00:45:31
+#+DISPLAY: t
+#+STARTUP: indent
+#+OPTIONS: toc:10
+#+AUTHOR: inmove
+#+SUBTITLE: mypy check hook before commit
+#+KEYWORDS: mypy, pre-commit
+#+CATEGORIES: Git
+
+* pre-commit for mypy for python files
+#+begin_src bash
+  #!/bin/sh
+
+  # Collect files in stage area
+  FILES=$(git diff --cached --name-only --diff-filter=ACM | grep '\.py$')
+  if [ -z "$FILES" ]; then
+      exit 0
+  fi
+
+  echo "Running mypy..."
+  for FILE in $FILES; do
+      mypy "$FILE"
+      if [ $? -ne 0 ]; then
+          echo "mypy failed: $FILE"
+          exit 1
+      fi
+  done
+
+  echo "mypy all passed"
+  exit 0
+
+#+end_src
+
+* pre-commit using flake8
+#+begin_src python
+  #!/usr/bin/env python
+  # -*- coding: utf-8 -*-
+
+  """
+  https://www.osgeo.cn/flake8/index.html
+
+  """
+
+
+  import sys
+  import subprocess
+  from collections import namedtuple
+
+
+  class Bcolors:
+      HEADER = '\033[95m'
+      OKBLUE = '\033[94m'
+      OKGREEN = '\033[92m'
+      WARNING = '\033[93m'
+      FAIL = '\033[91m'
+      ENDC = '\033[0m'
+      BOLD = '\033[1m'
+      UNDERLINE = '\033[4m'
+
+      BLACK_FONT_C = "\033[30m"
+      RED_FONT_C = "\033[31m"
+      GREEN_FONT_C = "\033[32m"
+      YELLOW_FONT_C = "\033[33m"
+      DARK_BLUE_FONT_C = "\033[34m"
+      PINK_FONT_C = "\033[35m"
+      LIGHT_BLUE_FONT_C = "\033[36m"
+      LIGHT_GREY_FONT_C = "\033[90m"
+      ORIGIN_FONT_C = "\033[91m"
+
+      @classmethod
+      def color_value(cls, color, value):
+          return color + str(value) + Bcolors.ENDC
+
+      @classmethod
+      def red_value(cls, value):
+          return cls.color_value(cls.RED_FONT_C, value)
+
+      @classmethod
+      def green_value(cls, value):
+          return cls.color_value(cls.GREEN_FONT_C, value)
+
+
+  class Checker:
+
+      MAX_LINE_LENGHT = 90
+
+      def __init__(self):
+          self._errcode = 0
+          self._ignore_errors = []
+          self._errors = []
+
+      def call(self, cmd, cwd=None):
+          Result = namedtuple("Result", ["message", "errmsg", "ret_code"])
+          p = subprocess.Popen(
+              cmd.split(),
+              stdout=subprocess.PIPE,
+              stderr=subprocess.PIPE,
+              cwd=cwd)
+          message, errmsg = p.communicate()
+          message = message.decode('utf8')
+          errmsg = errmsg.decode('utf8')
+          return Result(message, errmsg, p.returncode)
+
+      def cmd_exists(self, cmd):
+          result = self.call(f'which {cmd}')
+          return result.ret_code == 0
+
+      def get_staged(self, ext):
+          result = self.call('git diff --name-only --staged')
+          staged = set(result.message.splitlines())
+          return [f for f in staged if f.endswith(ext)]
+
+      def __output(self, message):
+          print(message)
+
+      def exit(self, msg):
+          self.__output(msg)
+          sys.exit(1)
+
+      def parse_outputs(self, outputs):
+          if not outputs:
+              return None
+          outputs = outputs.split("\n")
+          for output in outputs:
+              if output == "":
+                  continue
+              self.parse_output(output)
+
+      def parse_output(self, output):
+          """ Parse output from flake8
+
+          Args:
+              output: this is an example
+                  app.py:4:1: F401 'collections' imported but unused
+
+          Returns:
+              String
+          """
+          output = output.split()
+          location = output[0]
+          errcode = output[1]
+          if errcode in self._ignore_errors:
+              return
+          self._errcode |= 1
+          errmsg = " ".join(output[2:])
+          errcode = Bcolors.red_value(errcode)
+          msg = " ".join([location, errcode, errmsg])
+          self._errors.append(msg)
+          return msg
+
+      def check_flake8(self, filename):
+          command = f"flake8 {filename} --max-line-length={self.MAX_LINE_LENGHT}"
+          result = self.call(command)
+          parse_result = self.parse_outputs(result.message)
+          if parse_result is None:
+              return
+
+      def check_python(self):
+          has_flake8 = self.cmd_exists('flake8')
+          if not has_flake8:
+              self.exit('flake8 不存在: pip install flake8')
+
+          staged = self.get_staged('py')
+          if not staged:
+              return
+
+          for filename in staged:
+              self.check_flake8(filename)
+
+          for error in self._errors:
+              self.__output(error)
+
+          if self._errcode != 0:
+              sys.exit(self._errcode)
+
+
+      def main(self):
+          self.check_python()
+
+
+  if __name__ == '__main__':
+      checker = Checker()
+      checker.main()
+
+#+end_src

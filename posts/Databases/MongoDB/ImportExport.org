@@ -1,0 +1,58 @@
+#+TITLE: MongoDB: Import and Export data
+#+DATE: 2024-03-25 00:48:31
+#+DISPLAY: t
+#+STARTUP: indent
+#+OPTIONS: toc:10
+#+AUTHOR: inmove
+#+SUBTITLE: Ways of import and export data
+#+KEYWORDS: mongodump mongorestore mongoimport mongoexport
+#+CATEGORIES: Database MongoDB
+#+CARDIMAGE: https://inmove-blog.oss-cn-hangzhou.aliyuncs.com/images/database-01.png
+
+* export
+Export a single collection to json file
+#+begin_src shell
+  mongoexport --db=database_name --collection=collection_name --out=output_file.json
+#+end_src
+
+Export to csv file
+#+begin_src shell
+  mongoexport --db=database_name --collection=collection_name --type=csv --fields=field1,field2 --out=output_file.csv
+#+end_src
+
+* import
+Import a json file
+#+begin_src shell
+  mongoimport --db=database_name --collection=collection_name --file=input_file.json
+#+end_src
+
+Import a csv file
+#+begin_src shell
+  mongoimport --db=database_name --collection=collection_name --type=csv --file=input_file.csv --headerline
+#+end_src
+
+Use uri to specify database info
+#+begin_src shell
+  mongoimport --uri="mongodb+srv://<username>:<password>@target_cluster_address/database_name?retryWrites=true&w=majority" --db=database_name --collection=collection_name --file=/path/to/yourfile.json
+#+end_src
+
+* dump
+Dump a database. The output file are jsons by default.
+Use =--archive=xxx.archive= to save as bson data.
+Use =--gzip= to compress data.
+#+begin_src shell
+  mongodump --db=database_name --out=/path/to/backup/directory
+#+end_src
+
+#+begin_src shell
+  mongodump --archive=myatlas.data --gzip --port 39712 --authenticationDatabase admin --host 127.0.0.1 -u inmove -p xxxxxxxxxxx
+#+end_src
+
+* restore
+#+begin_src shell
+  mongorestore --archive=/path/to/backup/directory
+#+end_src
+
+#+begin_src shell
+  mongorestore --archive=myatlas.data --gzip --port 39712 --authenticationDatabase admin --host 127.0.0.1 -u inmove -p xxxxxxxxxx
+#+end_src

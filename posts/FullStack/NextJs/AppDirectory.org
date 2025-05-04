@@ -1,0 +1,34 @@
+#+TITLE: Directory In NextJs
+#+DATE: 2025-04-13 20:36:52
+#+DISPLAY: t
+#+STARTUP: indent
+#+OPTIONS: toc:10
+#+AUTHOR: inmove
+#+SUBTITLE: Usage of directory in NextJs
+#+KEYWORDS: layout template error
+#+CATEGORIES: NextJs
+
+* page.tsx
+某个页面组件，自动成为一个路由页面
+app/page.tsx 就是 / 的路由
+
+* layout.tsx
+该目录下所有子路由的页面布局
+
+* template.tsx
+和layout.tsx一样，但是每次导航都会重新渲染页面。用于需要每次进入都刷新内容的场景，比如弹窗、对话框页面。
+
+* loading.tsx
+为当前路径及子路径定义加载状态组件
+在页面或布局 await 数据加载时自动显示这个 loading 页面
+
+* error.tsx
+NextJs 会自动捕获该 layout 或 page 内的异常，显示该组件
+
+* not-found.tsx
+处理当前路径下的 404 页面（如使用 notFound() 函数时跳转到该页面）。
+用于提供更精细化的“找不到页面”处理。
+
+* route.tsx
+在 app/xxx/route.ts 下，可以定义一个基于 handler 的 API 路由。
+替代原来的 pages/api 模式，支持 GET, POST 等。

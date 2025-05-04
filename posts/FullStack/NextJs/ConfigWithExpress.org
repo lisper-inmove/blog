@@ -1,0 +1,107 @@
+#+TITLE: Config NextJs With Express
+#+DATE: 2024-03-04 16:15:28
+#+DISPLAY: t
+#+STARTUP: indent
+#+OPTIONS: toc:10
+#+AUTHOR: inmove
+#+SUBTITLE: NextJs With Express
+#+KEYWORDS: Express
+#+CATEGORIES: NextJs
+
+* install dependences
+#+begin_src shell
+  npm install @types/express express nodemon cross-env ts-node
+#+end_src
+
+* nodemon
+#+NAME: nodemon.json
+#+begin_src json
+  {
+    "watch": ["src/server.ts"],
+    "exec": "ts-node --project tsconfig.server.json src/server.ts -- -I",
+    "ext": "js ts",
+    "stdin": false
+  }
+#+end_src
+
+#+NAME: tsconfig.server.json
+#+begin_src json
+  {
+    "extends": "./tsconfig.json",
+    "compilerOptions": {
+      "module": "CommonJS",
+      "outDir": "dist",
+      "noEmit": false,
+      "jsx": "react"
+    },
+    "include": ["src/server.ts"]
+  }
+#+end_src
+
+* package.json
+replace ="dev": "next dev"= to  ="dev": "cross-env nodemon"=
+#+NAME: src/package.json
+#+begin_src json
+  {
+    "scripts": {
+      "dev": "cross-env nodemon",
+      "build": "next build",
+      "start": "cross-env nodemon",
+      "lint": "next lint"
+    }
+  }
+#+end_src
+
+* next-server.ts
+#+NAME: src/next-server.ts
+#+begin_src typescript
+  import next from "next";
+  const PORT = Number(process.env.PORT) || 3000;
+
+  export const nextApp = next({
+    dev: process.env.NODE_ENV !== "production",
+    port: PORT,
+  });
+
+  export const nextHandler = nextApp.getRequestHandler();
+#+end_src
+
+* server.ts
+#+begin_src typescript
+  import express, { NextFunction, Request, Response } from "express";
+  import { nextApp, nextHandler } from "./next-server";
+
+  const app = express();
+  const PORT = Number(process.env.PORT) || 3000;
+
+  function globalMiddleware(req: Request, res: Response, next: NextFunction) {
+    console.log("This is a globalMiddleware");
+    // console.log(req.headers);
+    // console.log(req.url);
+    // console.log("this is the middleware", typeof req, typeof res, typeof next);
+    next();
+  }
+
+  function specificMiddleware(req: Request, res: Response, next: NextFunction) {
+    console.log("This is a middleware for specific url");
+    return res.send({ Hello: "World" });
+  }
+
+  function regexMiddleware(req: Request, res: Response, next: NextFunction) {
+    console.log("This is a middleware for regex url");
+    return res.send({ Hello: "Regex" });
+  }
+
+  const start = async () => {
+    app.use("/test", (req, res, next) => specificMiddleware(req, res, next));
+    app.use(/.*regex.*/, (req, res, next) => regexMiddleware(req, res, next));
+    app.use((req, res, next) => globalMiddleware(req, res, next));
+    app.use((req, res) => nextHandler(req, res));
+    console.log(`Server start at ${PORT}`);
+
+    nextApp.prepare().then(() => {
+      app.listen(PORT, async () => {});
+    });
+  };
+  start();
+#+end_src

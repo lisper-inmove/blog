@@ -1,0 +1,13 @@
+#+TITLE: Circuit
+#+DATE: 2025-02-13 00:28:56
+#+DISPLAY: t
+#+STARTUP: indent
+#+OPTIONS: toc:10
+#+AUTHOR: inmove
+#+SUBTITLE: Learning Circuit
+#+KEYWORDS: Circuit
+#+CATEGORIES: IoT
+
+* 推挽输出 AND 开漏输出
+
+* 上拉电阻 AND 下拉电阻

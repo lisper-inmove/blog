@@ -1,0 +1,15 @@
+#+TITLE: Collect Websites
+#+DATE: 2025-01-21 13:14:23
+#+DISPLAY: nil
+#+STARTUP: indent
+#+OPTIONS: toc:10
+#+AUTHOR: inmove
+#+SUBTITLE: Collect Websites
+#+KEYWORDS: IoT
+#+CATEGORIES: IoT
+
+* esp32
+[[https://lastminuteengineers.com/getting-started-with-esp32/][ESP32]]
+
+* stm32
+[[https://stm32f407-tech-doc.readthedocs.io/en/latest/README.html#id2][STM32F407]]

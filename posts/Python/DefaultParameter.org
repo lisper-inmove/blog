@@ -1,0 +1,159 @@
+#+TITLE: 在Python中使用默认参数
+#+DATE: 2024-05-02 15:22:00
+#+DISPLAY: t
+#+STARTUP: indent
+#+OPTIONS: toc:10
+#+AUTHOR: inmove
+#+SUBTITLE: 在Python中使用默认参数，以及可能遇到的问题
+#+KEYWORDS: DefaultParameter
+#+CATEGORIES: Python
+
+* 使用可变参数作为默认参数时的问题
+函数关联到一个 function object，它的默认参数应该是放在这个function object某个字段里的。
+如下，test函数中，为a分配了一个堆内存的地址，当为它添加值的时候，同样会修改堆上的数据。
+而在 test2函数中，a默认设置为None，函数被调用时，如果a为None，才分配一块空间并赋值到a。这里a只是一个值，并不是'址'，所以原来默认的a的值是不受影响的。
+#+begin_src python :results output
+  def test(a = []):
+      a.append(123)
+      print(a, end=",")
+
+  def test2(a = None):
+      if (a is None):
+          a = []
+      a.append(123)
+      print(a, end=",")
+
+  if __name__ == '__main__':
+      test()
+      test()
+      print()
+      test2()
+      test2()
+#+end_src
+
+#+RESULTS:
+: [123],[123, 123],
+: [123],[123],
+
+* 用inspect来看看发生了什么
+
+从输出可以看到 a 的地址是没有变化的
+
+test1中，a的地址有一次变化，因为它的默认值是长度为0的数组，第一次append的时候会重新分配空间
+test2中，是为字典分配的空间，所以当我们为其增加新的k-v对时，并不会重新分配空间。如果我们一直增加k-v对，达到需要rehash的条件时，a的地址应该也是会变化的。
+test3中，a的默认值是None，并且每次都没有变化
+test4, test5 和test3一样，也是不会有上面提到的问题。
+
+所以这里应该还是 *值* 与 *址* 的问题
+
+这个 a 应该是在堆中分配的空间，然后挂在这个 function object 上面。
+在 test3, test4, test5 中，当我们为 a 重新赋值时，是一个赋'值'的动作，所以并不会影响到 function object 上的成员变量
+
+而如果我们修改的是 a 指向的内存空间的内容的时候，因为它指向的地址是不会变化的，那么下一次调用时，a指向的值就会是上一次修改后的值
+
+那么它就会反应在a上
+
+#+begin_src python :results output
+  import inspect
+
+  def test1(a = []):
+      a.append(123)
+
+  def test2(a = {}):
+      a.update({"name": "inmove"})
+
+  def test3(a = None):
+      if (a is None):
+          a = []
+      a.append(123)
+
+  def test4(a = None):
+      if (a is None):
+          a = []
+      a.append(123)
+
+  def test5(a=False):
+      if a is False:
+          a = True
+
+  def print_test_args(fn):
+      signature = inspect.signature(fn)
+      print(signature)
+      print(signature.parameters)
+      print(id(signature.parameters['a']))
+
+  def ptest(fn):
+      print(f"----------- inspect function {fn.__name__} start -------------")
+      print_test_args(fn)
+      fn()
+      print_test_args(fn)
+      fn()
+      print_test_args(fn)
+      print(f"----------- inspect function {fn.__name__} end ---------------")
+
+  if __name__ == '__main__':
+      ptest(test1)
+      ptest(test2)
+      ptest(test3)
+      ptest(test4)
+      ptest(test5)
+#+end_src
+
+#+RESULTS:
+#+begin_example
+----------- inspect function test1 start -------------
+(a=[])
+OrderedDict([('a', <Parameter "a=[]">)])
+139754181155008
+(a=[123])
+OrderedDict([('a', <Parameter "a=[123]">)])
+139754181155712
+(a=[123, 123])
+OrderedDict([('a', <Parameter "a=[123, 123]">)])
+139754181155712
+----------- inspect function test1 end ---------------
+----------- inspect function test2 start -------------
+(a={})
+OrderedDict([('a', <Parameter "a={}">)])
+139754181274944
+(a={'name': 'inmove'})
+OrderedDict([('a', <Parameter "a={'name': 'inmove'}">)])
+139754181274944
+(a={'name': 'inmove'})
+OrderedDict([('a', <Parameter "a={'name': 'inmove'}">)])
+139754181274944
+----------- inspect function test2 end ---------------
+----------- inspect function test3 start -------------
+(a=None)
+OrderedDict([('a', <Parameter "a=None">)])
+139754180026880
+(a=None)
+OrderedDict([('a', <Parameter "a=None">)])
+139754180026880
+(a=None)
+OrderedDict([('a', <Parameter "a=None">)])
+139754180026880
+----------- inspect function test3 end ---------------
+----------- inspect function test4 start -------------
+(a=None)
+OrderedDict([('a', <Parameter "a=None">)])
+139754180027136
+(a=None)
+OrderedDict([('a', <Parameter "a=None">)])
+139754180027136
+(a=None)
+OrderedDict([('a', <Parameter "a=None">)])
+139754180027136
+----------- inspect function test4 end ---------------
+----------- inspect function test5 start -------------
+(a=False)
+OrderedDict([('a', <Parameter "a=False">)])
+139754180027648
+(a=False)
+OrderedDict([('a', <Parameter "a=False">)])
+139754180027648
+(a=False)
+OrderedDict([('a', <Parameter "a=False">)])
+139754180027648
+----------- inspect function test5 end ---------------
+#+end_example

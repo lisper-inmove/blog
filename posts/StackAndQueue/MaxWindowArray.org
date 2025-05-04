@@ -1,0 +1,95 @@
+#+TITLE: Queue
+#+DATE: 2024-03-10 15:22:21
+#+DISPLAY: t
+#+STARTUP: indent
+#+OPTIONS: toc:10
+#+AUTHOR: inmove
+#+SUBTITLE: Queue is a fundamental data structure that operates in a First-In-First-Out (FIFO) manner
+#+KEYWORDS: Queue
+#+CATEGORIES: DataStructure
+
+* What is Queue
+
+A queue is a fundamental data structure that operates in a First-In-First-Out (FIFO) manner. This means that the first element added to the queue will be the first one to be removed. It's akin to a line of people waiting for their turn at a service counter; the person who arrives first gets served first, and new arrivals join the end of the line. Its ast as follows:
+
+1. /Enqueue/: Add (or offer) an element to the end of the queue.
+2. /Dequeue/: Remove (or poll) the element at the front of the queue and return it.
+3. /Peek/: View the element at the front of the queue without removing it, allowing you to see what's next to be processed.
+4. /IsEmpty/: Check if the queue is empty.
+5. /IsFull/: Check if the queue has reached its maximum capacity (relevant for queues with a fixed size).
+
+* Description
+
+An array and a window w. Begin at index 0~w-1, slide one element to right everytime, record max value to a result array.
+For example: arrays is [4, 3, 5, 4, 3, 3, 6, 7] w = 3
+[4, 3, 5], 4, 3, 3, 6, 7 --> 5
+4, [3, 5, 4], 3, 3, 6, 7 --> 5
+4, 3, [5, 4, 3], 3, 6, 7 --> 5
+4, 3, 5, [4, 3, 3], 6, 7 --> 4
+4, 3, 5, 4, [3, 3, 6], 7 --> 6
+4, 3, 5, 4, 3, [3, 6, 7] --> 7
+results is [5, 5, 5, 4, 6, 7]
+
+* Solution
+
+Prepare a Double-End Queue which max length is 3, its value is index of element.
+1. value = 4, index = 0: enqueue 0
+2. value = 3, index = 1: enqueue 1, because 3 is smaller than 4, but its index is bigger than 4
+3. first two(w - 1) steps is for preprocess
+4. value = 5, index = 2: dequeue 0 and 1, enqueue 2. (because (2 + 1) % 3 is equal to 0)push 5 to results
+   Because 5 is bigger than 3 and 4, also its index is bigger than theirs, so that 3 and 4 "never see the light of the day".
+5. Take a step forward, value is 4, index is 3, enqueue 3
+   *dequeue as long as one of the following two points is met:*
+   1. its value is smaller than 4
+   2. its index can't be reached(because w is 3)
+6. repeat step 5 until the end of the array
+
+#+begin_src python
+  class Queue:
+
+      def __init__(self):
+          self.data = []
+
+      def enqueue(self, value):
+          self.data.append(value)
+
+      def dequeue(self):
+          if (len(self.data) == 0):
+              return None
+          return self.data.pop(0)
+
+      def peek(self):
+          if (len(self.data) > 0):
+              return self.data[0]
+
+      def isEmpty(self):
+          return len(self.data) == 0
+
+
+  def maxWindowArray(numbers, w):
+      queue = Queue()
+      result = []
+      for index in range(0, w - 1):
+          queue.enqueue(index)
+          while not queue.isEmpty():
+              _index = queue.peek()
+              if numbers[_index] < numbers[index]:
+                  queue.dequeue()
+              else:
+                  break
+      for index in range(w - 1, len(numbers)):
+          queue.enqueue(index)
+          while not queue.isEmpty():
+              _index = queue.peek()
+              if (numbers[_index] < numbers[index] or index - _index >= w):
+                  queue.dequeue()
+              else:
+                  break
+          result.append(numbers[queue.peek()])
+      return result
+
+
+  if __name__ == '__main__':
+      array = [4, 3, 5, 4, 3, 3, 6, 7]
+      print(maxWindowArray(array, 3))
+#+end_src

@@ -1,0 +1,57 @@
+#+TITLE: Bucket Sort
+#+DATE: 2023-09-27 21:50:09
+#+DISPLAY: t
+#+STARTUP: indent
+#+OPTIONS: toc:10
+#+AUTHOR: inmove
+#+KEYWORDS: Bucket Sort
+#+CATEGORIES: Sort
+
+* BucketSort
+
+Divide numbers into several buckets, place arrays into these buckets, sort each bucket, and finally merge the buckets.
+The rule for placing numbers into buckets:
+  Each bucket is also an array, and all the numbers in a bucket must be smaller than those in the subsequent bucket (sorted from small to large) to ensure the final order after merging.
+  In the best-case scenario, the time complexity is O(n + k), where k is the number of buckets.
+  In the worst-case scenario, all numbers are placed in a single bucket, resulting in a time complexity of O(n^2).
+
+First, traverse all numbers and place them into buckets, with a time complexity of O(n).
+Assuming there are k buckets and using /insertSort/, the worst-case time complexity is O(n^2), so sorting a single bucket requires O((n/k)^2), and sorting all buckets requires O(n^2/k).
+Merging buckets involves traversing all the buckets, so it's O(k).
+Therefore, the time complexity of bucket sort is O(n + n^2/k + k).
+When k = n, the time complexity is O(3n) = O(n).
+When k = 1, the time complexity is O(n^2).
+
+#+begin_src python
+  def bucketSort(arr):
+      def insertionSort(arr):
+          for i in range(1, len(arr)):
+              key = arr[i]
+              j = i - 1
+              while j >= 0 and key < arr[j]:
+                  arr[j + 1] = arr[j]
+                  j -= 1
+              arr[j + 1] = key
+          return arr
+
+      # 1. Create Empty Bucket
+      num_buckets = len(arr)
+      buckets = [[] for _ in range(num_buckets)]
+
+      # 2. Put elements to bucket
+      max_val, min_val = max(arr), min(arr)
+      for num in arr:
+          index = int((num - min_val) * (num_buckets - 1) / (max_val - min_val))
+          buckets[index].append(num)
+
+      # 3. Sort every element
+      for bucket in buckets:
+          insertionSort(bucket)
+
+      # 4. Merge bucket
+      sorted_arr = []
+      for bucket in buckets:
+          sorted_arr.extend(bucket)
+
+      return sorted_arr
+#+end_src

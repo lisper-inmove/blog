@@ -1,0 +1,158 @@
+#+TITLE: Typing
+#+DATE: 2021-01-29 21:21:59
+#+DISPLAY: t
+#+STARTUP: indent
+#+OPTIONS: toc:10
+#+AUTHOR: inmove
+#+SUBTITLE: typing 是3.5引入的。有了typing的提示，在使用函数时能减少出错的可能性
+#+KEYWORDS: type check
+#+CATEGORIES: Python
+#+CARDIMAGE: https://inmove-blog.oss-cn-hangzhou.aliyuncs.com/images/typing.webp
+
+* 为什么要用 typing
+
+typing对mypy更友好
+用mypy检查代码的话能减少出错
+
+* 基础类型
+
+基础类型包括 int float bool str。他们不需要从typing中导入。
+
+#+begin_src python :results output
+  def add_numbers(a: int, b: int) -> int:
+      return a + b
+#+end_src
+
+* 列表，字典与元组
+#+begin_src python :results output
+  from typing import List, Dict, Tuple
+
+  def process_items(items: List[int]) -> None:
+      pass
+
+  def map_values(mapping: Dict[str, int]) -> None:
+      pass
+
+  def get_coordinates() -> Tuple[int, int]:
+      return (10, 20)
+#+end_src
+
+* 可选参数与联合参数
+#+begin_src python :results output
+  from typing import Optional, Union
+
+  def get_name(user_id: int) -> Optional[str]:
+      pass
+
+  def process(value: Union[int, str]):
+      pass
+#+end_src
+
+* 类型别名
+#+begin_src python :results output
+  from typing import Dict, Union, List
+
+  JSON = Dict[str, Union[str, int, float, bool, None, List['JSON'], Dict[str, 'JSON']]]
+
+  def parse_json(data: JSON) -> None:
+      pass
+#+end_src
+
+* 新类 与 可调用
+#+begin_src python :results output
+  from typing import NewType, Callable
+
+  UserId = NewType('UserId', int)
+
+  def user_processor(user_id: UserId) -> None:
+      pass
+
+  def execute_function(func: Callable[[int, int], int]) -> None:
+      pass
+#+end_src
+
+* Annotated
+#+begin_src python :results file :noweb yes :exports code :file
+  from typing import Annotated
+
+  # Strings to give some hints
+  def func(value: Annotated[int, "positive", "non-zero"]) -> None:
+      print(value)
+
+  def positive(value: int) -> bool:
+      if value <= 0:
+          raise ValueError("Value must be positive")
+      return True
+
+  def non_zero(value: int) -> bool:
+      if value == 0:
+          raise ValueError("Value must not be zero")
+      return True
+
+  # Use function to validate params
+  def func2(value: Annotated[int, positive, non_zero]) -> None:
+      print(f"Value {value} is valid")
+
+#+end_src
+
+* Generic and TpeVar
+python3.9 and above
+#+begin_src python :results output
+  from typing import Generic, TypeVar, Optional
+
+  DataT = TypeVar("DataT")
+
+
+  class Data(Generic[DataT]):
+
+      value: Optional[DataT] = None
+
+      def __init__(self, value):
+          self.value = value
+
+
+  data1 = Data[int](10)
+  print(data1.value)
+
+  data2 = Data[str]("Hello")
+  print(data2.value)
+#+end_src
+
+#+RESULTS:
+: World
+: Hello
+
+python3.12 and above
+#+begin_src python
+  class Response[DataT]:
+      data: DataT
+#+end_src
+
+泛型的继承
+#+begin_src python
+  from typing import Generic, TypeVar
+
+  TypeX = TypeVar("TypeX")
+  TypeY = TypeVar("TypeY")
+  TypeZ = TypeVar("TypeZ")
+
+  class A(Generic[TypeX, TypeY]):
+
+      def __init__(self, x: TypeX, y: TypeY):
+          self.x = x
+          self.y = y
+
+
+  class B(A[int, TypeY], Generic[TypeY, TypeZ]):
+
+      def __init__(self, x: int, y: TypeY, z: TypeZ):
+          super().__init__(x, y)
+          self.z = z
+
+
+  b = B[str, str](1, 2, 3)
+  print(b.x, b.y, b.z)
+#+end_src
+
+#+RESULTS:
+: None

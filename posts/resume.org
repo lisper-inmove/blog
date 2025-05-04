@@ -1,0 +1,15 @@
+#+TITLE: Resume
+#+DATE: 2024-02-23 03:16:46
+#+DISPLAY: nil
+#+STARTUP: indent
+#+OPTIONS: toc:10
+#+AUTHOR: inmove
+#+SUBTITLE: Resume
+#+KEYWORDS: Resume
+#+CATEGORIES: Resume
+
+
+* intro
+#+begin_verse
+intro myself
+#+end_verse
