@@ -15,7 +15,7 @@ export default function HeadlineComponent({
         textIndent.push(`indent-${i * 4}`);
     }
     return (
-        <Box className="mx-auto px-30 flex justify-start items-center">
+        <Box className="mx-auto flex justify-start items-center">
             <Box className="pr-10 pt-5">
                 <Link
                     href={`#${headline.prefix}`}
@@ -25,7 +25,9 @@ export default function HeadlineComponent({
                     }}
                 >
                     <h3
-                        className={textIndent[headline.level - 1]}
+                        className={`${
+                            textIndent[headline.level - 1]
+                        } dark:text-cyan-400 text-cyan-800`}
                         style={{
                             fontSize: levelToFontSize[headline.level - 1],
                         }}

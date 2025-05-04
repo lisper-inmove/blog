@@ -9,8 +9,10 @@ import {
     CodeElement,
     Headline,
     Post,
+    Row,
     Section,
     SingleElement,
+    Table,
 } from "@/entities/PostChild";
 import * as orga from "orga";
 
@@ -60,6 +62,8 @@ export default class OrgModeParser {
                 this.parseBlock(section, child, fileName);
             } else if (child.type === ChildType.emptyLine) {
             } else if (child.type === ChildType.paragraph) {
+            } else if (child.type === ChildType.table) {
+                this.parseTable(section, child);
             } else if (child.type === ChildType.section) {
                 const subSection = this.parseSection(child);
                 section.sections.push(subSection);
@@ -83,6 +87,36 @@ export default class OrgModeParser {
         }
         this._tableContentHeadlines.push(headline);
         return headline;
+    }
+
+    private parseTable(section: Section, item: Dict) {
+        const table: Table = new Table(ChildType.table);
+        for (const child of item.children) {
+            if (child.type === "table.row") {
+                const row: Row = new Row();
+                for (const cell of child.children) {
+                    console.log(cell);
+                    if (cell.type === "table.columnSeparator") {
+                    } else if (cell.type === "table.cell") {
+                        for (const _cell of cell.children) {
+                            const __cell: SingleElement = new SingleElement(
+                                _cell.type
+                            );
+                            __cell.value = _cell.value;
+                            __cell.start = {
+                                ...child.position.start,
+                            };
+                            __cell.end = {
+                                ...child.position.end,
+                            };
+                            row.cells.push(__cell);
+                        }
+                    }
+                }
+                table.rows.push(row);
+            }
+        }
+        section.blocks.push(table);
     }
 
     private parseBlock(section: Section, item: Dict, fileName: string) {
@@ -110,8 +144,9 @@ export default class OrgModeParser {
 
     private parseBlockChild(block: Block, item: Dict) {
         for (const child of item.children) {
-            let singleElement: SingleElement = new SingleElement(child.type);
-            singleElement.type = child.type || "text";
+            let singleElement: SingleElement = new SingleElement(
+                child.type || "type"
+            );
             singleElement.value = child.value || "";
             singleElement.name = child.name || "";
             singleElement.style = child.style || "";

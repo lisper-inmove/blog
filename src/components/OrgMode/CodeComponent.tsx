@@ -1,11 +1,14 @@
 "use client";
-import { SyntheticEvent, useState } from "react";
+import { SyntheticEvent, useEffect, useState } from "react";
 import { Prism as SyntaxHighlighter } from "react-syntax-highlighter";
 
 // https://github.com/react-syntax-highlighter/react-syntax-highlighter/blob/master/AVAILABLE_STYLES_PRISM.MD
 import { Box } from "@mui/material";
 import { FaRegCopy } from "react-icons/fa6";
-import { hopscotch as codeTheme } from "react-syntax-highlighter/dist/cjs/styles/prism";
+import {
+    hopscotch,
+    monokai,
+} from "react-syntax-highlighter/dist/cjs/styles/prism";
 import { generateRandomKey } from "./LineContentComponents";
 
 interface Props {
@@ -15,6 +18,7 @@ interface Props {
 }
 
 export default function CodeComponent({ line, language, name }: Props) {
+    const [theme, setTheme] = useState(monokai);
     let showLineNumbers = true;
     if (language == "picture") {
         showLineNumbers = false;
@@ -29,10 +33,17 @@ export default function CodeComponent({ line, language, name }: Props) {
         }, 2000);
     };
 
+    useEffect(() => {
+        const darkModeMediaQuery = window.matchMedia(
+            "(prefers-color-scheme: dark)"
+        );
+        setTheme(darkModeMediaQuery.matches ? hopscotch : monokai);
+    }, [theme]);
+
     return (
-        <Box className="pt-4 px-36 mb-8 relative">
-            <Box className="flex text-white absolute right-60 items-center">
-                <span className="mr-5 text-2xl">
+        <Box className="pt-4 mb-8 relative">
+            <Box className="flex text-amber-900 dark:text-amber-700 absolute items-center right-1">
+                <span className="text-2xl mr-5">
                     {copied ? (
                         <h1 className="fadeIn2S" key="copy-success">
                             Success
@@ -50,7 +61,7 @@ export default function CodeComponent({ line, language, name }: Props) {
             </Box>
             <SyntaxHighlighter
                 language={language}
-                style={codeTheme}
+                style={theme}
                 showLineNumbers={showLineNumbers}
                 customStyle={{
                     margin: "0",

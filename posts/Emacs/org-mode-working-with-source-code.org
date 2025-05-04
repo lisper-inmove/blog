@@ -16,7 +16,7 @@
 :exports => code
 :cache => no
 :noweb => no
-变量 *org-babel-default-header-args:<LANG>* 保存语言相关的HeaderArguments的设置
+变量 *org-babel-default-header-args:<LANG>* 保存语言相关的 /HeaderArguments/ 的设置 =x + y=
 
 2. 在属性中设置HeaderArguments
 #+end_verse

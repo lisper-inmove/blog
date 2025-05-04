@@ -31,9 +31,7 @@ export default function OrgModeViewer({ content }: Props) {
         return result;
     }
 
-    const headlinePrefix: string[] = generatePrefixes(
-        parser.tableContentHeadlines
-    );
+    generatePrefixes(parser.tableContentHeadlines);
 
     return (
         <div className="w-full h-full">

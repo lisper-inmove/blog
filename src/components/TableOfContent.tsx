@@ -1,5 +1,5 @@
 "use client";
-import { SectionHeadline } from "@/entities/PostChild";
+import { Headline } from "@/entities/PostChild";
 import { Box } from "@mui/material";
 import Link from "next/link";
 import { useState } from "react";
@@ -7,12 +7,12 @@ import { MdExpandMore } from "react-icons/md";
 
 interface TableContentProps {
     params: {
-        headlines: SectionHeadline[];
+        headlines: Headline[];
     };
 }
 
 export default function TableContentComponent({ params }: TableContentProps) {
-    let tableContent = renderTablehead(params.headlines);
+    let tableContent = renderTableHead(params.headlines);
     const [isExpanded, setIsExpanded] = useState(false);
     return (
         <div
@@ -31,7 +31,7 @@ export default function TableContentComponent({ params }: TableContentProps) {
     );
 }
 
-const renderTablehead = (headlines: SectionHeadline[]) => {
+const renderTableHead = (headlines: Headline[]) => {
     const handleClick = (index: string) => {
         const element = document.getElementById(index);
         if (element) {

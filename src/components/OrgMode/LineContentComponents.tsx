@@ -82,18 +82,18 @@ export function VerbatimText(content: SingleElement) {
 
 export function ItalicText(content: SingleElement) {
     return (
-        <>
+        <span key={`ItalicText-${content.start.line}-${content.start.column}`}>
             <span key={generateRandomKey("span-pre-wrap")}>
                 {content.prefix}
             </span>
             <span
                 key={generateRandomKey("italic")}
                 // className="text-orange-500 italic text-lg"
-                className={`italic ${content.textSize} text-purple-500`}
+                className={`italic ${content.textSize} text-blue-500 dark:text-amber-200`}
             >
                 {content.value}
             </span>
-        </>
+        </span>
     );
 }
 
@@ -189,9 +189,13 @@ export function LineComponent(content: SingleElement) {
         return CommonText(content);
     } else if (content.type === "innerCode") {
         return InnercodeText(content);
-    } else if (content.type === "text" && content.style === "bold") {
-        return BoldText(content);
-    } else {
-        return CommonText(content);
+    } else if (content.type === "text") {
+        if (content.style === "bold") {
+            return BoldText(content);
+        } else if (content.style === "italic") {
+            return ItalicText(content);
+        } else {
+            return CommonText(content);
+        }
     }
 }

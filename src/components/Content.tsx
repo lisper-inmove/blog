@@ -1,9 +1,12 @@
 import {
+    Block,
+    BlockElementType,
     BlockName,
     ChildType,
     CodeElement,
     Section,
     SingleElement,
+    Table,
 } from "@/entities/PostChild";
 import OrgModeParser from "@/utils/OrgModeParser";
 import { Box } from "@mui/material";
@@ -11,6 +14,7 @@ import React from "react";
 import CodeComponent from "./OrgMode/CodeComponent";
 import HeadlineComponent from "./OrgMode/HeadlineComponent";
 import { EmptyLine, LineComponent } from "./OrgMode/LineContentComponents";
+import TableComponent from "./OrgMode/TableComponent";
 
 interface Props {
     parser: OrgModeParser;
@@ -26,15 +30,27 @@ export default function Content({ parser }: Props): React.ReactNode {
             ></HeadlineComponent>
         );
         for (const block of section.blocks) {
-            if (block.name === BlockName.src) {
-                generateCodeComponents(block.elements as CodeElement[]);
-            } else if (block.name === BlockName.verse) {
-                generateSingleComponents(block.elements as SingleElement[]);
+            if (block.type === ChildType.block) {
+                const _block: Block = block as Block;
+                if (_block.name === BlockElementType.src) {
+                    generateCodeComponents(_block.elements as CodeElement[]);
+                } else if (_block.name === BlockName.verse) {
+                    generateSingleComponents(
+                        _block.elements as SingleElement[]
+                    );
+                }
+            } else if (block.type === ChildType.table) {
+                const _table: Table = block as Table;
+                generateTableComponents(_table);
             }
         }
         for (const subSection of section.sections) {
             generateHeadlineComponents(subSection);
         }
+    }
+
+    function generateTableComponents(table: Table) {
+        components.push(TableComponent(table));
     }
 
     function generateCodeComponents(elements: CodeElement[]) {
@@ -68,9 +84,7 @@ export default function Content({ parser }: Props): React.ReactNode {
             prevEle = ele;
         }
         components.push(
-            <Box key={`singleElement-${start}-${end}`} className="pl-36">
-                {_components}
-            </Box>
+            <Box key={`singleElement-${start}-${end}`}>{_components}</Box>
         );
     }
 

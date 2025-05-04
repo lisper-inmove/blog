@@ -69,6 +69,7 @@ export enum ChildType {
     paragraph = "paragraph",
     stars = "stars",
     text = "text",
+    table = "table",
 }
 
 export class Child {
@@ -127,8 +128,8 @@ export class Section extends Child {
         this._headline = v;
     }
 
-    private _blocks: Block[];
-    public get blocks(): Block[] {
+    private _blocks: Child[];
+    public get blocks(): Child[] {
         return this._blocks;
     }
     constructor(type: string) {
@@ -169,6 +170,7 @@ export class Block extends Child {
 export enum BlockElementType {
     src = "src",
     verse = "verse",
+    table = "table",
 }
 
 export class BlockElement {
@@ -280,5 +282,30 @@ export class SingleElement extends BlockElement {
     }
     public set name(v: string) {
         this._name = v;
+    }
+}
+
+export class Row {
+    constructor() {
+        this._cells = [];
+    }
+    private _cells: SingleElement[];
+    public get cells(): SingleElement[] {
+        return this._cells;
+    }
+}
+
+export class Table extends Child {
+    constructor(type: string) {
+        super(type);
+        this._rows = [];
+    }
+
+    private _rows: Row[];
+    public get rows(): Row[] {
+        return this._rows;
+    }
+    public set rows(v: Row[]) {
+        this._rows = v;
     }
 }
