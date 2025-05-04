@@ -1,19 +1,14 @@
-import { LineComponent, LineContentProps } from "./LineContentComponents";
+import { SingleElement } from "@/entities/PostChild";
+import { LineComponent } from "./LineContentComponents";
 
-interface QuoteComponentProps {
-    params: {
-        contents: LineContentProps[];
-    };
-}
-
-export default function QuoteComponent({ params }: QuoteComponentProps) {
+export default function QuoteComponent(lines: SingleElement[]) {
     return (
         <div className="flex px-56 pt-4">
             <div
                 className="border-l border-orange-300 ml-2 pl-4"
                 aria-hidden="true"
             >
-                {params.contents.map((content: LineContentProps) => {
+                {lines.map((content: SingleElement) => {
                     return LineComponent(content);
                 })}
             </div>

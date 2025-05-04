@@ -12,7 +12,7 @@ interface TableContentProps {
 }
 
 export default function TableContentComponent({ params }: TableContentProps) {
-    let tableContent = renderTableHead(params.headlines);
+    const tableContent = renderTableHead(params.headlines);
     const [isExpanded, setIsExpanded] = useState(false);
     return (
         <div

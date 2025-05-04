@@ -1,16 +1,11 @@
+import { SingleElement } from "@/entities/PostChild";
 import { Box } from "@mui/material";
-import { LineComponent, LineContentProps } from "./LineContentComponents";
+import { LineComponent } from "./LineContentComponents";
 
-interface ListComponentProps {
-    params: {
-        items: LineContentProps[];
-    };
-}
-
-export default function ListComponent({ params }: ListComponentProps) {
+export default function ListComponent(lines: SingleElement[]) {
     return (
         <Box className="px-56 pt-4 text-teal-800">
-            {params.items.map((content: LineContentProps) => {
+            {lines.map((content: SingleElement) => {
                 const components: any[] = [];
                 components.push(LineComponent(content));
                 return components;

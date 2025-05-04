@@ -21,7 +21,7 @@ interface Props {
 }
 
 export default function Content({ parser }: Props): React.ReactNode {
-    let components: React.ReactNode[] = [];
+    const components: React.ReactNode[] = [];
     function generateHeadlineComponents(section: Section) {
         components.push(
             <HeadlineComponent
@@ -54,7 +54,7 @@ export default function Content({ parser }: Props): React.ReactNode {
     }
 
     function generateCodeComponents(elements: CodeElement[]) {
-        for (let ele of elements) {
+        for (const ele of elements) {
             const language = ele.language;
             components.push(
                 <CodeComponent
@@ -69,14 +69,14 @@ export default function Content({ parser }: Props): React.ReactNode {
 
     function generateSingleComponents(elements: SingleElement[]) {
         let prevEle: SingleElement | null = null;
-        let _components: React.ReactNode[] = [];
+        const _components: React.ReactNode[] = [];
         let start: number = -1;
         let end: number = -1;
         if (elements.length > 0) {
             start = elements[0].start.line;
             end = elements[elements.length - 1].end.line;
         }
-        for (let ele of elements) {
+        for (const ele of elements) {
             if (prevEle != null && prevEle.start.line < ele.start.line) {
                 _components.push(EmptyLine());
             }

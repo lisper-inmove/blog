@@ -1,23 +1,12 @@
-import {
-  LineContentProps,
-  LineComponent,
-  generateRandomKey,
-} from "./LineContentComponents";
+import { SingleElement } from "@/entities/PostChild";
+import { LineComponent, generateRandomKey } from "./LineContentComponents";
 
-interface ParagraphComponentProps {
-  params: {
-    contents: LineContentProps[];
-  };
-}
-
-export default function ParagraphComponentV2({
-  params,
-}: ParagraphComponentProps) {
-  return (
-    <div key={generateRandomKey("ParagraphComponentV2")}>
-      {params.contents.map((content: LineContentProps) => {
-        return LineComponent(content);
-      })}
-    </div>
-  );
+export default function ParagraphComponentV2(lines: SingleElement[]) {
+    return (
+        <div key={generateRandomKey("ParagraphComponentV2")}>
+            {lines.map((content: SingleElement) => {
+                return LineComponent(content);
+            })}
+        </div>
+    );
 }

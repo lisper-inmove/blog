@@ -6,9 +6,11 @@ import { Prism as SyntaxHighlighter } from "react-syntax-highlighter";
 import { Box } from "@mui/material";
 import { FaRegCopy } from "react-icons/fa6";
 import {
-    hopscotch,
-    monokai,
+    hopscotch as dark,
+    solarizedlight as light,
 } from "react-syntax-highlighter/dist/cjs/styles/prism";
+import * as styles from "react-syntax-highlighter/dist/esm/styles/prism";
+
 import { generateRandomKey } from "./LineContentComponents";
 
 interface Props {
@@ -18,7 +20,8 @@ interface Props {
 }
 
 export default function CodeComponent({ line, language, name }: Props) {
-    const [theme, setTheme] = useState(monokai);
+    console.log(styles);
+    const [theme, setTheme] = useState(dark);
     let showLineNumbers = true;
     if (language == "picture") {
         showLineNumbers = false;
@@ -37,7 +40,7 @@ export default function CodeComponent({ line, language, name }: Props) {
         const darkModeMediaQuery = window.matchMedia(
             "(prefers-color-scheme: dark)"
         );
-        setTheme(darkModeMediaQuery.matches ? hopscotch : monokai);
+        setTheme(darkModeMediaQuery.matches ? dark : light);
     }, [theme]);
 
     return (

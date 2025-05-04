@@ -1,18 +1,10 @@
-import { LineComponent, LineContentProps } from "./LineContentComponents";
+import { SingleElement } from "@/entities/PostChild";
+import { LineComponent } from "./LineContentComponents";
 
-interface ParagraphComponentProps {
-    params: {
-        contents: LineContentProps[];
-        isResults: boolean;
-    };
-}
-
-export default function ParagraphComponent({
-    params,
-}: ParagraphComponentProps) {
+export default function ParagraphComponent(lines: SingleElement[]) {
     return (
         <div className="px-56 pt-4 text-xl">
-            {params.contents.map((content: LineContentProps) => {
+            {lines.map((content: SingleElement) => {
                 return LineComponent(content);
             })}
         </div>

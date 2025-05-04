@@ -125,7 +125,7 @@ export default class OrgModeParser {
         if (item.name === BlockName.verse) {
             this.parseBlockChild(block, item);
         } else if (item.name === BlockName.src) {
-            let codeElement: CodeElement = new CodeElement(
+            const codeElement: CodeElement = new CodeElement(
                 BlockElementType.src
             );
             codeElement.value = item.value;
@@ -144,7 +144,7 @@ export default class OrgModeParser {
 
     private parseBlockChild(block: Block, item: Dict) {
         for (const child of item.children) {
-            let singleElement: SingleElement = new SingleElement(
+            const singleElement: SingleElement = new SingleElement(
                 child.type || "type"
             );
             singleElement.value = child.value || "";
