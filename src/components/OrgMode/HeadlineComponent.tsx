@@ -10,10 +10,7 @@ export default function HeadlineComponent({
     headline,
 }: HeadlineComponentProps) {
     const levelToFontSize: number[] = [32, 28, 24, 22, 20, 18, 16, 14, 12, 10];
-    const textIndent: string[] = [];
-    for (let i = 0; i < levelToFontSize.length; i++) {
-        textIndent.push(`indent-${i * 4}`);
-    }
+
     return (
         <Box className="mx-auto flex justify-start items-center">
             <Box className="pr-10 pt-5">
@@ -25,9 +22,7 @@ export default function HeadlineComponent({
                     }}
                 >
                     <h3
-                        className={`${
-                            textIndent[headline.level - 1]
-                        } dark:text-cyan-400 text-cyan-800`}
+                        className="dark:text-cyan-400 text-cyan-800"
                         style={{
                             fontSize: levelToFontSize[headline.level - 1],
                         }}

@@ -81,6 +81,7 @@ export default class OrgModeParser {
         for (const child of item.children) {
             if (child.type === ChildType.stars) {
                 headline.level = child.level;
+                headline.indent = `indent-${(headline.level - 1) * 4}`;
             } else if (child.type == ChildType.text) {
                 headline.value = child.value;
             }
@@ -123,7 +124,7 @@ export default class OrgModeParser {
         const block: Block = new Block(ChildType.block);
         block.name = item.name;
         if (item.name === BlockName.verse) {
-            this.parseBlockChild(block, item);
+            this.parseBlockChild(section, block, item);
         } else if (item.name === BlockName.src) {
             const codeElement: CodeElement = new CodeElement(
                 BlockElementType.src
@@ -142,7 +143,7 @@ export default class OrgModeParser {
         section.blocks.push(block);
     }
 
-    private parseBlockChild(block: Block, item: Dict) {
+    private parseBlockChild(section: Section, block: Block, item: Dict) {
         for (const child of item.children) {
             const singleElement: SingleElement = new SingleElement(
                 child.type || "type"
@@ -150,6 +151,15 @@ export default class OrgModeParser {
             singleElement.value = child.value || "";
             singleElement.name = child.name || "";
             singleElement.style = child.style || "";
+            if (singleElement.type === BlockElementType.listItemBullet) {
+                const index = child.indent / 4;
+                const indent = " ".repeat(child.indent);
+                singleElement.value = `${indent}${section.itemBulletSn[index]}. `;
+                section.itemBulletSn[index]++;
+                for (let i = index + 1; i < 8; i++) {
+                    section.itemBulletSn[i] = 1;
+                }
+            }
             singleElement.prefix = "";
             singleElement.textSize = "";
             singleElement.start = {

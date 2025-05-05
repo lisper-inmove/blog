@@ -9,7 +9,7 @@ import {
     hopscotch as dark,
     solarizedlight as light,
 } from "react-syntax-highlighter/dist/cjs/styles/prism";
-import * as styles from "react-syntax-highlighter/dist/esm/styles/prism";
+// import * as styles from "react-syntax-highlighter/dist/esm/styles/prism";
 
 import { generateRandomKey } from "./LineContentComponents";
 
@@ -20,7 +20,7 @@ interface Props {
 }
 
 export default function CodeComponent({ line, language, name }: Props) {
-    console.log(styles);
+    // console.log(styles);
     const [theme, setTheme] = useState(dark);
     let showLineNumbers = true;
     if (language == "picture") {

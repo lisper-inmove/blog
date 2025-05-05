@@ -21,7 +21,6 @@ export enum BlockType {
     blockBegin = "block.begin",
     blockEnd = "block.end",
     text = "text",
-    listItemBullet = "list.item.bullet",
     emptyLine = "emptyLine",
 }
 
@@ -117,6 +116,14 @@ export class Headline extends Child {
     public get tags(): string[] {
         return this._tags;
     }
+
+    private _indent: string;
+    public get indent(): string {
+        return this._indent;
+    }
+    public set indent(v: string) {
+        this._indent = v;
+    }
 }
 
 export class Section extends Child {
@@ -136,11 +143,18 @@ export class Section extends Child {
         super(type);
         this._blocks = [];
         this._sections = [];
+        // 8 levels is enough
+        this._itemBulletSn = [1, 1, 1, 1, 1, 1, 1, 1, 1];
     }
 
     private _sections: Section[];
     public get sections(): Section[] {
         return this._sections;
+    }
+
+    private _itemBulletSn: number[];
+    public get itemBulletSn(): number[] {
+        return this._itemBulletSn;
     }
 }
 
@@ -171,6 +185,7 @@ export enum BlockElementType {
     src = "src",
     verse = "verse",
     table = "table",
+    listItemBullet = "list.item.bullet",
 }
 
 export class BlockElement {

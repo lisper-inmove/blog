@@ -66,17 +66,19 @@ export function LinkText(content: SingleElement) {
 
 export function VerbatimText(content: SingleElement) {
     return (
-        <>
+        <span
+            key={`VerbatimText-${content.start.line}-${content.start.column}`}
+        >
             <span key={generateRandomKey("span-pre-wrap")}>
                 {content.prefix}
             </span>
             <span
                 key={generateRandomKey("verbatim")}
-                className={`${content.textSize} text-red-500`}
+                className={`${content.textSize} text-blue-500 dark:text-yellow-400`}
             >
                 {content.value}
             </span>
-        </>
+        </span>
     );
 }
 
@@ -194,6 +196,8 @@ export function LineComponent(content: SingleElement) {
             return BoldText(content);
         } else if (content.style === "italic") {
             return ItalicText(content);
+        } else if (content.style === "verbatim") {
+            return VerbatimText(content);
         } else {
             return CommonText(content);
         }

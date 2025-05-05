@@ -4,6 +4,7 @@ import {
     BlockName,
     ChildType,
     CodeElement,
+    Headline,
     Section,
     SingleElement,
     Table,
@@ -36,7 +37,8 @@ export default function Content({ parser }: Props): React.ReactNode {
                     generateCodeComponents(_block.elements as CodeElement[]);
                 } else if (_block.name === BlockName.verse) {
                     generateSingleComponents(
-                        _block.elements as SingleElement[]
+                        _block.elements as SingleElement[],
+                        section.headline
                     );
                 }
             } else if (block.type === ChildType.table) {
@@ -67,7 +69,10 @@ export default function Content({ parser }: Props): React.ReactNode {
         }
     }
 
-    function generateSingleComponents(elements: SingleElement[]) {
+    function generateSingleComponents(
+        elements: SingleElement[],
+        headline: Headline
+    ) {
         let prevEle: SingleElement | null = null;
         const _components: React.ReactNode[] = [];
         let start: number = -1;
