@@ -71,9 +71,26 @@ export default class OrgModeParser {
                 if (child.key === "NAME") {
                     fileName = child.value;
                 }
+            } else if (child.type === ChildType.list) {
+                this.parseList(section, child);
+
+                // this.parseBlock(section, child, fileName);
             }
         }
         return section;
+    }
+
+    private parseList(section: Section, item: Dict) {
+        // this.parseBlock(section, item, "");
+
+        for (const child of item.children) {
+            if (child.children != undefined) {
+                const block: Block = new Block(ChildType.block);
+                block.name = BlockName.verse;
+                this.parseBlockChild(section, block, child);
+                section.blocks.push(block);
+            }
+        }
     }
 
     private parseHeadline(item: Dict): Headline {

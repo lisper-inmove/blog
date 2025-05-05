@@ -69,6 +69,7 @@ export enum ChildType {
     stars = "stars",
     text = "text",
     table = "table",
+    list = "list",
 }
 
 export class Child {
