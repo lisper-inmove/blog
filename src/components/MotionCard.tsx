@@ -42,7 +42,7 @@ export default function MotionCard({ metadata }: Props) {
                 <div className="flex flex-row justify-between">
                     {/* 关键字 */}
                     <div className="flex flex-row mb-3">
-                        <div className="text-black/70 dark:text-gray-700 text-lg mt-5 ml-3 px-3 py-1 bg-gray-300 rounded-lg font-semibold">
+                        <div className="text-amber-800 dark:text-orange-900 text-lg mt-5 ml-3 px-3 py-1 bg-gray-300 rounded-lg font-semibold">
                             #{metadata.categories}
                         </div>
                         {metadata.keywords.map((keyword, index) => {

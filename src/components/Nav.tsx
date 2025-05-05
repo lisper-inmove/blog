@@ -46,7 +46,7 @@ export default function Nav({
                     <div className="w-1/6 pr-10">
                         <input
                             type="text"
-                            placeholder="Search"
+                            placeholder="Search by Category"
                             onChange={(e) => setInputValue(e.target.value)}
                             className="w-full px-4 py-2 border border-gray-300 rounded-lg shadow-sm focus:outline-none focus:ring-2"
                         />
