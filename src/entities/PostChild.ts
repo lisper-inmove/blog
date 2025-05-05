@@ -300,6 +300,14 @@ export class SingleElement extends BlockElement {
     public set name(v: string) {
         this._name = v;
     }
+
+    private _columnNumber: number;
+    public get columnNumber(): number {
+        return this._columnNumber;
+    }
+    public set columnNumber(v: number) {
+        this._columnNumber = v;
+    }
 }
 
 export class Row {

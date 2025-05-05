@@ -7,14 +7,8 @@ export function generateRandomKey(prefix: string) {
 export function CommonText(content: SingleElement) {
     return (
         <span key={`CommonText-${content.start.line}-${content.start.column}`}>
+            <span style={{ whiteSpace: "pre-wrap" }}>{content.prefix}</span>
             <span
-                style={{ whiteSpace: "pre-wrap" }}
-                key={generateRandomKey("span-pre-wrap")}
-            >
-                {content.prefix}
-            </span>
-            <span
-                key={generateRandomKey("commonText")}
                 className={`${content.textSize}`}
                 style={{ whiteSpace: "pre-wrap" }}
             >
@@ -121,13 +115,8 @@ export function InnercodeText(content: SingleElement) {
 export function BoldText(content: SingleElement) {
     return (
         <span key={`BoldText-${content.start.line}-${content.start.column}`}>
-            <span key={generateRandomKey("span-pre-wrap")}>
-                {content.prefix}
-            </span>
-            <span
-                key={generateRandomKey("bold")}
-                className={`font-bold ${content.textSize} text-red-600`}
-            >
+            <span>{content.prefix}</span>
+            <span className={`font-bold ${content.textSize} text-red-600`}>
                 {content.value}
             </span>
         </span>
@@ -147,6 +136,35 @@ export function StrikeThroughText(content: SingleElement) {
 
 export function EmptyLine() {
     return <br key={generateRandomKey("emptyLine")} />;
+}
+
+export function MultiComponent(contents: SingleElement[]): React.ReactNode {
+    const result: React.ReactNode[] = [];
+    let key: string = "";
+    for (const content of contents) {
+        key = `MultiComponent-${content.start.line}-${content.start.column}`;
+        if (content.style === "bold") {
+            result.push(
+                <span
+                    key={generateRandomKey("MultiComponentBold")}
+                    className={`font-bold ${content.textSize} text-red-600`}
+                >
+                    {content.value}
+                </span>
+            );
+        } else {
+            result.push(
+                <span
+                    key={generateRandomKey("MultiComponentCommon")}
+                    className={`${content.textSize}`}
+                    style={{ whiteSpace: "pre-wrap" }}
+                >
+                    {content.value}
+                </span>
+            );
+        }
+    }
+    return <span key={key}>{result}</span>;
 }
 
 export function LineComponent(content: SingleElement) {

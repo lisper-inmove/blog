@@ -116,6 +116,7 @@ export default class OrgModeParser {
         for (const child of item.children) {
             if (child.type === "table.row") {
                 const row: Row = new Row();
+                let columnNumber = 0;
                 for (const cell of child.children) {
                     console.log(cell);
                     if (cell.type === "table.columnSeparator") {
@@ -125,6 +126,8 @@ export default class OrgModeParser {
                                 _cell.type
                             );
                             __cell.value = _cell.value;
+                            __cell.style = _cell.style || "";
+                            __cell.columnNumber = columnNumber;
                             __cell.start = {
                                 ...child.position.start,
                             };
@@ -134,6 +137,7 @@ export default class OrgModeParser {
                             row.cells.push(__cell);
                         }
                     }
+                    columnNumber += 1;
                 }
                 table.rows.push(row);
             }

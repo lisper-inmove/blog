@@ -1,16 +1,24 @@
-import { Table } from "@/entities/PostChild";
-import { LineComponent } from "./LineContentComponents";
+import { SingleElement, Table } from "@/entities/PostChild";
+import { MultiComponent } from "./LineContentComponents";
 
 export default function TableComponent(table: Table) {
     let key: string = "TableComponent";
     const rows: React.ReactNode[][] = [];
     for (const row of table.rows) {
         const cells: React.ReactNode[] = [];
+        const cellsTemp: SingleElement[][] = [];
+        let prevColumnNumber: number = -1;
         for (const cell of row.cells) {
-            key += `${cell.start.line} - ${cell.start.offset}`;
-            const lines: React.ReactNode[] = [];
-            lines.push(LineComponent(cell));
-            cells.push(lines);
+            key = `${cell.start.line} - ${cell.start.offset}`;
+            if (prevColumnNumber != cell.columnNumber) {
+                cellsTemp.push([cell]);
+            } else {
+                cellsTemp[cellsTemp.length - 1].push(cell);
+            }
+            prevColumnNumber = cell.columnNumber;
+        }
+        for (const _cells of cellsTemp) {
+            cells.push(MultiComponent(_cells));
         }
         rows.push(cells);
     }
