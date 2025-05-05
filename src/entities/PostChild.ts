@@ -15,6 +15,7 @@ export type Position = {
 export enum BlockName {
     verse = "verse",
     src = "src",
+    quote = "quote",
 }
 
 export enum BlockType {

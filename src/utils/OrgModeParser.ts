@@ -62,6 +62,7 @@ export default class OrgModeParser {
                 this.parseBlock(section, child, fileName);
             } else if (child.type === ChildType.emptyLine) {
             } else if (child.type === ChildType.paragraph) {
+                this.parseParagraph(section, child);
             } else if (child.type === ChildType.table) {
                 this.parseTable(section, child);
             } else if (child.type === ChildType.section) {
@@ -73,16 +74,12 @@ export default class OrgModeParser {
                 }
             } else if (child.type === ChildType.list) {
                 this.parseList(section, child);
-
-                // this.parseBlock(section, child, fileName);
             }
         }
         return section;
     }
 
     private parseList(section: Section, item: Dict) {
-        // this.parseBlock(section, item, "");
-
         for (const child of item.children) {
             if (child.children != undefined) {
                 const block: Block = new Block(ChildType.block);
@@ -91,6 +88,13 @@ export default class OrgModeParser {
                 section.blocks.push(block);
             }
         }
+    }
+
+    private parseParagraph(section: Section, item: Dict) {
+        const block: Block = new Block(ChildType.block);
+        block.name = BlockName.verse;
+        this.parseBlockChild(section, block, item);
+        section.blocks.push(block);
     }
 
     private parseHeadline(item: Dict): Headline {
@@ -142,6 +146,8 @@ export default class OrgModeParser {
         block.name = item.name;
         if (item.name === BlockName.verse) {
             this.parseBlockChild(section, block, item);
+        } else if (item.name === BlockName.quote) {
+            this.parseQuote(block, item);
         } else if (item.name === BlockName.src) {
             const codeElement: CodeElement = new CodeElement(
                 BlockElementType.src
@@ -160,22 +166,41 @@ export default class OrgModeParser {
         section.blocks.push(block);
     }
 
-    private parseBlockChild(section: Section, block: Block, item: Dict) {
+    private parseQuote(block: Block, item: Dict) {
         for (const child of item.children) {
-            const singleElement: SingleElement = new SingleElement(
-                child.type || "type"
-            );
+            const singleElement: SingleElement = new SingleElement("quote");
+            if (singleElement.type === "newline") {
+                continue;
+            }
             singleElement.value = child.value || "";
             singleElement.name = child.name || "";
             singleElement.style = child.style || "";
-            if (singleElement.type === BlockElementType.listItemBullet) {
-                const index = child.indent / 4;
-                const indent = " ".repeat(child.indent);
-                singleElement.value = `${indent}${section.itemBulletSn[index]}. `;
-                section.itemBulletSn[index]++;
-                for (let i = index + 1; i < 8; i++) {
-                    section.itemBulletSn[i] = 1;
-                }
+            singleElement.prefix = "";
+            singleElement.textSize = "";
+            singleElement.start = {
+                ...child.position.start,
+            };
+            singleElement.end = {
+                ...child.position.end,
+            };
+            block.elements.push(singleElement);
+        }
+    }
+
+    private parseBlockChild(section: Section, block: Block, item: Dict) {
+        for (const child of item.children) {
+            const singleElement: SingleElement = new SingleElement(
+                child.type || "text"
+            );
+            if (singleElement.type === "newline") {
+                singleElement.type = ChildType.emptyLine;
+            }
+            singleElement.value = child.value || "";
+            singleElement.name = child.name || "";
+            singleElement.style = child.style || "";
+            this.calculateBulletSnAndIndent(section, child, singleElement);
+            if (singleElement.type === "link") {
+                this.extractLinkInfo(singleElement, child);
             }
             singleElement.prefix = "";
             singleElement.textSize = "";
@@ -186,6 +211,32 @@ export default class OrgModeParser {
                 ...child.position.end,
             };
             block.elements.push(singleElement);
+        }
+    }
+
+    private extractLinkInfo(singleElement: SingleElement, item: Dict) {
+        for (const child of item.children) {
+            if (child.type === "link.path") {
+                singleElement.link = child.value;
+            } else if (child.type === "text") {
+                singleElement.value = child.value;
+            }
+        }
+    }
+
+    private calculateBulletSnAndIndent(
+        section: Section,
+        item: Dict,
+        singleElement: SingleElement
+    ) {
+        if (singleElement.type === BlockElementType.listItemBullet) {
+            const index = item.indent / 4;
+            const indent = " ".repeat(item.indent);
+            singleElement.value = `${indent}${section.itemBulletSn[index]}. `;
+            section.itemBulletSn[index]++;
+            for (let i = index + 1; i < 8; i++) {
+                section.itemBulletSn[i] = 1;
+            }
         }
     }
 

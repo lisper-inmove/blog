@@ -4,7 +4,6 @@ import {
     BlockName,
     ChildType,
     CodeElement,
-    Headline,
     Section,
     SingleElement,
     Table,
@@ -37,13 +36,18 @@ export default function Content({ parser }: Props): React.ReactNode {
                     generateCodeComponents(_block.elements as CodeElement[]);
                 } else if (_block.name === BlockName.verse) {
                     generateSingleComponents(
+                        _block.elements as SingleElement[]
+                    );
+                } else if (_block.name === BlockName.quote) {
+                    generateSingleComponents(
                         _block.elements as SingleElement[],
-                        section.headline
+                        false
                     );
                 }
             } else if (block.type === ChildType.table) {
                 const _table: Table = block as Table;
                 generateTableComponents(_table);
+            } else if (block.type === ChildType.paragraph) {
             }
         }
         for (const subSection of section.sections) {
@@ -71,7 +75,7 @@ export default function Content({ parser }: Props): React.ReactNode {
 
     function generateSingleComponents(
         elements: SingleElement[],
-        headline: Headline
+        enableNewLine: boolean = true
     ) {
         let prevEle: SingleElement | null = null;
         const _components: React.ReactNode[] = [];
@@ -83,7 +87,9 @@ export default function Content({ parser }: Props): React.ReactNode {
         }
         for (const ele of elements) {
             if (prevEle != null && prevEle.start.line < ele.start.line) {
-                _components.push(EmptyLine());
+                if (enableNewLine) {
+                    _components.push(EmptyLine());
+                }
             }
             _components.push(LineComponent(ele));
             prevEle = ele;

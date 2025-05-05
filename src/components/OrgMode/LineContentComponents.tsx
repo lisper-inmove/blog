@@ -30,14 +30,9 @@ export function QuoteText(content: SingleElement) {
             <span
                 key={`QuoteText-${content.start.line}-${content.start.column}`}
             >
-                <span
-                    key={generateRandomKey("commonText")}
-                    className={`${content.textSize}`}
-                >
-                    <h3 className="line-clamp-6 text-ellipsis w-1/2">
-                        {content.value}
-                    </h3>
-                </span>
+                <h3 className="ml-10 indent-10 line-clamp-6 text-ellipsis w-1/2 border-l-4 border-gray-500 pl-4 italic text-lg text-blue-800 dark:text-gray-500">
+                    {content.value}
+                </h3>
             </span>
         );
     }
@@ -45,22 +40,14 @@ export function QuoteText(content: SingleElement) {
 
 export function LinkText(content: SingleElement) {
     return (
-        <>
-            <span
-                style={{ whiteSpace: "pre-wrap" }}
-                key={generateRandomKey("span-pre-wrap")}
-            >
-                {content.prefix}
-            </span>
-            <span
-                key={generateRandomKey("commonText")}
-                className={`${content.textSize} text-green-500`}
-            >
+        <span key={`LinkText-${content.start.line}-${content.start.column}`}>
+            <span style={{ whiteSpace: "pre-wrap" }}>{content.prefix}</span>
+            <span className={`${content.textSize} text-green-500`}>
                 <a href={content.link} key={generateRandomKey("for-link")}>
                     {content.value}
                 </a>
             </span>
-        </>
+        </span>
     );
 }
 
@@ -201,5 +188,9 @@ export function LineComponent(content: SingleElement) {
         } else {
             return CommonText(content);
         }
+    } else if (content.type === "link") {
+        return LinkText(content);
+    } else if (content.type === "quote") {
+        return QuoteText(content);
     }
 }
