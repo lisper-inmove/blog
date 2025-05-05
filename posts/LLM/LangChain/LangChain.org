@@ -1,8 +1,0 @@
-#+TITLE: Study LangChain
-#+DATE: 2025-04-19 12:48:47
-#+DISPLAY: t
-#+STARTUP: indent
-#+OPTIONS: toc:10
-#+AUTHOR: inmove
-#+SUBTITLE: How to use LangChain
-#+CATEGORIES: LLM
