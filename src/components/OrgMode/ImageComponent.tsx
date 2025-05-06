@@ -5,10 +5,10 @@ interface ImageComponentProps {
 }
 
 export default function ImageComponent({ url }: ImageComponentProps) {
-    let height = 300;
-    let width = 300;
-    let justifyContent = "";
-    let caption = "";
+    // let height = 300;
+    // let width = 300;
+    // let justifyContent = "";
+    const caption = "";
     // if (params.attributes.attr_html) {
     //     width = params.attributes.attr_html.width ?? 300;
     //     height = params.attributes.attr_html.height ?? 300;
