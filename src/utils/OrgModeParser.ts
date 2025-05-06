@@ -156,6 +156,8 @@ export default class OrgModeParser {
             this.parseBlockChild(section, block, item);
         } else if (item.name === BlockName.quote) {
             this.parseQuote(block, item);
+        } else if (item.name === BlockName.image) {
+            this.parseImage(block, item);
         } else if (item.name === BlockName.src) {
             const codeElement: CodeElement = new CodeElement(
                 BlockElementType.src
@@ -193,6 +195,22 @@ export default class OrgModeParser {
             };
             block.elements.push(singleElement);
         }
+    }
+
+    private parseImage(block: Block, item: Dict) {
+        const singleElement: SingleElement = new SingleElement(BlockName.image);
+        singleElement.value = item.value || "";
+        singleElement.name = item.name || "";
+        singleElement.style = item.style || "";
+        singleElement.prefix = "";
+        singleElement.textSize = "";
+        singleElement.start = {
+            ...item.position.start,
+        };
+        singleElement.end = {
+            ...item.position.end,
+        };
+        block.elements.push(singleElement);
     }
 
     private parseBlockChild(section: Section, block: Block, item: Dict) {

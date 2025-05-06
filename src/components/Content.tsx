@@ -13,6 +13,7 @@ import { Box } from "@mui/material";
 import React from "react";
 import CodeComponent from "./OrgMode/CodeComponent";
 import HeadlineComponent from "./OrgMode/HeadlineComponent";
+import ImageComponent from "./OrgMode/ImageComponent";
 import { EmptyLine, LineComponent } from "./OrgMode/LineContentComponents";
 import TableComponent from "./OrgMode/TableComponent";
 
@@ -43,6 +44,10 @@ export default function Content({ parser }: Props): React.ReactNode {
                         _block.elements as SingleElement[],
                         false
                     );
+                } else if (_block.name === BlockName.image) {
+                    const element: SingleElement = _block
+                        .elements[0] as SingleElement;
+                    components.push(ImageComponent({ url: element.value }));
                 }
             } else if (block.type === ChildType.table) {
                 const _table: Table = block as Table;

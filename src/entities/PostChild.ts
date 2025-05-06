@@ -16,6 +16,7 @@ export enum BlockName {
     verse = "verse",
     src = "src",
     quote = "quote",
+    image = "image",
 }
 
 export enum BlockType {
