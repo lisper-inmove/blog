@@ -82,10 +82,14 @@ export default class OrgModeParser {
     private parseList(section: Section, item: Dict) {
         for (const child of item.children) {
             if (child.children != undefined) {
-                const block: Block = new Block(ChildType.block);
-                block.name = BlockName.verse;
-                this.parseBlockChild(section, block, child);
-                section.blocks.push(block);
+                if (child.type === "list") {
+                    this.parseList(section, child);
+                } else {
+                    const block: Block = new Block(ChildType.block);
+                    block.name = BlockName.verse;
+                    this.parseBlockChild(section, block, child);
+                    section.blocks.push(block);
+                }
             }
         }
     }
@@ -234,7 +238,7 @@ export default class OrgModeParser {
         singleElement: SingleElement
     ) {
         if (singleElement.type === BlockElementType.listItemBullet) {
-            const index = item.indent / 4;
+            const index = Math.trunc((item.indent + 3) / 4);
             const indent = " ".repeat(item.indent);
             singleElement.value = `${indent}${section.itemBulletSn[index]}. `;
             section.itemBulletSn[index]++;
