@@ -15,6 +15,7 @@ import CodeComponent from "./OrgMode/CodeComponent";
 import HeadlineComponent from "./OrgMode/HeadlineComponent";
 import ImageComponent from "./OrgMode/ImageComponent";
 import { EmptyLine, LineComponent } from "./OrgMode/LineContentComponents";
+import MathComponent from "./OrgMode/MathComponent";
 import TableComponent from "./OrgMode/TableComponent";
 
 interface Props {
@@ -67,14 +68,23 @@ export default function Content({ parser }: Props): React.ReactNode {
     function generateCodeComponents(elements: CodeElement[]) {
         for (const ele of elements) {
             const language = ele.language;
-            components.push(
-                <CodeComponent
-                    key={`codeElement-${ele.start.line}-${ele.end.line}`}
-                    line={ele.value}
-                    language={language}
-                    name={ele.fileName}
-                ></CodeComponent>
-            );
+            if (ele.isFormula) {
+                components.push(
+                    <MathComponent
+                        key={`codeElement-${ele.start.line}-${ele.end.line}`}
+                        content={ele.value}
+                    />
+                );
+            } else {
+                components.push(
+                    <CodeComponent
+                        key={`codeElement-${ele.start.line}-${ele.end.line}`}
+                        line={ele.value}
+                        language={language}
+                        name={ele.fileName}
+                    ></CodeComponent>
+                );
+            }
         }
     }
 

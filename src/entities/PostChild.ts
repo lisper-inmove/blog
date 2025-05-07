@@ -223,6 +223,7 @@ export class BlockElement {
 export class CodeElement extends BlockElement {
     constructor(type: string) {
         super(type);
+        this._isFormula = false;
     }
 
     private _value: string;
@@ -246,6 +247,14 @@ export class CodeElement extends BlockElement {
     }
     public set fileName(v: string) {
         this._fileName = v;
+    }
+
+    private _isFormula: boolean;
+    public get isFormula(): boolean {
+        return this._isFormula;
+    }
+    public set isFormula(v: boolean) {
+        this._isFormula = v;
     }
 }
 

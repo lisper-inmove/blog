@@ -165,6 +165,9 @@ export default class OrgModeParser {
             codeElement.value = item.value;
             codeElement.language = item.params[0];
             codeElement.fileName = fileName;
+            if (item.attributes.attr_formula != undefined) {
+                codeElement.isFormula = true;
+            }
             codeElement.start = {
                 ...item.position.start,
             };
