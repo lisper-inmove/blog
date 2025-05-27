@@ -11,6 +11,7 @@ import {
 import OrgModeParser from "@/utils/OrgModeParser";
 import { Box } from "@mui/material";
 import React from "react";
+import MathPlot from "./MathPlot";
 import CodeComponent from "./OrgMode/CodeComponent";
 import HeadlineComponent from "./OrgMode/HeadlineComponent";
 import ImageComponent from "./OrgMode/ImageComponent";
@@ -68,13 +69,24 @@ export default function Content({ parser }: Props): React.ReactNode {
     function generateCodeComponents(elements: CodeElement[]) {
         for (const ele of elements) {
             const language = ele.language;
-            if (ele.isFormula) {
-                components.push(
-                    <MathComponent
-                        key={`codeElement-${ele.start.line}-${ele.end.line}`}
-                        content={ele.value}
-                    />
-                );
+            if (ele.isFormula || ele.isAxis) {
+                if (ele.isFormula) {
+                    components.push(
+                        <MathComponent
+                            key={`codeElement-${ele.start.line}-${ele.end.line}`}
+                            content={ele.value}
+                        />
+                    );
+                }
+                if (ele.isAxis) {
+                    components.push(
+                        <MathPlot
+                            key={`codeElement-${ele.start.line}-${ele.end.line}-MathPlot`}
+                            expression={ele.value}
+                            parameters={ele.attr_params}
+                        />
+                    );
+                }
             } else {
                 components.push(
                     <CodeComponent

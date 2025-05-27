@@ -55,11 +55,14 @@ export default class OrgModeParser {
     private parseSection(item: Dict): Section {
         const section: Section = new Section(ChildType.section);
         let fileName = "";
+        let attr_axis = "";
         for (const child of item.children) {
             if (child.type === ChildType.headline) {
                 section.headline = this.parseHeadline(child);
             } else if (child.type === ChildType.block) {
-                this.parseBlock(section, child, fileName);
+                this.parseBlock(section, child, fileName, attr_axis);
+                fileName = "";
+                attr_axis = "";
             } else if (child.type === ChildType.emptyLine) {
             } else if (child.type === ChildType.paragraph) {
                 this.parseParagraph(section, child);
@@ -71,6 +74,9 @@ export default class OrgModeParser {
             } else if (child.type === ChildType.keyword) {
                 if (child.key === "NAME") {
                     fileName = child.value;
+                }
+                if (child.key === "attr_axis") {
+                    attr_axis += child.value;
                 }
             } else if (child.type === ChildType.list) {
                 this.parseList(section, child);
@@ -149,7 +155,12 @@ export default class OrgModeParser {
         section.blocks.push(table);
     }
 
-    private parseBlock(section: Section, item: Dict, fileName: string) {
+    private parseBlock(
+        section: Section,
+        item: Dict,
+        fileName: string,
+        attr_axis: string
+    ) {
         const block: Block = new Block(ChildType.block);
         block.name = item.name;
         if (item.name === BlockName.verse) {
@@ -167,6 +178,10 @@ export default class OrgModeParser {
             codeElement.fileName = fileName;
             if (item.attributes.attr_formula != undefined) {
                 codeElement.isFormula = true;
+            }
+            if (item.attributes.attr_axis != undefined) {
+                codeElement.isAxis = true;
+                codeElement.attr_params = attr_axis;
             }
             codeElement.start = {
                 ...item.position.start,

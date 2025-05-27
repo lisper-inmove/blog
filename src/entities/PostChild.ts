@@ -224,6 +224,8 @@ export class CodeElement extends BlockElement {
     constructor(type: string) {
         super(type);
         this._isFormula = false;
+        this._isAxis = false;
+        this._attr_params = "";
     }
 
     private _value: string;
@@ -255,6 +257,22 @@ export class CodeElement extends BlockElement {
     }
     public set isFormula(v: boolean) {
         this._isFormula = v;
+    }
+
+    private _isAxis: boolean;
+    public get isAxis(): boolean {
+        return this._isAxis;
+    }
+    public set isAxis(v: boolean) {
+        this._isAxis = v;
+    }
+
+    private _attr_params: string;
+    public get attr_params(): string {
+        return this._attr_params;
+    }
+    public set attr_params(v: string) {
+        this._attr_params = v;
     }
 }
 

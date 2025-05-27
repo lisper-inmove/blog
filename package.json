@@ -13,6 +13,7 @@
     "@emotion/styled": "^11.14.0",
     "@mui/material": "^7.0.2",
     "better-react-mathjax": "^2.3.0",
+    "function-plot": "^1.25.1",
     "next": "15.3.0",
     "orga": "^4.5.0",
     "react": "^19.0.0",
