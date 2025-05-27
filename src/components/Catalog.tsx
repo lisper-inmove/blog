@@ -4,6 +4,7 @@ import { useSearchContext } from "@/contexts/SearchParamCtx";
 import { PostMetadata } from "@/entities/Post";
 import { useEffect, useState } from "react";
 import { useInView } from "react-intersection-observer";
+import { lfont } from "@/utils/font";
 import MotionCard from "./MotionCard";
 
 export default function Catalog() {
@@ -51,7 +52,7 @@ export default function Catalog() {
     }, [inView, isEnd]);
 
     return (
-        <div className="w-full">
+        <div className={`w-full ${lfont.className}`}>
             {metadatas.map((metadata) => {
                 return (
                     <div key={metadata.id}>
